@@ -12,12 +12,12 @@ Proyecto del curso **CC451 Interacción Humano-Computador**, Universidad Naciona
 
 ## Qué hace
 
-1. **Elegir el clima del día:** soleado, nublado, lluvia, tormenta o niebla. Si no hay ganas de hablar, basta con eso (10 s).
-2. **Contarlo por voz** (o escribirlo). La transcripción se puede corregir antes de que la lea la IA.
-3. **Detector de riesgo:** corre antes que la IA. Si hay señales de riesgo, muestra la Línea 113 opción 5, el SAMU 106 y la PNP 105, y no genera ninguna reflexión.
-4. **Emociones como nubes:** la IA propone y el usuario confirma, corrige o marca "no sé". La emoción inferida nunca reemplaza a la declarada.
-5. **Reflexión breve no clínica**, que se puede escuchar en voz alta.
-6. **Historial de 30 días** con datos simulados, para ver la app funcionando sin registrar nada.
+1. Eliges el clima del día: soleado, nublado, lluvia, tormenta o niebla. Si no tienes ganas de hablar, con eso basta.
+2. Si quieres, lo cuentas por voz o lo escribes. Puedes corregir la transcripción antes de que la lea la IA.
+3. Antes de llamar a la IA se revisa si hay frases de riesgo. Si las hay, la app muestra la Línea 113 (opción 5), el SAMU 106 y la PNP 105, y no genera reflexión.
+4. La IA propone emociones y tú eliges las tuyas o marcas "no sé". Lo que infiere la IA no reemplaza lo que eliges.
+5. Ves una reflexión corta, que también se puede escuchar.
+6. El historial de ejemplo muestra 30 días simulados.
 
 ## Requerimientos del proyecto y dónde están
 
