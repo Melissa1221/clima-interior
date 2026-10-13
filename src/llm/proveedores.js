@@ -40,7 +40,28 @@ export const ollama = {
   },
 }
 
-// API remota (Claude, Gemini) a través de un proxy propio que guarda la clave.
+// Gemini por API. En desarrollo la clave va en .env (nunca en el repo); en producción va en el proxy.
+export const gemini = {
+  nombre: 'gemini',
+  async proponerEmociones(texto) {
+    const modelo = import.meta.env.VITE_GEMINI_MODELO || 'gemini-flash-latest'
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': import.meta.env.VITE_GEMINI_API_KEY },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: PROMPT(texto) }] }],
+          generationConfig: { temperature: 0.3, responseMimeType: 'application/json' },
+        }),
+      },
+    )
+    const datos = await res.json()
+    return JSON.parse(datos.candidates[0].content.parts[0].text)
+  },
+}
+
+// API remota a través de un proxy propio que guarda la clave.
 export const remoto = {
   nombre: 'remoto',
   async proponerEmociones(texto) {
