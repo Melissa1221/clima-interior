@@ -43,7 +43,7 @@ export const ollama = {
 
 // Gemini por API. En desarrollo la clave va en .env (nunca en el repo); en producción va en el proxy.
 // La disponibilidad de cada modelo varía mucho: si uno responde 429/503 o tarda, se pasa al siguiente.
-const MODELOS_GEMINI = 'gemini-3.8-flash,gemini-flash-latest,gemini-3.5-flash'
+const MODELOS_GEMINI = 'gemini-3.8-flash,gemini-3.1-flash-lite,gemini-flash-latest'
 const ESPERA_POR_MODELO_MS = 6500
 
 export const gemini = {
