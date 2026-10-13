@@ -19,13 +19,14 @@ C4Context
   System_Ext(supa, "Supabase", "Salas en tiempo real y sincronización (siguiente avance).")
   System_Ext(lineas, "Líneas de ayuda", "113 op. 5, SAMU 106, PNP 105. La app solo muestra los números.")
 
-  Rel(usuario, clima, "Cuenta su día, elige emociones, ve su cielo")
-  Rel(clima, psicologa, "Resumen exportado por el usuario")
-  Rel(amigos, clima, "Ven el clima colectivo")
-  Rel(clima, llm, "Texto confirmado → emociones propuestas y reflexión")
-  Rel(clima, stt, "Audio → texto / texto → voz")
-  Rel(clima, supa, "Parámetros numéricos del clima")
-  Rel(usuario, lineas, "Llama si lo decide")
+  Rel(usuario, clima, "Usa")
+  Rel(clima, psicologa, "Resumen")
+  Rel(amigos, clima, "Ven la sala")
+  Rel(clima, llm, "Relato")
+  Rel(clima, stt, "STT / TTS")
+  Rel(clima, supa, "Clima en números")
+  Rel(usuario, lineas, "Llama")
+  UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
 
 ## Nivel 2: contenedores
@@ -46,10 +47,11 @@ C4Container
   Rel(usuario, pwa, "Usa", "navegador o app instalada")
   Rel(pwa, sw, "Pide recursos")
   Rel(pwa, local, "Lee y escribe el perfil")
-  Rel(pwa, proxy, "Relato confirmado", "HTTPS")
-  Rel(proxy, llm, "Prompt con el relato delimitado", "HTTPS")
-  Rel(pwa, llm, "Directo si es Ollama local", "HTTP localhost")
-  Rel(pwa, supa, "Solo números + seudónimo", "WebSocket/TLS")
+  Rel(pwa, proxy, "Relato", "HTTPS")
+  Rel(proxy, llm, "Prompt", "HTTPS")
+  Rel(pwa, llm, "Ollama local", "HTTP")
+  Rel(pwa, supa, "Números", "WebSocket")
+  UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
 
 ## Nivel 3: componentes de la PWA
