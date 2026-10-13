@@ -1,0 +1,32 @@
+{
+  "codigo": "K7QF-29XM-PL4D-8RWT",
+  "caduca": "2026-10-15T23:59:00-05:00",
+  "nota": "Solo se comparten parámetros del clima y seudónimos efímeros (RF-27, RNF-13, RNF-14).",
+  "participantes": [
+    {
+      "seudonimo": "Nube 1",
+      "clima": "nublado",
+      "valencia": 0.1
+    },
+    {
+      "seudonimo": "Nube 2",
+      "clima": "lluvia",
+      "valencia": -0.4
+    },
+    {
+      "seudonimo": "Nube 3",
+      "clima": "soleado",
+      "valencia": 0.6
+    },
+    {
+      "seudonimo": "Nube 4",
+      "clima": "niebla",
+      "valencia": -0.2
+    },
+    {
+      "seudonimo": "Nube 5",
+      "clima": "soleado",
+      "valencia": 0.5
+    }
+  ]
+}

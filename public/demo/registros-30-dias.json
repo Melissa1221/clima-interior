@@ -1,0 +1,527 @@
+[
+  {
+    "id": "reg-2026-09-08",
+    "fecha": "2026-09-08",
+    "hora": "22:18",
+    "clima": "soleado",
+    "parametros": {
+      "valencia": 0.55,
+      "activacion": 0.23,
+      "intensidad": 0.86
+    },
+    "emocion_declarada": "alivio",
+    "emocion_inferida": "alivio",
+    "tres_palabras": [
+      "hermana",
+      "cocinar",
+      "llamada"
+    ],
+    "transcripcion": "Hablé con mi hermana y me reí un buen rato.",
+    "duracion_checkin_s": 73,
+    "respiracion_hecha": false
+  },
+  {
+    "id": "reg-2026-09-09",
+    "fecha": "2026-09-09",
+    "hora": "21:05",
+    "clima": "tormenta",
+    "parametros": {
+      "valencia": -0.44,
+      "activacion": 0.9,
+      "intensidad": 0.72
+    },
+    "emocion_declarada": "ansiedad",
+    "emocion_inferida": null,
+    "tres_palabras": [
+      "caminar",
+      "cocinar",
+      "amigos"
+    ],
+    "transcripcion": null,
+    "duracion_checkin_s": 9,
+    "respiracion_hecha": true
+  },
+  {
+    "id": "reg-2026-09-10",
+    "fecha": "2026-09-10",
+    "hora": "21:34",
+    "clima": "soleado",
+    "parametros": {
+      "valencia": 0.56,
+      "activacion": 0.18,
+      "intensidad": 0.52
+    },
+    "emocion_declarada": "calma",
+    "emocion_inferida": "calma",
+    "tres_palabras": [
+      "clase",
+      "caminar",
+      "sueño"
+    ],
+    "transcripcion": "Terminé lo que tenía pendiente y me sentí ligera.",
+    "duracion_checkin_s": 53,
+    "respiracion_hecha": true
+  },
+  {
+    "id": "reg-2026-09-12",
+    "fecha": "2026-09-12",
+    "hora": "22:05",
+    "clima": "tormenta",
+    "parametros": {
+      "valencia": -0.55,
+      "activacion": 0.7,
+      "intensidad": 0.46
+    },
+    "emocion_declarada": "preocupación",
+    "emocion_inferida": null,
+    "tres_palabras": [
+      "sueño",
+      "llamada",
+      "serie"
+    ],
+    "transcripcion": null,
+    "duracion_checkin_s": 10,
+    "respiracion_hecha": false
+  },
+  {
+    "id": "reg-2026-09-13",
+    "fecha": "2026-09-13",
+    "hora": "21:18",
+    "clima": "soleado",
+    "parametros": {
+      "valencia": 0.55,
+      "activacion": 0.45,
+      "intensidad": 0.36
+    },
+    "emocion_declarada": "gratitud",
+    "emocion_inferida": "gratitud",
+    "tres_palabras": [
+      "cocinar",
+      "examen",
+      "llamada"
+    ],
+    "transcripcion": "Terminé lo que tenía pendiente y me sentí ligera.",
+    "duracion_checkin_s": 58,
+    "respiracion_hecha": true
+  },
+  {
+    "id": "reg-2026-09-14",
+    "fecha": "2026-09-14",
+    "hora": "23:47",
+    "clima": "lluvia",
+    "parametros": {
+      "valencia": -0.55,
+      "activacion": 0.27,
+      "intensidad": 0.67
+    },
+    "emocion_declarada": "tristeza",
+    "emocion_inferida": "tristeza",
+    "tres_palabras": [
+      "trabajo",
+      "familia",
+      "trabajo"
+    ],
+    "transcripcion": "Todo el día con la cabeza en el deadline.",
+    "duracion_checkin_s": 45,
+    "respiracion_hecha": false
+  },
+  {
+    "id": "reg-2026-09-15",
+    "fecha": "2026-09-15",
+    "hora": "21:47",
+    "clima": "tormenta",
+    "parametros": {
+      "valencia": -0.41,
+      "activacion": 0.75,
+      "intensidad": 0.55
+    },
+    "emocion_declarada": "ansiedad",
+    "emocion_inferida": "cansancio",
+    "tres_palabras": [
+      "sueño",
+      "caminar",
+      "serie"
+    ],
+    "transcripcion": "Tuve un examen y no me fue como esperaba.",
+    "duracion_checkin_s": 70,
+    "respiracion_hecha": false
+  },
+  {
+    "id": "reg-2026-09-16",
+    "fecha": "2026-09-16",
+    "hora": "21:47",
+    "clima": "tormenta",
+    "parametros": {
+      "valencia": -0.66,
+      "activacion": 0.68,
+      "intensidad": 0.33
+    },
+    "emocion_declarada": "frustración",
+    "emocion_inferida": null,
+    "tres_palabras": [
+      "examen",
+      "café",
+      "parque"
+    ],
+    "transcripcion": null,
+    "duracion_checkin_s": 8,
+    "respiracion_hecha": true
+  },
+  {
+    "id": "reg-2026-09-17",
+    "fecha": "2026-09-17",
+    "hora": "21:18",
+    "clima": "soleado",
+    "parametros": {
+      "valencia": 0.77,
+      "activacion": 0.38,
+      "intensidad": 0.82
+    },
+    "emocion_declarada": "gratitud",
+    "emocion_inferida": "gratitud",
+    "tres_palabras": [
+      "música",
+      "caminar",
+      "tráfico"
+    ],
+    "transcripcion": "Hablé con mi hermana y me reí un buen rato.",
+    "duracion_checkin_s": 59,
+    "respiracion_hecha": false
+  },
+  {
+    "id": "reg-2026-09-18",
+    "fecha": "2026-09-18",
+    "hora": "20:18",
+    "clima": "soleado",
+    "parametros": {
+      "valencia": 0.74,
+      "activacion": 0.79,
+      "intensidad": 0.58
+    },
+    "emocion_declarada": "alegría",
+    "emocion_inferida": "alegría",
+    "tres_palabras": [
+      "sueño",
+      "lluvia",
+      "llamada"
+    ],
+    "transcripcion": "Terminé lo que tenía pendiente y me sentí ligera.",
+    "duracion_checkin_s": 51,
+    "respiracion_hecha": false
+  },
+  {
+    "id": "reg-2026-09-19",
+    "fecha": "2026-09-19",
+    "hora": "23:34",
+    "clima": "tormenta",
+    "parametros": {
+      "valencia": -0.6,
+      "activacion": 0.76,
+      "intensidad": 0.86
+    },
+    "emocion_declarada": "ansiedad",
+    "emocion_inferida": "ansiedad",
+    "tres_palabras": [
+      "lluvia",
+      "amigos",
+      "música"
+    ],
+    "transcripcion": "Tuve un examen y no me fue como esperaba.",
+    "duracion_checkin_s": 64,
+    "respiracion_hecha": true
+  },
+  {
+    "id": "reg-2026-09-21",
+    "fecha": "2026-09-21",
+    "hora": "21:05",
+    "clima": "lluvia",
+    "parametros": {
+      "valencia": -0.38,
+      "activacion": 0.51,
+      "intensidad": 0.68
+    },
+    "emocion_declarada": "preocupación",
+    "emocion_inferida": null,
+    "tres_palabras": [
+      "trabajo",
+      "clase",
+      "llamada"
+    ],
+    "transcripcion": null,
+    "duracion_checkin_s": 9,
+    "respiracion_hecha": true
+  },
+  {
+    "id": "reg-2026-09-22",
+    "fecha": "2026-09-22",
+    "hora": "20:18",
+    "clima": "soleado",
+    "parametros": {
+      "valencia": 0.64,
+      "activacion": 0.35,
+      "intensidad": 0.67
+    },
+    "emocion_declarada": "gratitud",
+    "emocion_inferida": null,
+    "tres_palabras": [
+      "hermana",
+      "tráfico",
+      "música"
+    ],
+    "transcripcion": null,
+    "duracion_checkin_s": 9,
+    "respiracion_hecha": false
+  },
+  {
+    "id": "reg-2026-09-23",
+    "fecha": "2026-09-23",
+    "hora": "23:47",
+    "clima": "soleado",
+    "parametros": {
+      "valencia": 0.65,
+      "activacion": 0.3,
+      "intensidad": 0.77
+    },
+    "emocion_declarada": "calma",
+    "emocion_inferida": null,
+    "tres_palabras": [
+      "lluvia",
+      "parque",
+      "cocinar"
+    ],
+    "transcripcion": null,
+    "duracion_checkin_s": 7,
+    "respiracion_hecha": false
+  },
+  {
+    "id": "reg-2026-09-24",
+    "fecha": "2026-09-24",
+    "hora": "21:47",
+    "clima": "soleado",
+    "parametros": {
+      "valencia": 0.56,
+      "activacion": 0.19,
+      "intensidad": 0.37
+    },
+    "emocion_declarada": "calma",
+    "emocion_inferida": "calma",
+    "tres_palabras": [
+      "examen",
+      "hermana",
+      "llamada"
+    ],
+    "transcripcion": "Hoy salí a caminar y me despejé bastante.",
+    "duracion_checkin_s": 79,
+    "respiracion_hecha": true
+  },
+  {
+    "id": "reg-2026-09-25",
+    "fecha": "2026-09-25",
+    "hora": "20:34",
+    "clima": "niebla",
+    "parametros": {
+      "valencia": -0.31,
+      "activacion": 0.01,
+      "intensidad": 0.57
+    },
+    "emocion_declarada": "cansancio",
+    "emocion_inferida": null,
+    "tres_palabras": [
+      "caminar",
+      "parque",
+      "serie"
+    ],
+    "transcripcion": null,
+    "duracion_checkin_s": 7,
+    "respiracion_hecha": false
+  },
+  {
+    "id": "reg-2026-09-26",
+    "fecha": "2026-09-26",
+    "hora": "20:47",
+    "clima": "soleado",
+    "parametros": {
+      "valencia": 0.64,
+      "activacion": 0.15,
+      "intensidad": 0.84
+    },
+    "emocion_declarada": "calma",
+    "emocion_inferida": "frustración",
+    "tres_palabras": [
+      "tráfico",
+      "cocinar",
+      "amigos"
+    ],
+    "transcripcion": "Hoy salí a caminar y me despejé bastante.",
+    "duracion_checkin_s": 65,
+    "respiracion_hecha": true
+  },
+  {
+    "id": "reg-2026-09-28",
+    "fecha": "2026-09-28",
+    "hora": "20:34",
+    "clima": "lluvia",
+    "parametros": {
+      "valencia": -0.23,
+      "activacion": 0.43,
+      "intensidad": 0.56
+    },
+    "emocion_declarada": "confusión",
+    "emocion_inferida": "confusión",
+    "tres_palabras": [
+      "trabajo",
+      "café",
+      "parque"
+    ],
+    "transcripcion": "Dormí poco y el tráfico me quitó energía.",
+    "duracion_checkin_s": 72,
+    "respiracion_hecha": false
+  },
+  {
+    "id": "reg-2026-09-29",
+    "fecha": "2026-09-29",
+    "hora": "23:34",
+    "clima": "soleado",
+    "parametros": {
+      "valencia": 0.79,
+      "activacion": 0.66,
+      "intensidad": 0.89
+    },
+    "emocion_declarada": "alegría",
+    "emocion_inferida": null,
+    "tres_palabras": [
+      "cocinar",
+      "familia",
+      "lluvia"
+    ],
+    "transcripcion": null,
+    "duracion_checkin_s": 6,
+    "respiracion_hecha": true
+  },
+  {
+    "id": "reg-2026-09-30",
+    "fecha": "2026-09-30",
+    "hora": "20:34",
+    "clima": "tormenta",
+    "parametros": {
+      "valencia": -0.53,
+      "activacion": 0.69,
+      "intensidad": 0.39
+    },
+    "emocion_declarada": "frustración",
+    "emocion_inferida": null,
+    "tres_palabras": [
+      "hermana",
+      "amigos",
+      "cocinar"
+    ],
+    "transcripcion": null,
+    "duracion_checkin_s": 7,
+    "respiracion_hecha": true
+  },
+  {
+    "id": "reg-2026-10-01",
+    "fecha": "2026-10-01",
+    "hora": "21:47",
+    "clima": "niebla",
+    "parametros": {
+      "valencia": -0.65,
+      "activacion": 0.14,
+      "intensidad": 0.62
+    },
+    "emocion_declarada": "tristeza",
+    "emocion_inferida": "frustración",
+    "tres_palabras": [
+      "deadline",
+      "música",
+      "caminar"
+    ],
+    "transcripcion": "Dormí poco y el tráfico me quitó energía.",
+    "duracion_checkin_s": 55,
+    "respiracion_hecha": false
+  },
+  {
+    "id": "reg-2026-10-02",
+    "fecha": "2026-10-02",
+    "hora": "21:47",
+    "clima": "soleado",
+    "parametros": {
+      "valencia": 0.74,
+      "activacion": 0.22,
+      "intensidad": 0.6
+    },
+    "emocion_declarada": "calma",
+    "emocion_inferida": "frustración",
+    "tres_palabras": [
+      "deadline",
+      "amigos",
+      "música"
+    ],
+    "transcripcion": "Hablé con mi hermana y me reí un buen rato.",
+    "duracion_checkin_s": 52,
+    "respiracion_hecha": true
+  },
+  {
+    "id": "reg-2026-10-04",
+    "fecha": "2026-10-04",
+    "hora": "23:34",
+    "clima": "soleado",
+    "parametros": {
+      "valencia": 0.84,
+      "activacion": 0.74,
+      "intensidad": 0.51
+    },
+    "emocion_declarada": "alegría",
+    "emocion_inferida": "alegría",
+    "tres_palabras": [
+      "clase",
+      "trabajo",
+      "examen"
+    ],
+    "transcripcion": "Terminé lo que tenía pendiente y me sentí ligera.",
+    "duracion_checkin_s": 84,
+    "respiracion_hecha": false
+  },
+  {
+    "id": "reg-2026-10-05",
+    "fecha": "2026-10-05",
+    "hora": "21:18",
+    "clima": "niebla",
+    "parametros": {
+      "valencia": -0.74,
+      "activacion": 0.15,
+      "intensidad": 0.31
+    },
+    "emocion_declarada": "tristeza",
+    "emocion_inferida": null,
+    "tres_palabras": [
+      "trabajo",
+      "trabajo",
+      "serie"
+    ],
+    "transcripcion": null,
+    "duracion_checkin_s": 8,
+    "respiracion_hecha": false
+  },
+  {
+    "id": "reg-2026-10-07",
+    "fecha": "2026-10-07",
+    "hora": "22:34",
+    "clima": "lluvia",
+    "parametros": {
+      "valencia": -0.47,
+      "activacion": 0.58,
+      "intensidad": 0.61
+    },
+    "emocion_declarada": null,
+    "emocion_inferida": null,
+    "tres_palabras": [
+      "caminar",
+      "parque",
+      "lluvia"
+    ],
+    "transcripcion": null,
+    "duracion_checkin_s": 6,
+    "respiracion_hecha": true
+  }
+]
