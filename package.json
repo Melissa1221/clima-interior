@@ -1,0 +1,23 @@
+{
+  "name": "clima-interior",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Diario emocional generativo con voz e IA (PWA). Proyecto del curso CC451 IHC, UNI 2026-2.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "datos": "python3 scripts/generar_datos.py"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.0",
+    "vite": "^7.0.0",
+    "vite-plugin-pwa": "^1.0.0"
+  }
+}
