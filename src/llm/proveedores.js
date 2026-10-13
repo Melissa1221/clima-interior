@@ -36,39 +36,67 @@ export const ollama = {
         prompt: PROMPT(texto), format: 'json', stream: false, options: { temperature: 0.3 },
       }),
     })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
     return JSON.parse((await res.json()).response)
   },
 }
 
 // Gemini por API. En desarrollo la clave va en .env (nunca en el repo); en producción va en el proxy.
+// La disponibilidad de cada modelo varía mucho: si uno responde 429/503 o tarda, se pasa al siguiente.
+const MODELOS_GEMINI = 'gemini-3.8-flash,gemini-flash-latest,gemini-3.5-flash'
+const ESPERA_POR_MODELO_MS = 6500
+
 export const gemini = {
   nombre: 'gemini',
   async proponerEmociones(texto) {
-    const modelo = import.meta.env.VITE_GEMINI_MODELO || 'gemini-flash-latest'
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': import.meta.env.VITE_GEMINI_API_KEY },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: PROMPT(texto) }] }],
-          generationConfig: { temperature: 0.3, responseMimeType: 'application/json' },
-        }),
-      },
-    )
-    const datos = await res.json()
-    return JSON.parse(datos.candidates[0].content.parts[0].text)
+    const clave = import.meta.env.VITE_GEMINI_API_KEY
+    if (!clave) throw new Error('falta VITE_GEMINI_API_KEY')
+    const modelos = (import.meta.env.VITE_GEMINI_MODELOS || MODELOS_GEMINI).split(',').map((m) => m.trim()).filter(Boolean)
+    const cuerpo = JSON.stringify({
+      contents: [{ parts: [{ text: PROMPT(texto) }] }],
+      generationConfig: { temperature: 0.3, responseMimeType: 'application/json' },
+    })
+    const fallos = []
+    for (const modelo of modelos) {
+      let res
+      try {
+        res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': clave },
+          body: cuerpo,
+          signal: AbortSignal.timeout(ESPERA_POR_MODELO_MS),
+        })
+      } catch (err) {
+        fallos.push(`${modelo}: ${err.name === 'TimeoutError' ? 'tardó demasiado' : err.message}`)
+        continue
+      }
+      const datos = await res.json().catch(() => ({}))
+      if (res.ok) return leerJson(datos.candidates?.[0]?.content?.parts?.[0]?.text, datos)
+      fallos.push(`${modelo}: HTTP ${res.status}`)
+      if (res.status !== 429 && res.status !== 503 && res.status !== 404) {
+        throw new Error(`HTTP ${res.status}: ${datos.error?.message ?? 'sin detalle'}`)
+      }
+    }
+    throw new Error(`ningún modelo respondió (${fallos.join('; ')})`)
   },
+}
+
+// El texto puede venir vacío (respuesta bloqueada) o envuelto en ```json.
+function leerJson(texto, datos) {
+  if (!texto) throw new Error(`sin texto (${datos.candidates?.[0]?.finishReason ?? datos.promptFeedback?.blockReason ?? 'desconocido'})`)
+  return JSON.parse(texto.replace(/^```(?:json)?\s*|\s*```$/g, ''))
 }
 
 // API remota a través de un proxy propio que guarda la clave.
 export const remoto = {
   nombre: 'remoto',
   async proponerEmociones(texto) {
+    if (!import.meta.env.VITE_REMOTO_URL) throw new Error('falta VITE_REMOTO_URL')
     const res = await fetch(import.meta.env.VITE_REMOTO_URL, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt: PROMPT(texto) }),
     })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
     return res.json()
   },
 }
