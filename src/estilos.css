@@ -1,0 +1,43 @@
+:root { font-family: system-ui, sans-serif; color: #1f2a3c; background: #f4f1ea; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+.app { display: flow-root; max-width: 480px; margin: 0 auto; min-height: 100dvh; position: relative; }
+.salir { position: absolute; top: 12px; right: 12px; z-index: 2; background: #fff; padding: 8px 14px;
+  border-radius: 999px; color: #1f2a3c; text-decoration: none; font-size: 14px; }
+.paisaje { min-height: 100dvh; padding: 72px 16px 24px; display: flex; align-items: flex-end;
+  transition: background 600ms ease; }
+.paisaje--inicio { background: linear-gradient(#bcd3ee, #f4f1ea); }
+.paisaje--soleado { background: linear-gradient(#6fa8e8, #f6d98a); }
+.paisaje--nublado { background: linear-gradient(#9fb0c4, #dfe4ea); }
+.paisaje--lluvia { background: linear-gradient(#56657a, #9aa7b6); }
+.paisaje--tormenta { background: linear-gradient(#2a3446, #5d6a7e); }
+.paisaje--niebla { background: linear-gradient(#c9ccd1, #eceef0); }
+.tarjeta { background: #fff; border-radius: 20px; padding: 20px; width: 100%; display: grid; gap: 12px; }
+h1, h2 { margin: 0; font-family: Georgia, serif; }
+button { font: inherit; min-height: 44px; border-radius: 12px; border: 2px solid transparent; cursor: pointer; }
+button:focus-visible, a:focus-visible, textarea:focus-visible { outline: 3px solid #f2c14e; outline-offset: 2px; }
+button:disabled { opacity: .45; cursor: not-allowed; }
+.principal { background: #2f4466; color: #fff; }
+.secundario { background: #fff; border-color: #2f4466; color: #2f4466; }
+.enlace { background: none; color: #2f4466; text-decoration: underline; }
+.climas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.clima { display: grid; gap: 4px; padding: 12px 4px; background: #eef2f7; }
+.clima span { font-size: 28px; }
+.clima.activo, .nube.activa { border-color: #2f4466; background: #dbe6f5; }
+.nubes { display: flex; flex-wrap: wrap; gap: 8px; }
+.nube { background: #eef2f7; border-radius: 999px; padding: 0 18px; }
+.rotulo { font-size: 13px; color: #5a6475; margin: 0; }
+.reflexion { background: #2f4466; color: #fff; padding: 12px; border-radius: 12px; margin: 0; }
+.reflexion .enlace { color: #fff; }
+textarea { font: inherit; padding: 10px; border-radius: 12px; border: 1px solid #b8c0cc; }
+.mic { color: #b3261e; font-weight: 600; margin: 0; }
+.riesgo { margin: 72px 16px; width: auto; }
+.recurso { display: grid; padding: 12px; border-radius: 12px; background: #fbe9ea; color: #1f2a3c; text-decoration: none; }
+.pequeno { font-size: 13px; color: #5a6475; margin: 0; }
+.historial { margin: 72px 16px; width: auto; }
+.calendario { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.dia { aspect-ratio: 1; border-radius: 8px; }
+.dia--vacio { background: linear-gradient(#dcebfa, #f7f9fc); border: 1px dashed #b8c0cc; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.pie { position: fixed; bottom: 4px; left: 0; right: 0; text-align: center; font-size: 11px; color: #5a6475; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
