@@ -1,7 +1,7 @@
 # Arquitectura (modelo C4)
 
 Los diagramas usan la notación C4 de Mermaid, que GitHub muestra directamente.
-Las partes marcadas como **(siguiente avance)** están diseñadas pero todavía no están en el código.
+Las partes marcadas como **(pendiente)** están diseñadas pero todavía no están en el código.
 
 ## Nivel 1: contexto
 
@@ -16,7 +16,7 @@ C4Context
   System(clima, "Clima Interior", "PWA: check-in por voz, paisaje generativo, emociones propuestas por IA, historial y salas.")
   System_Ext(llm, "Proveedor de LLM", "API remota (Claude, Gemini) u Ollama local.")
   System_Ext(stt, "Voz del dispositivo", "Web Speech API para STT y TTS.")
-  System_Ext(supa, "Supabase", "Salas en tiempo real y sincronización (siguiente avance).")
+  System_Ext(supa, "Supabase", "Salas en tiempo real y sincronización (pendiente).")
   System_Ext(lineas, "Líneas de ayuda", "113 op. 5, SAMU 106, PNP 105. La app solo muestra los números.")
 
   Rel(usuario, clima, "Usa")
@@ -39,10 +39,10 @@ C4Container
     Container(pwa, "PWA", "React + Vite", "Interfaz, paisaje, voz y flujo del check-in.")
     Container(sw, "Service worker", "Workbox", "Caché offline de la app, los datos demo y los recursos de crisis.")
     ContainerDb(local, "Perfil local", "localStorage → IndexedDB", "Registros, preferencias y ritmo. El audio no se guarda.")
-    Container(proxy, "Proxy LLM", "Función serverless", "Guarda la clave de la API remota (siguiente avance).")
+    Container(proxy, "Proxy LLM", "Función serverless", "Guarda la clave de la API remota (pendiente).")
   }
   System_Ext(llm, "LLM", "Claude / Gemini / Ollama")
-  System_Ext(supa, "Supabase Realtime", "Salas (siguiente avance)")
+  System_Ext(supa, "Supabase Realtime", "Salas (pendiente)")
 
   Rel(usuario, pwa, "Usa", "navegador o app instalada")
   Rel(pwa, sw, "Pide recursos")
