@@ -43,6 +43,7 @@ cd clima-interior
 npm install
 cp .env.example .env      # por defecto usa el proveedor simulado, sin claves
 npm run dev               # http://localhost:5173
+npm test                  # pruebas de la capa LLM, el detector de riesgo y el perfil
 ```
 
 Para probar la PWA instalable y el modo offline, usa la versión compilada:
