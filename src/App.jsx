@@ -51,7 +51,9 @@ export default function App() {
   const [propuesta, setPropuesta] = useState(null)
   const [elegidas, setElegidas] = useState([])
   const [demo, setDemo] = useState(null)
+  const [errorMic, setErrorMic] = useState(null)
   const rec = useRef(null)
+  const consulta = useRef(0) // invalida respuestas del LLM que llegan después de salir
 
   useEffect(() => {
     if (!grabando) return
@@ -76,21 +78,40 @@ export default function App() {
   function empezarGrabacion() {
     setPantalla('contar')
     if (!sttDisponible()) return
+    setErrorMic(null)
+    const previo = texto.trim() // volver a grabar agrega al texto, no lo borra
     rec.current = crearGrabacion({
-      alTexto: setTexto,
-      alError: () => setGrabando(false),
+      alTexto: (t) => setTexto(previo ? `${previo} ${t}` : t),
+      alError: (e) => {
+        setGrabando(false)
+        setErrorMic(e === 'not-allowed' || e === 'service-not-allowed'
+          ? 'El micrófono está bloqueado. Puedes escribirlo aquí; tu clima sigue guardado.'
+          : 'No pudimos escucharte. Puedes escribirlo aquí o volver a intentar.')
+      },
       alTerminar: () => setGrabando(false),
     })
-    rec.current.start()
-    setSegundos(0)
-    setGrabando(true)
+    try {
+      rec.current.start()
+      setSegundos(0)
+      setGrabando(true)
+    } catch {
+      setErrorMic('No pudimos usar el micrófono. Puedes escribirlo aquí.')
+    }
+  }
+
+  function detenerMic() {
+    rec.current?.abort?.()
+    rec.current = null
+    setGrabando(false)
   }
 
   async function listo() {
-    rec.current?.stop()
+    detenerMic()
     if (hayRiesgo(texto)) return setPantalla('riesgo')
     setPantalla('pensando')
+    const id = ++consulta.current
     const r = await proponerEmociones(texto)
+    if (id !== consulta.current) return
     setPropuesta(r)
     setElegidas([])
     setPantalla('emociones')
@@ -103,6 +124,9 @@ export default function App() {
   }
 
   const reiniciar = () => {
+    detenerMic()
+    consulta.current++
+    setErrorMic(null)
     setClima(null); setTexto(''); setPropuesta(null); setElegidas([]); setPantalla('inicio')
   }
 
@@ -135,7 +159,11 @@ export default function App() {
           <section className="tarjeta">
             {grabando && <p className="mic" aria-live="polite">● Micrófono activo · {segundos} s</p>}
             {segundos >= SEG_SUGERIR_CIERRE && <p aria-live="polite">Ya va un minuto. Puedes terminar cuando cierres la idea.</p>}
-            {!sttDisponible() && <p>Tu navegador no permite dictar. Puedes escribirlo aquí.</p>}
+            {!sttDisponible() && <p role="status">Tu navegador no permite dictar. Puedes escribirlo aquí.</p>}
+            {errorMic && <p role="alert">{errorMic}</p>}
+            {!grabando && sttDisponible() && (
+              <button className="secundario" onClick={empezarGrabacion}>🎤 Volver a grabar</button>
+            )}
             <label htmlFor="relato">Lo que entendí (puedes corregirlo)</label>
             <textarea id="relato" value={texto} onChange={(e) => setTexto(e.target.value)} rows={5} />
             <button className="principal" disabled={!texto.trim()} onClick={listo}>Listo</button>
