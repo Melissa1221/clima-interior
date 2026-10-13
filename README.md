@@ -63,8 +63,9 @@ Edita `VITE_LLM_PROVIDER` en `.env`:
 | Valor | Qué usa | Necesita |
 |---|---|---|
 | `mock` | Respuestas simuladas por reglas | Nada (por defecto) |
+| `gemini` | Gemini Flash por API (capa gratuita) | `VITE_GEMINI_API_KEY` de [AI Studio](https://aistudio.google.com/apikey) |
 | `ollama` | Modelo local | [Ollama](https://ollama.com) con `ollama pull llama3.2` |
-| `remoto` | Claude o Gemini vía proxy | `VITE_REMOTO_URL` apuntando al proxy que guarda la clave |
+| `remoto` | Cualquier API vía proxy | `VITE_REMOTO_URL` apuntando al proxy que guarda la clave |
 
 Si el proveedor falla, tarda más de 10 s o responde fuera del esquema, la app usa una reflexión local y sigue funcionando.
 
