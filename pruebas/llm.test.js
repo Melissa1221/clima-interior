@@ -37,7 +37,8 @@ describe('proponerEmociones', () => {
   })
   it('el respaldo igual propone emociones a partir del relato', async () => {
     const r = await proponerEmociones('mucho trabajo, terminé cansada y aliviada', { proveedor: prov(async () => { throw new Error('HTTP 404') }) })
-    expect(r.emociones.map((e) => e.nombre)).toEqual(['cansancio', 'alivio'])
+    expect(r.emociones.map((e) => e.nombre)).toEqual(['cansancio', 'alivio', 'calma'])
+    expect(r.reflexion).toMatch(/energía/)
   })
   it('usa el respaldo si el proveedor tarda demasiado', async () => {
     const r = await proponerEmociones('hola', { proveedor: prov(() => new Promise(() => {})), tiempoMax: 50 })
