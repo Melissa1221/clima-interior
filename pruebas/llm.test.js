@@ -35,6 +35,10 @@ describe('proponerEmociones', () => {
     const r = await proponerEmociones('hola', { proveedor: prov(async () => { throw new Error('HTTP 503') }) })
     expect(r.respaldo).toBe(true)
   })
+  it('el respaldo igual propone emociones a partir del relato', async () => {
+    const r = await proponerEmociones('mucho trabajo, terminé cansada y aliviada', { proveedor: prov(async () => { throw new Error('HTTP 404') }) })
+    expect(r.emociones.map((e) => e.nombre)).toEqual(['cansancio', 'alivio'])
+  })
   it('usa el respaldo si el proveedor tarda demasiado', async () => {
     const r = await proponerEmociones('hola', { proveedor: prov(() => new Promise(() => {})), tiempoMax: 50 })
     expect(r.respaldo).toBe(true)
