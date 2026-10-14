@@ -4,7 +4,7 @@ Cuenta cómo fue tu día en un minuto y míralo convertido en un clima. La app t
 sientes, y tú decides cuáles son tuyas.
 
 Proyecto del curso **CC451 Interacción Humano-Computador**, Universidad Nacional de Ingeniería, 2026-2.
-**Grupo 8:** Melissa Iman Noriega · Benjamin Seminario Serna · Ivette Mera Amado.
+**Grupo 8:** Melissa Iman Noriega · Benjamin Seminario Serna · Ivett Mera Amado.
 
 | Inicio | Emociones propuestas | Historial demo |
 |---|---|---|
