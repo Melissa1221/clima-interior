@@ -16,17 +16,35 @@ export function emocionesPorReglas(texto) {
     [/aliviad|alivio/, 'alivio'], [/gracias|agradec/, 'gratitud'],
     [/re[ií]|feliz|bien/, 'alegría'], [/tranquil|calma|m[uú]sica/, 'calma'],
   ]
-  const emociones = reglas.filter(([re]) => re.test(t)).map(([, nombre]) => ({ nombre, confianza: 0.7 }))
-  return emociones.length ? emociones.slice(0, 4) : [{ nombre: 'confusión', confianza: 0.4 }]
+  const emociones = reglas.filter(([re]) => re.test(t)).map(([, nombre]) => ({ nombre, confianza: 0.7 })).slice(0, 4)
+  // Siempre al menos tres opciones, para que el usuario elija y no solo confirme
+  for (const nombre of ['calma', 'cansancio', 'confusión', 'alegría']) {
+    if (emociones.length >= 3) break
+    if (!emociones.some((e) => e.nombre === nombre)) emociones.push({ nombre, confianza: 0.3 })
+  }
+  return emociones
 }
+
+const REFLEXIONES = {
+  cansancio: 'Suena a un día que pidió mucha energía. ¿Hubo algún momento en que pudiste descansar un poco?',
+  frustración: 'Algunas cosas no salieron como querías. ¿Qué parte sí dependía de ti?',
+  ansiedad: 'Se nota que algo te tuvo en tensión. ¿Qué te ayudaría a soltarlo un poco esta noche?',
+  tristeza: 'Fue un día pesado. No hace falta resolverlo hoy; ya ponerle nombre ayuda.',
+  preocupación: 'Algo te quedó dando vueltas. ¿Es algo que puedes dejar anotado para mañana?',
+  alivio: 'Al final algo se acomodó. ¿Qué fue lo que más te alivió?',
+  gratitud: 'Hubo algo o alguien que valoraste hoy. Vale la pena recordarlo.',
+  alegría: 'Hubo algo bueno en tu día. ¿Qué lo hizo especial?',
+  calma: 'Tu día tuvo momentos tranquilos. ¿Qué los hizo posibles?',
+}
+export const reflexionPorReglas = (emociones) =>
+  REFLEXIONES[emociones.find((e) => e.confianza > 0.5)?.nombre] ||
+  'Gracias por darte este minuto. Ponerle nombre a lo que sientes ya es un paso.'
 
 export const mock = {
   nombre: 'mock',
   async proponerEmociones(texto) {
-    return {
-      emociones: emocionesPorReglas(texto),
-      reflexion: 'Contaste varias cosas de tu día. ¿Qué te ayudó a sentirte un poco mejor, aunque fuera un momento?',
-    }
+    const emociones = emocionesPorReglas(texto)
+    return { emociones, reflexion: reflexionPorReglas(emociones) }
   },
 }
 

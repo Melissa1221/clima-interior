@@ -1,6 +1,6 @@
 import { validarRespuesta, RESPALDO_LOCAL, EMOCIONES_VALIDAS } from './contrato.js'
 import * as proveedores from './proveedores.js'
-import { emocionesPorReglas } from './proveedores.js'
+import { emocionesPorReglas, reflexionPorReglas } from './proveedores.js'
 
 // RNF-19 pide ≤10 s en p95; se deja margen para que Gemini pruebe dos modelos
 const TIEMPO_MAX_MS = 14000
@@ -41,5 +41,6 @@ export async function proponerEmociones(texto, { proveedor = proveedorActivo(), 
     clearTimeout(reloj)
   }
   // Sin IA igual se proponen emociones por palabras clave, para que el usuario tenga qué elegir
-  return { ...RESPALDO_LOCAL, emociones: emocionesPorReglas(texto) }
+  const emociones = emocionesPorReglas(texto)
+  return { ...RESPALDO_LOCAL, emociones, reflexion: reflexionPorReglas(emociones) }
 }
