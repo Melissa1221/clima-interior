@@ -33,7 +33,7 @@
 | RF-23 | Control sobre la personalización | FR | S | Controlar lo que sabe de mí | HU-09 | Pendiente | HU-09 Esc. 1 |
 | RF-24 | Ayuda contextual por paso | FR | M | Ayuda en el momento | HU-10 | Pendiente | HU-10 Esc. 1 |
 | RF-25 | Pista proactiva a los 12 s | FR | C | Ayuda en el momento | HU-10 | Pendiente | HU-10 Esc. 2-3 |
-| RF-26 | Salas con código que caduca | FR | S | Clima compartido anónimo | HU-12 | Pendiente | HU-12 Esc. 1 |
+| RF-26 | Salas con código que caduca | FR | M | Clima compartido anónimo | HU-12 | Pendiente | HU-12 Esc. 1 |
 | RF-27 | Solo parámetros del clima con seudónimo | FR | M | Clima compartido anónimo | HU-12 | Pendiente | HU-12 Esc. 2-3 |
 | RF-28 | Clima colectivo de la sala | FR | C | Clima compartido anónimo | HU-12 | Pendiente | HU-12 Esc. 1 |
 | RF-29 | Moderación sin acceso a diarios | FR | S | Administrar mi sala | HU-13 | Pendiente | HU-13 Esc. 1-2 |
