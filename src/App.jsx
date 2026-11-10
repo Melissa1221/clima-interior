@@ -23,10 +23,12 @@ const DESCRIPCION = {
 }
 const SEG_SUGERIR_CIERRE = 60
 
-// Los 30 días del periodo demo, incluidos los que no tienen registro (RF-43: sin rachas que castiguen)
-function treintaDias(registros) {
+// 30 días seguidos, incluidos los que no tienen registro (RF-43: sin rachas que castiguen).
+// La demo empieza en su primer registro; el historial real termina hoy.
+function treintaDias(registros, { terminaHoy = false } = {}) {
   const porFecha = Object.fromEntries(registros.map((r) => [r.fecha, r]))
-  const inicio = new Date(`${registros[0].fecha}T12:00:00`)
+  const inicio = terminaHoy ? new Date() : new Date(`${registros[0].fecha}T12:00:00`)
+  if (terminaHoy) inicio.setDate(inicio.getDate() - 29)
   return Array.from({ length: 30 }, (_, i) => {
     const d = new Date(inicio)
     d.setDate(d.getDate() + i)
@@ -179,9 +181,14 @@ export default function App() {
     setPropuesta((p) => ({ ...p, reflexion: p.reflexion.match(/^[^.?!]*[.?!]/)?.[0] ?? p.reflexion }))
   }
 
-  async function abrirDemo() {
-    const res = await fetch('/demo/registros-30-dias.json')
-    setDemo(await res.json())
+  // Historial con tus registros; si aún no hay, o si lo pides, el de ejemplo
+  async function abrirHistorial(verDemo = perfil.registros.length === 0) {
+    if (verDemo) {
+      const res = await fetch('/demo/registros-30-dias.json')
+      setDemo(await res.json())
+    } else {
+      setDemo(null)
+    }
     setPantalla('semana')
   }
 
@@ -326,12 +333,12 @@ export default function App() {
         </Paisaje>
       )}
 
-      {pantalla === 'semana' && demo && (
+      {pantalla === 'semana' && (
         <section className="tarjeta historial">
           <h2>Tus últimos 30 días</h2>
-          <p className="rotulo">Modo demo: datos simulados, no son de una persona real</p>
+          <p className="rotulo">{demo ? 'Modo demo: datos simulados, no son de una persona real' : `Tus ${perfil.registros.length} registro(s)`}</p>
           <ol className="calendario">
-            {treintaDias(demo).map(({ fecha, r }) => (
+            {(demo ? treintaDias(demo) : treintaDias(perfil.registros, { terminaHoy: true })).map(({ fecha, r }) => (
               <li key={fecha} className={r ? `dia paisaje--${r.clima}` : 'dia dia--vacio'}
                 title={r ? `${fecha}: ${r.clima}, ${r.emocion_declarada ?? 'no sé'}` : `${fecha}: sin registro`}>
                 <span className="sr">
@@ -341,6 +348,9 @@ export default function App() {
             ))}
           </ol>
           <p className="pequeno">Los días sin registro no aparecen como fallo: el cielo sigue despejado.</p>
+          {perfil.registros.length > 0 && (
+            <button className="enlace" onClick={() => abrirHistorial(!demo)}>{demo ? 'Ver mis registros' : 'Ver el ejemplo de 30 días'}</button>
+          )}
           <button className="secundario" onClick={reiniciar}>Volver al inicio</button>
         </section>
       )}
@@ -350,7 +360,7 @@ export default function App() {
       {['inicio', 'semana', 'perfil'].includes(pantalla) && (
         <nav className="nav" aria-label="Secciones">
           <button aria-current={pantalla === 'inicio' ? 'page' : undefined} onClick={reiniciar}><span>⌂</span>Inicio</button>
-          <button aria-current={pantalla === 'semana' ? 'page' : undefined} onClick={abrirDemo}><span>▦</span>Historial</button>
+          <button aria-current={pantalla === 'semana' ? 'page' : undefined} onClick={() => abrirHistorial()}><span>▦</span>Historial</button>
           <button aria-current={pantalla === 'perfil' ? 'page' : undefined} onClick={() => setPantalla('perfil')}><span>◎</span>Tú</button>
         </nav>
       )}
