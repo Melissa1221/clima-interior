@@ -185,10 +185,12 @@ export default function App() {
             {porTexto && <p className="pequeno">Como el micrófono falló, empezamos escribiendo. Puedes hablar cuando quieras.</p>}
             <div className="contar">
               <button className="mic-grande" disabled={!clima} onClick={porTexto ? escribir : empezarGrabacion}
-                aria-label={porTexto ? 'Escribir mi día' : 'Contar mi día por voz'}><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" /></svg></button>
+                aria-label={porTexto ? 'Escribir mi día' : 'Contar mi día por voz'}>
+                {porTexto ? <span aria-hidden="true" className="icono-lapiz">✎</span> : <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" /></svg>}
+              </button>
               <div>
                 <h2>{porTexto ? "Escribir mi día" : "Contar mi día"}</h2>
-                <p className="pequeno">Más o menos 1 minuto. Puedes cambiar a texto cuando quieras.</p>
+                <p className="pequeno">{porTexto ? 'Unas líneas bastan.' : 'Más o menos 1 minuto. Puedes cambiar a texto cuando quieras.'}</p>
               </div>
             </div>
             <div className="fila">

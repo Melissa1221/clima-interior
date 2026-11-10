@@ -96,3 +96,4 @@ textarea { font: inherit; padding: 10px; border-radius: 12px; border: 1px solid 
 .participantes .enlace { margin-left: auto; }
 .sala--dentro { padding-bottom: 20px; }
 .categoria .enlace { justify-self: start; padding: 0; }
+.icono-lapiz { font-size: 34px; line-height: 1; }
