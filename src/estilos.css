@@ -3,7 +3,7 @@
 body { margin: 0; }
 .app { display: flow-root; max-width: 480px; margin: 0 auto; min-height: 100dvh; position: relative; }
 .barra { position: absolute; top: 14px; right: 14px; z-index: 3; }
-.salir { background: #2b3447; color: #fff; padding: 12px 18px; border-radius: 999px; text-decoration: none;
+.salir { background: #2b3447; color: #fff; padding: 12px 18px; min-height: 44px; border-radius: 999px; text-decoration: none;
   font-weight: 600; font-size: 15px; display: flex; align-items: center; }
 .paisaje { min-height: 100dvh; padding: 80px 14px 86px; display: flex; flex-direction: column; justify-content: flex-end;
   gap: 14px; position: relative; overflow: hidden; transition: background 600ms ease; }
