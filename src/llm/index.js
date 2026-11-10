@@ -25,11 +25,11 @@ export function normalizar(r) {
 
 // Punto único de entrada. Si el proveedor falla, tarda o responde fuera del esquema,
 // se devuelve la reflexión local y la app sigue funcionando (RNF-23).
-export async function proponerEmociones(texto, { proveedor = proveedorActivo(), tiempoMax = TIEMPO_MAX_MS } = {}) {
+export async function proponerEmociones(texto, { proveedor = proveedorActivo(), tiempoMax = TIEMPO_MAX_MS, contexto = {} } = {}) {
   let reloj
   try {
     const r = await Promise.race([
-      proveedor.proponerEmociones(texto),
+      proveedor.proponerEmociones(texto, contexto),
       new Promise((_, rej) => { reloj = setTimeout(() => rej(new Error('tiempo agotado')), tiempoMax) }),
     ])
     const normal = normalizar(r)
