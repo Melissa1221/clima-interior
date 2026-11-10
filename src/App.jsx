@@ -197,6 +197,7 @@ export default function App() {
                 </button>
               ))}
             </div>
+            {!clima && <p className="pequeno" role="status">Elige un clima para empezar.</p>}
             {porTexto && <p className="pequeno">Como el micrófono falló, empezamos escribiendo. Puedes hablar cuando quieras.</p>}
             <div className="contar">
               <button className="mic-grande" disabled={!clima} onClick={porTexto ? escribir : empezarGrabacion}
