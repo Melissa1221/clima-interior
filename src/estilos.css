@@ -64,6 +64,7 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .clima.activo, .nube.activa { border-color: #2f4466; background: #dbe6f5; }
 .nubes { display: flex; flex-wrap: wrap; gap: 8px; }
 .nube { background: #eef2f7; border-radius: 999px; padding: 0 18px; }
+.tuya { color: #5a6475; font-weight: 400; }
 .rotulo { font-size: 13px; color: #5a6475; margin: 0; }
 .reflexion { background: #2f4466; color: #fff; padding: 12px; border-radius: 12px; margin: 0; }
 .reflexion .enlace { color: #fff; }

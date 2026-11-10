@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { proponerEmociones, proveedorActivo } from './llm/index.js'
 import { crearGrabacion, decir, sttDisponible } from './voz/stt.js'
-import { leerPerfil, guardarRegistro } from './datos/perfil.js'
+import {
+  leerPerfil, guardarRegistro, registrarFalloMic, pedirMasCorto, personalizarPropuesta, contextoParaLLM, notaDeRitmo,
+} from './datos/perfil.js'
 import { hayRiesgo, RECURSOS } from './datos/riesgo.js'
 
 const CLIMAS = [
@@ -92,6 +94,7 @@ export default function App() {
   const [demo, setDemo] = useState(null)
   const [errorMic, setErrorMic] = useState(null)
   const rec = useRef(null)
+  const inicioCheckin = useRef(null) // para aprender cuánto dura tu check-in (RF-21)
   const consulta = useRef(0) // invalida respuestas del LLM que llegan después de salir
 
   useEffect(() => {
@@ -110,7 +113,8 @@ export default function App() {
       emocion_inferida: propuesta?.emociones.map((e) => e.nombre) ?? null,
       transcripcion: texto || null,
     }
-    setPerfil((p) => guardarRegistro(p, registro))
+    const segundos = inicioCheckin.current ? Math.round((Date.now() - inicioCheckin.current) / 1000) : undefined
+    setPerfil((p) => guardarRegistro(p, registro, { segundos }))
     setPantalla('guardado')
   }
 
@@ -123,6 +127,7 @@ export default function App() {
       alTexto: (t) => setTexto(previo ? `${previo} ${t}` : t),
       alError: (e) => {
         setGrabando(false)
+        setPerfil(registrarFalloMic)
         setErrorMic(e === 'not-allowed' || e === 'service-not-allowed'
           ? 'El micrófono está bloqueado. Puedes escribirlo aquí; tu clima sigue guardado.'
           : 'No pudimos escucharte. Puedes escribirlo aquí o volver a intentar.')
@@ -160,11 +165,17 @@ export default function App() {
     if (hayRiesgo(texto)) return setPantalla('riesgo')
     setPantalla('pensando')
     const id = ++consulta.current
-    const r = await proponerEmociones(texto)
+    const r = await proponerEmociones(texto, { contexto: contextoParaLLM(perfil) })
     if (id !== consulta.current) return
-    setPropuesta(r)
+    setPropuesta(personalizarPropuesta(perfil, r))
     setElegidas([])
     setPantalla('emociones')
+  }
+
+  // HU-08: la persona corrige el tono; al tercer pedido el perfil lo recuerda
+  function masCorto() {
+    setPerfil(pedirMasCorto)
+    setPropuesta((p) => ({ ...p, reflexion: p.reflexion.match(/^[^.?!]*[.?!]/)?.[0] ?? p.reflexion }))
   }
 
   async function abrirDemo() {
@@ -177,8 +188,11 @@ export default function App() {
     detenerMic()
     consulta.current++
     setErrorMic(null)
+    inicioCheckin.current = null
     setClima(null); setTexto(''); setPropuesta(null); setElegidas([]); setPantalla('inicio')
   }
+
+  const porTexto = perfil.preferencias.entrada === 'texto' && perfil.activas.entrada
 
   return (
     <main className="app">
@@ -191,6 +205,7 @@ export default function App() {
           <section className="saludo">
             <h1>{saludo()}</h1>
             <p>¿Cómo fue tu día?</p>
+            {notaDeRitmo(perfil) && <p className="pequeno">{notaDeRitmo(perfil)}</p>}
           </section>
           {perfil.registros.at(-1) && (
             <p className="ayer">Último registro: {DESCRIPCION[perfil.registros.at(-1).clima]}</p>
@@ -200,20 +215,25 @@ export default function App() {
             <div className="climas" role="radiogroup" aria-label="Clima del día">
               {CLIMAS.map((c) => (
                 <button key={c.id} role="radio" aria-checked={clima === c.id}
-                  className={clima === c.id ? 'clima activo' : 'clima'} onClick={() => setClima(c.id)}>
+                  className={clima === c.id ? 'clima activo' : 'clima'}
+                  onClick={() => { inicioCheckin.current ??= Date.now(); setClima(c.id) }}>
                   <span aria-hidden="true">{c.icono}</span>{c.etiqueta}
                 </button>
               ))}
             </div>
+            {porTexto && <p className="pequeno">Como el micrófono falló, empezamos escribiendo. Puedes hablar cuando quieras.</p>}
             <div className="contar">
-              <button className="mic-grande" disabled={!clima} onClick={empezarGrabacion} aria-label="Contar mi día por voz"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" /></svg></button>
+              <button className="mic-grande" disabled={!clima} onClick={porTexto ? escribir : empezarGrabacion}
+                aria-label={porTexto ? 'Escribir mi día' : 'Contar mi día por voz'}><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" /></svg></button>
               <div>
-                <h2>Contar mi día</h2>
+                <h2>{porTexto ? "Escribir mi día" : "Contar mi día"}</h2>
                 <p className="pequeno">Más o menos 1 minuto. Puedes cambiar a texto cuando quieras.</p>
               </div>
             </div>
             <div className="fila">
-              <button className="secundario" disabled={!clima} onClick={escribir}>✎ Escribir</button>
+              {porTexto
+                ? <button className="secundario" disabled={!clima} onClick={empezarGrabacion}>🎙️ Hablar</button>
+                : <button className="secundario" disabled={!clima} onClick={escribir}>✎ Escribir</button>}
               <button className="secundario" disabled={!clima} onClick={() => guardar()}>Así está bien (10 s)</button>
             </div>
           </section>
@@ -266,12 +286,13 @@ export default function App() {
                 <button key={e.nombre} aria-pressed={elegidas.includes(e.nombre)}
                   className={elegidas.includes(e.nombre) ? 'nube activa' : 'nube'}
                   onClick={() => setElegidas((l) => l.includes(e.nombre) ? l.filter((x) => x !== e.nombre) : [...l, e.nombre])}>
-                  {e.nombre}
+                  {e.nombre}{e.tuya && <small className="tuya"> · tuya</small>}
                 </button>
               ))}
             </div>
             <p className="reflexion">{propuesta.reflexion}
               <button className="enlace" onClick={() => decir(propuesta.reflexion)} aria-label="Escuchar la reflexión">🔊</button>
+              <button className="enlace" onClick={masCorto}>Más corto</button>
             </p>
             <button className="principal" onClick={() => guardar({ emociones: elegidas })}>
               {elegidas.length ? 'Guardar mi día' : 'No sé, guardar igual'}
