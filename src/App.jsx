@@ -23,6 +23,9 @@ const DESCRIPCION = {
 }
 const SEG_SUGERIR_CIERRE = 60
 
+// Fecha en la zona del usuario: con toISOString un registro de las 20:00 en Lima caía en el día siguiente
+const fechaLocal = (d) => d.toLocaleDateString('en-CA')
+
 // 30 días seguidos, incluidos los que no tienen registro (RF-43: sin rachas que castiguen).
 // La demo empieza en su primer registro; el historial real termina hoy.
 function treintaDias(registros, { terminaHoy = false } = {}) {
@@ -32,7 +35,7 @@ function treintaDias(registros, { terminaHoy = false } = {}) {
   return Array.from({ length: 30 }, (_, i) => {
     const d = new Date(inicio)
     d.setDate(d.getDate() + i)
-    const fecha = d.toISOString().slice(0, 10)
+    const fecha = fechaLocal(d)
     return { fecha, r: porFecha[fecha] }
   })
 }
@@ -109,7 +112,7 @@ export default function App() {
   function guardar(extra = {}) {
     const ahora = new Date()
     const registro = {
-      fecha: ahora.toISOString().slice(0, 10),
+      fecha: fechaLocal(ahora),
       hora: ahora.toTimeString().slice(0, 5),
       clima,
       emocion_declarada: extra.emociones?.length ? extra.emociones : null,
