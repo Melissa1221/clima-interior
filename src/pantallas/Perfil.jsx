@@ -2,11 +2,15 @@ import { CATEGORIAS, cambiarCategoria, restablecer, borrarTodo, emocionesFavorit
 
 // "Lo que sé de ti" (RF-23, HU-09): cada dato que usa la personalización se puede ver,
 // apagar o borrar, y se muestra de dónde salió cada cambio que hizo la app (RF-22).
+const duracion = (seg) => seg < 60
+  ? `${seg} ${seg === 1 ? 'segundo' : 'segundos'}`
+  : `${Math.floor(seg / 60)} min ${seg % 60} s`
+
 function resumen(perfil, categoria) {
   const { ritmo, aprendizaje, preferencias } = perfil
   if (categoria === 'ritmo') {
     if (!ritmo.horaHabitual) return 'Todavía no lo sé.'
-    const dura = ritmo.segundosCheckin ? ` Tu check-in dura unos ${ritmo.segundosCheckin} s.` : ''
+    const dura = ritmo.segundosCheckin ? ` Tus check-ins duran en promedio ${duracion(ritmo.segundosCheckin)}.` : ''
     return `Sueles venir a las ${ritmo.horaHabitual}:00.${dura}`
   }
   if (categoria === 'emocionesDeclaradas') {
