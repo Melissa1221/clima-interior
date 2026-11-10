@@ -43,7 +43,9 @@ cd clima-interior
 npm install
 cp .env.example .env      # por defecto usa el proveedor simulado, sin claves
 npm run dev               # http://localhost:5173
-npm test                  # pruebas de la capa LLM, el detector de riesgo y el perfil
+npm test                  # pruebas unitarias: capa LLM, riesgo, perfil y salas
+npx playwright install chromium   # solo la primera vez
+npm run e2e               # pruebas e2e: flujos completos, salas entre dispositivos, WCAG 2.2 AA y PWA offline
 ```
 
 Para probar la PWA instalable y el modo offline, usa la versión compilada:
