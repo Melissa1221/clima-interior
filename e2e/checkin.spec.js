@@ -16,6 +16,21 @@ test('check-in rápido en 2 acciones y aparece en el historial (RNF-31, RF-40)',
   await expect(page.getByText('Tus 1 registro(s)')).toBeVisible()
   await expect(page.locator('.calendario .paisaje--nublado')).toHaveCount(1)
   await expect(page.locator('.calendario li')).toHaveCount(30)
+  // cada día muestra su número, y el registrado su clima
+  await expect(page.locator('.calendario .paisaje--nublado .dia__i')).toHaveText('⛅')
+  await expect(page.locator('.calendario .dia__n').last()).toHaveText(String(new Date().getDate()))
+  // se puede alternar con el ejemplo de 30 días y volver
+  await page.getByRole('button', { name: 'Ver el ejemplo de 30 días' }).click()
+  await expect(page.getByText(/Modo demo: datos simulados/)).toBeVisible()
+  await page.getByRole('button', { name: 'Ver mis registros' }).click()
+  await expect(page.getByText('Tus 1 registro(s)')).toBeVisible()
+})
+
+test('antes de elegir el clima, la app dice qué hacer', async ({ page }) => {
+  await expect(page.getByRole('button', { name: 'Contar mi día por voz' })).toBeDisabled()
+  await expect(page.getByText('Elige un clima para empezar.')).toBeVisible()
+  await page.getByRole('radio', { name: /Soleado/ }).click()
+  await expect(page.getByText('Elige un clima para empezar.')).toHaveCount(0)
 })
 
 test('check-in hablado completo en menos de 90 s (RNF-01, HU-02 a HU-05)', async ({ page }) => {
