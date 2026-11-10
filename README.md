@@ -26,8 +26,8 @@ Proyecto del curso **CC451 Interacción Humano-Computador**, Universidad Naciona
 | Interfaz de voz | STT y TTS con Web Speech API (`src/voz/stt.js`) | Hecho |
 | LLM con capa de abstracción | Contrato común + proveedores `mock`, `ollama`, `remoto` (`src/llm/`) | Hecho |
 | PWA | `vite-plugin-pwa`: instalable, service worker, offline | Hecho |
-| Personalización continua | Perfil persistente con registros y hora habitual (`src/datos/perfil.js`) | Básico |
-| Multiusuario | Salas por código con Supabase Realtime; datos de ejemplo en `public/demo/sala-ejemplo.json` | Diseñado |
+| Personalización continua | El perfil aprende hora habitual, duración, emociones que eliges, si la IA acierta, fallos del micrófono y el largo de reflexión que prefieres; cada cambio anota su motivo y se puede apagar o borrar en «Lo que sé de ti» (`src/datos/perfil.js`, `src/pantallas/Perfil.jsx`) | Hecho |
+| Multiusuario | Salas de clima compartido con código de 128 bits, seudónimos efímeros, clima colectivo, retirar, sacar y cerrar. Mensajes solo numéricos validados en cliente y servidor (`src/salas/`, `server/salas.mjs`) | Hecho |
 | Diseño emocional (Norman) | Visceral: paisaje. Conductual: check-in en menos de 90 s. Reflexivo: historial y patrones | Parcial |
 
 La matriz de trazabilidad completa (44 RF, 32 RNF, 32 historias de usuario) está en
@@ -56,6 +56,20 @@ npm run preview           # http://localhost:4173
 En Chrome aparece el botón **Instalar** en la barra de direcciones. En el celular, abre la URL y elige
 "Agregar a pantalla de inicio". El dictado por voz necesita Chrome o Edge; en otros navegadores la app
 ofrece escribir.
+
+### Salas de clima compartido
+
+Sin configurar nada, las salas funcionan entre pestañas del mismo navegador (modo demo). Para usarlas entre
+dispositivos, levanta el relé y apunta la app a él:
+
+```bash
+npm run salas                                   # relé WebSocket en ws://localhost:8787
+echo "VITE_SALAS_URL=ws://localhost:8787" >> .env
+npm run dev -- --host                           # para abrirla también desde el celular en la misma red
+```
+
+En el celular usa `ws://<IP de la laptop>:8787` en `VITE_SALAS_URL`. El relé no guarda diarios ni texto: solo
+reenvía mensajes numéricos entre quienes tienen el mismo código y borra la sala al cerrarla o a las 24 h.
 
 ### Cambiar de proveedor de LLM
 
@@ -94,6 +108,10 @@ src/
   voz/stt.js         voz a texto y texto a voz
   datos/perfil.js    perfil persistente
   datos/riesgo.js    detector de riesgo y líneas de ayuda
+  salas/             esquema numérico, transporte (local / WebSocket) y lógica de la sala
+  pantallas/         sala compartida y «Lo que sé de ti»
+  componentes/       paisaje del clima
+server/salas.mjs     relé WebSocket de las salas
 public/demo/         datos simulados
 scripts/             generador de datos
 docs/                arquitectura, matriz, capturas
