@@ -86,3 +86,13 @@ textarea { font: inherit; padding: 10px; border-radius: 12px; border: 1px solid 
 .interruptor input { width: 22px; height: 22px; accent-color: #2f4466; }
 .cambios li { display: grid; gap: 2px; }
 .perfil h3 { margin: 8px 0 0; font-size: 16px; }
+.colectivo { margin-bottom: auto; background: rgba(255,255,255,.9); }
+.sala input { font: inherit; min-height: 44px; border: 2px solid #c9ced8; border-radius: 12px; padding: 0 12px; width: 100%; }
+.unirse { display: grid; gap: 8px; }
+.codigo { display: grid; gap: 6px; }
+.codigo code { font-size: 15px; letter-spacing: .5px; word-break: break-all; background: #eef2f7; padding: 8px 10px; border-radius: 10px; }
+.participantes { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.participantes li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.participantes .enlace { margin-left: auto; }
+.sala--dentro { padding-bottom: 20px; }
+.categoria .enlace { justify-self: start; padding: 0; }

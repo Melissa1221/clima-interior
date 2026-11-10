@@ -6,6 +6,7 @@ import {
 } from './datos/perfil.js'
 import { hayRiesgo, RECURSOS } from './datos/riesgo.js'
 import Perfil from './pantallas/Perfil.jsx'
+import Sala from './pantallas/Sala.jsx'
 import { CLIMAS, DESCRIPCION, Paisaje } from './componentes/Paisaje.jsx'
 
 const SEG_SUGERIR_CIERRE = 60
@@ -35,7 +36,9 @@ const mmss = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 
 export default function App() {
   const [perfil, setPerfil] = useState(leerPerfil)
-  const [pantalla, setPantalla] = useState('inicio')
+  // Un enlace de invitación (#sala=CÓDIGO) abre directo la sala
+  const [codigoInvitacion] = useState(() => new URLSearchParams(location.hash.slice(1)).get('sala') ?? '')
+  const [pantalla, setPantalla] = useState(codigoInvitacion ? 'sala' : 'inicio')
   const [clima, setClima] = useState(null)
   const [texto, setTexto] = useState('')
   const [grabando, setGrabando] = useState(false)
@@ -148,6 +151,8 @@ export default function App() {
     setClima(null); setTexto(''); setPropuesta(null); setElegidas([]); setPantalla('inicio')
   }
 
+  const ultimo = perfil.registros.at(-1)
+  const climaHoy = ultimo?.fecha === fechaLocal(new Date()) ? ultimo.clima : null
   const porTexto = perfil.preferencias.entrada === 'texto' && perfil.activas.entrada
 
   return (
@@ -303,12 +308,16 @@ export default function App() {
         </section>
       )}
 
+      {pantalla === 'sala' && <Sala climaHoy={climaHoy} codigoInicial={codigoInvitacion}
+        alVolver={() => { history.replaceState(null, '', location.pathname); reiniciar() }} />}
+
       {pantalla === 'perfil' && <Perfil perfil={perfil} setPerfil={setPerfil} alVolver={reiniciar} />}
 
-      {['inicio', 'semana', 'perfil'].includes(pantalla) && (
+      {['inicio', 'semana', 'perfil', 'sala'].includes(pantalla) && (
         <nav className="nav" aria-label="Secciones">
           <button aria-current={pantalla === 'inicio' ? 'page' : undefined} onClick={reiniciar}><span>⌂</span>Inicio</button>
           <button aria-current={pantalla === 'semana' ? 'page' : undefined} onClick={() => abrirHistorial()}><span>▦</span>Historial</button>
+          <button aria-current={pantalla === 'sala' ? 'page' : undefined} onClick={() => setPantalla('sala')}><span>☁</span>Sala</button>
           <button aria-current={pantalla === 'perfil' ? 'page' : undefined} onClick={() => setPantalla('perfil')}><span>◎</span>Tú</button>
         </nav>
       )}
