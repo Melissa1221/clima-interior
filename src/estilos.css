@@ -75,7 +75,10 @@ textarea { font: inherit; padding: 10px; border-radius: 12px; border: 1px solid 
 .pequeno { font-size: 13px; color: #5a6475; margin: 0; }
 .historial { margin: 80px 14px 96px; width: auto; }
 .calendario { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-.dia { aspect-ratio: 1; border-radius: 8px; }
+.dia { aspect-ratio: 1; border-radius: 8px; position: relative; display: grid; place-items: center; }
+.dia__n { position: absolute; top: 2px; left: 4px; font-size: 10px; color: #3a4458; }
+.paisaje--lluvia .dia__n, .paisaje--tormenta .dia__n { color: #fff; }
+.dia__i { font-size: 16px; line-height: 1; margin-top: 6px; }
 .dia--vacio { background: linear-gradient(#dcebfa, #f7f9fc); border: 1px dashed #b8c0cc; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .pie { position: fixed; bottom: 2px; left: 0; right: 0; text-align: center; font-size: 11px; color: #5a6475; }

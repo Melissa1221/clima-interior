@@ -32,6 +32,8 @@ function saludo() {
   const h = new Date().getHours()
   return h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches'
 }
+// En el diario es una lista; en los datos de ejemplo, un texto
+const emociones = (r) => [].concat(r.emocion_declarada ?? []).join(', ') || 'no sé'
 const mmss = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 
 export default function App() {
@@ -308,9 +310,11 @@ export default function App() {
           <ol className="calendario">
             {(demo ? treintaDias(demo) : treintaDias(perfil.registros, { terminaHoy: true })).map(({ fecha, r }) => (
               <li key={fecha} className={r ? `dia paisaje--${r.clima}` : 'dia dia--vacio'}
-                title={r ? `${fecha}: ${r.clima}, ${r.emocion_declarada ?? 'no sé'}` : `${fecha}: sin registro`}>
+                title={r ? `${fecha}: ${r.clima}, ${emociones(r)}` : `${fecha}: sin registro`}>
+                <span className="dia__n" aria-hidden="true">{Number(fecha.slice(8))}</span>
+                {r && <span className="dia__i" aria-hidden="true">{CLIMAS.find((c) => c.id === r.clima)?.icono}</span>}
                 <span className="sr">
-                  {r ? `${fecha}: ${DESCRIPCION[r.clima]} Emoción: ${r.emocion_declarada ?? 'no sé'}` : `${fecha}: sin registro, cielo despejado`}
+                  {r ? `${fecha}: ${DESCRIPCION[r.clima]} Emoción: ${emociones(r)}` : `${fecha}: sin registro, cielo despejado`}
                 </span>
               </li>
             ))}
