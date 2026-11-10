@@ -5,6 +5,7 @@ import {
   leerPerfil, guardarRegistro, registrarFalloMic, pedirMasCorto, personalizarPropuesta, contextoParaLLM, notaDeRitmo,
 } from './datos/perfil.js'
 import { hayRiesgo, RECURSOS } from './datos/riesgo.js'
+import Perfil from './pantallas/Perfil.jsx'
 
 const CLIMAS = [
   { id: 'soleado', etiqueta: 'Soleado', icono: '☀️' },
@@ -344,10 +345,13 @@ export default function App() {
         </section>
       )}
 
-      {(pantalla === 'inicio' || pantalla === 'semana') && (
+      {pantalla === 'perfil' && <Perfil perfil={perfil} setPerfil={setPerfil} alVolver={reiniciar} />}
+
+      {['inicio', 'semana', 'perfil'].includes(pantalla) && (
         <nav className="nav" aria-label="Secciones">
           <button aria-current={pantalla === 'inicio' ? 'page' : undefined} onClick={reiniciar}><span>⌂</span>Inicio</button>
           <button aria-current={pantalla === 'semana' ? 'page' : undefined} onClick={abrirDemo}><span>▦</span>Historial</button>
+          <button aria-current={pantalla === 'perfil' ? 'page' : undefined} onClick={() => setPantalla('perfil')}><span>◎</span>Tú</button>
         </nav>
       )}
       <footer className="pie">LLM activo: {proveedorActivo().nombre}</footer>
