@@ -20,7 +20,7 @@ test('crear, invitar, compartir, retirar, sacar y cerrar una sala entre tres dis
   await ana.getByRole('button', { name: /Sala/ }).click()
   await ana.getByRole('button', { name: 'Crear una sala' }).click()
   await ana.getByRole('button', { name: /Lluvia/ }).click()
-  const codigo = await ana.locator('.codigo code').innerText()
+  const codigo = (await ana.locator('.codigo code').innerText()).trim().replace(/\s+/g, '-')
   expect(codigo.replace(/-/g, '')).toHaveLength(26) // RNF-14: 128 bits
 
   // Bea entra por el enlace de invitación; Ceci escribe el código a mano en minúsculas
