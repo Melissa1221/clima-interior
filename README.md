@@ -79,6 +79,7 @@ Edita `VITE_LLM_PROVIDER` en `.env`:
 |---|---|---|
 | `mock` | Respuestas simuladas por reglas | Nada (por defecto) |
 | `gemini` | Gemini Flash por API (capa gratuita) | `VITE_GEMINI_API_KEY` de [AI Studio](https://aistudio.google.com/apikey) |
+| `groq` | gpt-oss-120b por API (capa gratuita) | `VITE_GROQ_API_KEY` de [Groq](https://console.groq.com/keys) |
 | `ollama` | Modelo local | [Ollama](https://ollama.com) con `ollama pull llama3.2` |
 | `remoto` | Cualquier API vía proxy | `VITE_REMOTO_URL` apuntando al proxy que guarda la clave |
 
