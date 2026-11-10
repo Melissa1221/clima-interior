@@ -52,6 +52,7 @@ test('crear, invitar, compartir, retirar, sacar y cerrar una sala entre tres dis
   await ana.getByRole('button', { name: 'Sacar' }).last().click()
   await expect(ceci.getByText('La persona que creó la sala te sacó')).toBeVisible()
   await expect(ana.getByText('Clima de la sala · 2 personas')).toBeVisible()
+  ana.once('dialog', (d) => d.accept()) // pide confirmación antes de cerrar para todos
   await ana.getByRole('button', { name: 'Cerrar sala' }).click()
   await expect(bea.getByText('La sala se cerró')).toBeVisible()
 

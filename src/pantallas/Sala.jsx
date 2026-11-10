@@ -150,7 +150,9 @@ export default function Sala({ climaHoy, codigoInicial = '', alVolver }) {
           : 'Conectada al servidor de salas: funciona entre dispositivos.'}</p>
         <div className="fila">
           <button className="secundario" onClick={volver}>Salir</button>
-          {yo.creador && <button className="secundario" onClick={() => sala.current.cerrar()}>Cerrar sala</button>}
+          {yo.creador && <button className="secundario" onClick={() => {
+            if (window.confirm('¿Cerrar la sala para todos? Se borra y nadie más podrá entrar con este código.')) sala.current.cerrar()
+          }}>Cerrar sala</button>}
         </div>
       </section>
     </Paisaje>
