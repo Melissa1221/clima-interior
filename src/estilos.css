@@ -97,3 +97,9 @@ textarea { font: inherit; padding: 10px; border-radius: 12px; border: 1px solid 
 .sala--dentro { padding-bottom: 20px; }
 .categoria .enlace { justify-self: start; padding: 0; }
 .icono-lapiz { font-size: 34px; line-height: 1; }
+.reflexion .enlace { min-width: 44px; }
+@media (max-width: 360px) {
+  .hoja { padding: 14px; }
+  .climas { gap: 4px; }
+  .clima { font-size: 12px; padding: 0; }
+}
