@@ -111,6 +111,28 @@ function leerJson(texto, datos) {
   return JSON.parse(texto.replace(/^```(?:json)?\s*|\s*```$/g, ''))
 }
 
+// Groq (API compatible con OpenAI, capa gratuita). Respaldo rápido cuando Gemini está saturado.
+export const groq = {
+  nombre: 'groq',
+  async proponerEmociones(texto, contexto) {
+    const clave = import.meta.env.VITE_GROQ_API_KEY
+    if (!clave) throw new Error('falta VITE_GROQ_API_KEY')
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${clave}` },
+      body: JSON.stringify({
+        model: import.meta.env.VITE_GROQ_MODELO || 'openai/gpt-oss-120b',
+        messages: [{ role: 'user', content: PROMPT(texto, contexto) }],
+        temperature: 0.3,
+        response_format: { type: 'json_object' },
+      }),
+    })
+    const datos = await res.json().catch(() => ({}))
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${datos.error?.message ?? 'sin detalle'}`)
+    return JSON.parse(datos.choices?.[0]?.message?.content ?? '')
+  },
+}
+
 // API remota a través de un proxy propio que guarda la clave.
 export const remoto = {
   nombre: 'remoto',
