@@ -25,10 +25,10 @@ const CIELO = {
 }
 const NUBES = [[30, 120, 1], [250, 170, 0.8], [60, 250, 1.2], [300, 60, 0.9], [150, 320, 1], [330, 280, 0.7]]
 
-function Cielo({ clima }) {
+function Cielo({ clima, descripcion }) {
   const c = CIELO[clima || 'inicio']
   return (
-    <svg className="cielo" viewBox="0 0 400 420" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
+    <svg className="cielo" viewBox="0 0 400 420" preserveAspectRatio="xMidYMin slice" role="img" aria-label={descripcion}>
       {c.sol && <circle cx="300" cy="150" r="46" className="cielo__sol" />}
       {NUBES.slice(0, c.nubes).map(([x, y, k], i) => (
         <g key={i} className="cielo__nube" transform={`translate(${x} ${y}) scale(${k})`}>
@@ -48,9 +48,9 @@ function Cielo({ clima }) {
 
 export function Paisaje({ clima, children }) {
   return (
-    <div className={`paisaje paisaje--${clima || 'inicio'}`} role="img"
-      aria-label={clima ? DESCRIPCION[clima] : 'Cielo de inicio'}>
-      <Cielo clima={clima} />
+    // role="img" va solo en el dibujo: si envolviera la pantalla, el lector ocultaría los botones
+    <div className={`paisaje paisaje--${clima || 'inicio'}`}>
+      <Cielo clima={clima} descripcion={clima ? DESCRIPCION[clima] : 'Cielo de inicio'} />
       {children}
     </div>
   )
