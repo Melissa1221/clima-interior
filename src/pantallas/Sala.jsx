@@ -104,7 +104,7 @@ export default function Sala({ climaHoy, codigoInicial = '', alVolver }) {
       <section className="tarjeta sala sala--dentro">
         <div className="codigo">
           <p className="rotulo">Código de la sala (caduca en {HORAS_DE_VIDA} h)</p>
-          <code>{estado.codigo}</code>
+          <code>{estado.codigo.split('-').map((g, i) => <span key={i}>{g}</span>)}</code>
           <button className="secundario" onClick={invitar}>Invitar</button>
           {aviso && <p className="pequeno" role="status">{aviso}</p>}
         </div>
