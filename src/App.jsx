@@ -37,7 +37,8 @@ const mmss = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 export default function App() {
   const [perfil, setPerfil] = useState(leerPerfil)
   // Un enlace de invitación (#sala=CÓDIGO) abre directo la sala
-  const [codigoInvitacion] = useState(() => new URLSearchParams(location.hash.slice(1)).get('sala') ?? '')
+  const leerInvitacion = () => new URLSearchParams(location.hash.slice(1)).get('sala') ?? ''
+  const [codigoInvitacion, setCodigoInvitacion] = useState(leerInvitacion)
   const [pantalla, setPantalla] = useState(codigoInvitacion ? 'sala' : 'inicio')
   const [clima, setClima] = useState(null)
   const [texto, setTexto] = useState('')
@@ -50,6 +51,18 @@ export default function App() {
   const rec = useRef(null)
   const inicioCheckin = useRef(null) // para aprender cuánto dura tu check-in (RF-21)
   const consulta = useRef(0) // invalida respuestas del LLM que llegan después de salir
+
+  // También si el enlace llega con la app ya abierta (p. ej. instalada como PWA)
+  useEffect(() => {
+    const alCambiar = () => {
+      const c = leerInvitacion()
+      if (!c) return
+      setCodigoInvitacion(c)
+      setPantalla('sala')
+    }
+    window.addEventListener('hashchange', alCambiar)
+    return () => window.removeEventListener('hashchange', alCambiar)
+  }, [])
 
   useEffect(() => {
     if (!grabando) return
@@ -310,7 +323,7 @@ export default function App() {
         </section>
       )}
 
-      {pantalla === 'sala' && <Sala climaHoy={climaHoy} codigoInicial={codigoInvitacion}
+      {pantalla === 'sala' && <Sala key={codigoInvitacion} climaHoy={climaHoy} codigoInicial={codigoInvitacion}
         alVolver={() => { history.replaceState(null, '', location.pathname); reiniciar() }} />}
 
       {pantalla === 'perfil' && <Perfil perfil={perfil} setPerfil={setPerfil} alVolver={reiniciar} />}
