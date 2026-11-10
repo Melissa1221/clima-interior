@@ -49,7 +49,9 @@ export default function Perfil({ perfil, setPerfil, alVolver }) {
             </label>
             <p className="pequeno">{perfil.activas[id] ? resumen(perfil, id) : 'Apagado: no lo uso ni lo guardo.'}</p>
             {perfil.activas[id] && (
-              <button className="enlace" onClick={() => setPerfil((p) => restablecer(p, id))}>Olvidar esto</button>
+              <button className="enlace" onClick={() => {
+                if (window.confirm(`¿Olvidar "${nombre.toLowerCase()}"? Tus registros del diario no se borran.`)) setPerfil((p) => restablecer(p, id))
+              }}>Olvidar esto</button>
             )}
           </li>
         ))}
