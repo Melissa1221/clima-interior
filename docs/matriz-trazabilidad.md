@@ -12,31 +12,31 @@
 | RF-02 | Codificación no cromática | FR | S | Distinguir días sin color | HU-16 | Parcial | HU-16 Esc. 1: diferencia en escala de grises |
 | RF-03 | Descripción textual y hablada del paisaje | FR | M | Escuchar mi paisaje | HU-15 | Implementado | HU-15 Esc. 1: anuncio del lector de pantalla. Prueba: `aria-label` del paisaje y descripción hablada (S46) |
 | RF-04 | Sonificación del clima | FR | C | Escuchar mi paisaje | HU-15 | Implementado | HU-15 Esc. 1: sonido asociado al clima. Sonificación breve por clima, sin sonidos intensos en modo neutral |
-| RF-05 | Check-in de 60 s con pausa y cierre sugerido | FR | M | Check-in hablado | HU-02 | Parcial | HU-02 Esc. 1-2: sugerencia a 60 s, pausa sin pérdida |
-| RF-06 | Transcripción plegada bajo el paisaje ("Listo" / "Ver lo que entendí"); va al LLM solo tras confirmar | FR | M | Revisar lo que entendió | HU-03 | Implementado | HU-03 Esc. 1: envío solo tras confirmar |
+| RF-05 | Check-in de 60 s con pausa y cierre sugerido | FR | M | Check-in hablado | HU-02 | Implementado | HU-02 Esc. 1-2: sugerencia a 60 s, pausa sin pérdida · reloj de 1:00 y aviso de cierre a los 60 s. Código: [`src/App.jsx`](../src/App.jsx), [`e2e/checkin.spec.js`](../e2e/checkin.spec.js) |
+| RF-06 | Transcripción plegada bajo el paisaje ("Listo" / "Ver lo que entendí"); va al LLM solo tras confirmar | FR | M | Revisar lo que entendió | HU-03 | Implementado | HU-03 Esc. 1: envío solo tras confirmar · el texto se corrige y va al LLM solo al tocar «Listo». Código: [`src/App.jsx`](../src/App.jsx), [`e2e/checkin.spec.js`](../e2e/checkin.spec.js) |
 | RF-07 | Revisión si confianza STT < 0.75 | FR | S | Revisar lo que entendió | HU-03 | Pendiente | HU-03 Esc. 2: edición obligatoria |
-| RF-08 | Entrada alternativa sin perder borrador | FR | M | Registrar sin hablar | HU-19 | Implementado | HU-19 Esc. 1: borrador intacto al cambiar |
+| RF-08 | Entrada alternativa sin perder borrador | FR | M | Registrar sin hablar | HU-19 | Implementado | HU-19 Esc. 1: borrador intacto al cambiar · pasar a texto conserva lo dictado. Código: [`src/App.jsx`](../src/App.jsx), [`src/voz/stt.js`](../src/voz/stt.js) |
 | RF-09 | TTS con subtítulos integrados | FR | S | Leer lo que dice el asistente | HU-17 | Parcial | HU-17 Esc. 1 y 3 |
-| RF-10 | Micrófono denegado con ruta alternativa | FR | M | Registrar sin hablar | HU-19 | Implementado | HU-19 Esc. 2 |
+| RF-10 | Micrófono denegado con ruta alternativa | FR | M | Registrar sin hablar | HU-19 | Implementado | HU-19 Esc. 2 · micrófono bloqueado ofrece escribir; tras 2 fallos se empieza escribiendo. Código: [`src/App.jsx`](../src/App.jsx), [`src/datos/perfil.js`](../src/datos/perfil.js), [`e2e/checkin.spec.js`](../e2e/checkin.spec.js) |
 | RF-11 | Indicador de micrófono y aviso de privacidad | FR | M | Check-in hablado | HU-02 | Implementado | HU-02 Esc. 1: indicador en ≤200 ms. S07 antes de grabar + indicador rojo |
-| RF-12 | Emoción propuesta que el usuario confirma o corrige | FR | M | Confirmar o corregir la emoción | HU-04 | Implementado | HU-04 Esc. 1-2 |
-| RF-13 | Reflexión no clínica de máx. 2 frases, como subtítulo | FR | M | Reflexión breve | HU-05 | Parcial | HU-05 Esc. 1: regenerar, omitir, simplificar |
-| RF-14 | Detector de riesgo independiente y previo | FR | M | Ayuda si estoy en riesgo | HU-06 | Implementado | HU-06 Esc. 1: sin reflexión ante riesgo |
-| RF-15 | Pantalla de derivación 113 / 106 / 105 | FR | M | Ayuda si estoy en riesgo | HU-06 | Implementado | HU-06 Esc. 1 y 3 |
+| RF-12 | Emoción propuesta que el usuario confirma o corrige | FR | M | Confirmar o corregir la emoción | HU-04 | Implementado | HU-04 Esc. 1-2 · nubes que se eligen o «No sé»; se suman las que la persona elige seguido. Código: [`src/App.jsx`](../src/App.jsx), [`src/datos/perfil.js`](../src/datos/perfil.js) |
+| RF-13 | Reflexión no clínica de máx. 2 frases, como subtítulo | FR | M | Reflexión breve | HU-05 | Implementado | HU-05 Esc. 1: regenerar, omitir, simplificar · máx. 2 frases y botón «Más corto». Código: [`src/llm/proveedores.js`](../src/llm/proveedores.js), [`src/datos/perfil.js`](../src/datos/perfil.js) |
+| RF-14 | Detector de riesgo independiente y previo | FR | M | Ayuda si estoy en riesgo | HU-06 | Implementado | HU-06 Esc. 1: sin reflexión ante riesgo · detector previo al LLM. Código: [`src/datos/riesgo.js`](../src/datos/riesgo.js), [`pruebas/riesgo.test.js`](../pruebas/riesgo.test.js), [`e2e/checkin.spec.js`](../e2e/checkin.spec.js) |
+| RF-15 | Pantalla de derivación 113 / 106 / 105 | FR | M | Ayuda si estoy en riesgo | HU-06 | Implementado | HU-06 Esc. 1 y 3 · Línea 113 (5), SAMU 106, PNP 105. Código: [`src/App.jsx`](../src/App.jsx), [`src/datos/riesgo.js`](../src/datos/riesgo.js), [`e2e/checkin.spec.js`](../e2e/checkin.spec.js) |
 | RF-16 | Filtro contra respuestas diagnósticas | FR | M | Reflexión breve | HU-05 | Pendiente | HU-05 Esc. 2-3 |
 | RF-17 | Patrones con al menos 3 registros | FR | S | Ver patrones | HU-07 | Pendiente | HU-07 Esc. 1-2 |
-| RF-18 | Adaptadores LLM / STT / TTS intercambiables | FR | M | Cambiar de proveedor | HU-25 | Parcial | HU-25 Esc. 1 |
-| RF-19 | PWA instalable | FR | M | Instalar y usar sin internet | HU-11 | Implementado | HU-11 Esc. 1 |
-| RF-20 | Check-in offline con cola | FR | S | Instalar y usar sin internet | HU-11 | Parcial | HU-11 Esc. 2-3 |
-| RF-21 | Perfil persistente | FR | M | Que se adapte a mí | HU-08 | Implementado | HU-08 Esc. 2 |
-| RF-22 | Paisaje y lenguaje que evolucionan | FR | S | Que se adapte a mí | HU-08 | Parcial | HU-08 Esc. 1 |
-| RF-23 | Control sobre la personalización | FR | S | Controlar lo que sabe de mí | HU-09 | Implementado | HU-09 Esc. 1. S40: cada dato se apaga y deja de usarse; `perfil.test.js` |
+| RF-18 | Adaptadores LLM / STT / TTS intercambiables | FR | M | Cambiar de proveedor | HU-25 | Parcial | HU-25 Esc. 1 · LLM intercambiable (mock, gemini, ollama, remoto); STT/TTS aún solo Web Speech. Código: [`src/llm/index.js`](../src/llm/index.js), [`src/llm/proveedores.js`](../src/llm/proveedores.js), [`pruebas/llm.test.js`](../pruebas/llm.test.js) |
+| RF-19 | PWA instalable | FR | M | Instalar y usar sin internet | HU-11 | Implementado | HU-11 Esc. 1 · manifiesto y service worker. Código: [`vite.config.js`](../vite.config.js), [`e2e/pwa.spec.js`](../e2e/pwa.spec.js) |
+| RF-20 | Check-in offline con cola | FR | S | Instalar y usar sin internet | HU-11 | Parcial | HU-11 Esc. 2-3 · el check-in funciona sin red y se guarda en el dispositivo; sin cola de sincronización. Código: [`vite.config.js`](../vite.config.js), [`src/datos/perfil.js`](../src/datos/perfil.js), [`e2e/pwa.spec.js`](../e2e/pwa.spec.js) |
+| RF-21 | Perfil persistente | FR | M | Que se adapte a mí | HU-08 | Implementado | HU-08 Esc. 2 · perfil v2 con preferencias, ritmo, errores y emociones declaradas e inferidas. Código: [`src/datos/perfil.js`](../src/datos/perfil.js), [`pruebas/perfil.test.js`](../pruebas/perfil.test.js), [`e2e/personalizacion.spec.js`](../e2e/personalizacion.spec.js) |
+| RF-22 | Paisaje y lenguaje que evolucionan | FR | S | Que se adapte a mí | HU-08 | Parcial | HU-08 Esc. 1 · el largo de la reflexión y la entrada se adaptan y anotan su fuente; la paleta aún no. Código: [`src/datos/perfil.js`](../src/datos/perfil.js), [`pruebas/perfil.test.js`](../pruebas/perfil.test.js), [`e2e/personalizacion.spec.js`](../e2e/personalizacion.spec.js) |
+| RF-23 | Control sobre la personalización | FR | S | Controlar lo que sabe de mí | HU-09 | Implementado | HU-09 Esc. 1 · «Lo que sabe de ti»: ver, apagar, olvidar y borrar todo. Código: [`src/pantallas/Privacidad.jsx`](../src/pantallas/Privacidad.jsx), [`src/datos/perfil.js`](../src/datos/perfil.js), [`pruebas/perfil.test.js`](../pruebas/perfil.test.js), [`e2e/personalizacion.spec.js`](../e2e/personalizacion.spec.js) |
 | RF-24 | Ayuda contextual por paso | FR | M | Ayuda en el momento | HU-10 | Implementado | HU-10 Esc. 1. Botón «?» en cada pantalla con ayuda propia |
 | RF-25 | Pista proactiva a los 12 s | FR | C | Ayuda en el momento | HU-10 | Implementado | HU-10 Esc. 2-3. Pista a los 12 s en texto, voz y vibración |
-| RF-26 | Salas con código que caduca | FR | M | Clima compartido anónimo | HU-12 | Pendiente | HU-12 Esc. 1 |
-| RF-27 | Solo parámetros del clima con seudónimo | FR | M | Clima compartido anónimo | HU-12 | Pendiente | HU-12 Esc. 2-3 |
-| RF-28 | Clima colectivo de la sala | FR | C | Clima compartido anónimo | HU-12 | Pendiente | HU-12 Esc. 1 |
-| RF-29 | Moderación sin acceso a diarios | FR | S | Administrar mi sala | HU-13 | Pendiente | HU-13 Esc. 1-2 |
+| RF-26 | Salas con código que caduca | FR | M | Clima compartido anónimo | HU-12 | Implementado | HU-12 Esc. 1 · crear, unirse por código o enlace, salir; caduca a las 24 h. Código: [`src/salas/sala.js`](../src/salas/sala.js), [`src/pantallas/Sala.jsx`](../src/pantallas/Sala.jsx), [`server/salas.mjs`](../server/salas.mjs), [`pruebas/salas.test.js`](../pruebas/salas.test.js), [`pruebas/servidor-salas.test.js`](../pruebas/servidor-salas.test.js), [`e2e/salas.spec.js`](../e2e/salas.spec.js) |
+| RF-27 | Solo parámetros del clima con seudónimo | FR | M | Clima compartido anónimo | HU-12 | Implementado | HU-12 Esc. 2-3 · solo clima con seudónimo efímero; «Retirar mi clima». Código: [`src/salas/mensaje.js`](../src/salas/mensaje.js), [`src/salas/sala.js`](../src/salas/sala.js), [`pruebas/salas.test.js`](../pruebas/salas.test.js), [`e2e/salas.spec.js`](../e2e/salas.spec.js) |
+| RF-28 | Clima colectivo de la sala | FR | C | Clima compartido anónimo | HU-12 | Implementado | HU-12 Esc. 1 · clima colectivo por valencia promedio. Código: [`src/salas/mensaje.js`](../src/salas/mensaje.js), [`src/pantallas/Sala.jsx`](../src/pantallas/Sala.jsx), [`pruebas/salas.test.js`](../pruebas/salas.test.js) |
+| RF-29 | Moderación sin acceso a diarios | FR | S | Administrar mi sala | HU-13 | Parcial | HU-13 Esc. 1-2 · el creador saca y cierra; el servidor no tiene diarios; falta «reportar». Código: [`src/salas/sala.js`](../src/salas/sala.js), [`server/salas.mjs`](../server/salas.mjs), [`pruebas/servidor-salas.test.js`](../pruebas/servidor-salas.test.js), [`e2e/salas.spec.js`](../e2e/salas.spec.js) |
 | RF-30 | Ritual de cierre | FR | S | Cerrar mi día con calma | HU-14 | Pendiente | HU-14 Esc. 1-2 |
 | RF-31 | Paisaje que reacciona a la voz | FR | C | Ver mi día como un paisaje | HU-01 | Pendiente | HU-01 Esc. 2 |
 | RF-32 | Modo movimiento reducido | FR | M | Paisaje que no haga daño | HU-21 | Implementado | HU-21 Esc. 1-2. S46: movimiento reducido y capas apagables; `prefers-reduced-motion` |
@@ -46,41 +46,41 @@
 | RF-36 | Alertas visuales y hápticas | FR | S | Leer lo que dice el asistente | HU-17 | Implementado | HU-17 Esc. 2. Aviso visual y vibración en errores y alertas; `accesibilidad.test.js` |
 | RF-37 | Edad y consentimiento granular | FR | M | Decidir qué datos autorizo | HU-23 | Implementado | HU-23 Esc. 1. S02/S03: edad y cuatro permisos independientes; `privacidad.test.js` |
 | RF-38 | Exportar para psicóloga y eliminar datos | FR | S | Resumen o borrar todo | HU-24 | Implementado | HU-24 Esc. 1-3. S43-S45: PDF sin propuestas de la IA y borrado total; `exportar.test.js` |
-| RF-39 | Demo de 30 días simulados | FR | M | Evaluar el MVP | HU-26 | Implementado | HU-26 Esc. 1 |
-| RF-40 | Check-in rápido: elegir 1 de 5 climas primero; contarlo es opcional | FR | M | Registrar mi día sin hablar | HU-28 | Implementado | HU-28 Esc. 1-2 |
-| RF-41 | Emociones como nubes tocables, con equivalente en botones accesibles | FR | S | Elegir mis emociones tocando nubes | HU-29 | Implementado | HU-29 Esc. 1-2 |
+| RF-39 | Demo de 30 días simulados | FR | M | Evaluar el MVP | HU-26 | Implementado | HU-26 Esc. 1 · 30 días con semilla fija. Código: [`public/demo/registros-30-dias.json`](../public/demo/registros-30-dias.json), [`scripts/generar_datos.py`](../scripts/generar_datos.py), [`e2e/checkin.spec.js`](../e2e/checkin.spec.js) |
+| RF-40 | Check-in rápido: elegir 1 de 5 climas primero; contarlo es opcional | FR | M | Registrar mi día sin hablar | HU-28 | Implementado | HU-28 Esc. 1-2 · elegir clima y «Así está bien». Código: [`src/App.jsx`](../src/App.jsx), [`e2e/checkin.spec.js`](../e2e/checkin.spec.js) |
+| RF-41 | Emociones como nubes tocables, con equivalente en botones accesibles | FR | S | Elegir mis emociones tocando nubes | HU-29 | Implementado | HU-29 Esc. 1-2 · botones con aria-pressed. Código: [`src/App.jsx`](../src/App.jsx) |
 | RF-42 | "1 minuto de lluvia para respirar", opcional | FR | S | Calmarme un minuto con la lluvia | HU-30 | Pendiente | HU-30 Esc. 1-3 |
-| RF-43 | "Tu cielo de la semana" con patrón descriptivo | FR | S | Ver mi semana sin culpa | HU-31 | Parcial | HU-31 Esc. 1 |
+| RF-43 | "Tu cielo de la semana" con patrón descriptivo | FR | S | Ver mi semana sin culpa | HU-31 | Parcial | HU-31 Esc. 1 · calendario de 30 días sin rachas; falta el patrón descriptivo. Código: [`src/App.jsx`](../src/App.jsx) |
 | RF-44 | Paisaje del día como fondo de pantalla, solo si el usuario lo pide | FR | C | Llevar mi clima fuera de la app | HU-32 | Pendiente | HU-32 Esc. 1-2 |
-| RNF-01 | ≥80% de check-ins en < 90 s | NFR | M | Check-in hablado | HU-02 | Pendiente | HU-02 Esc. 1 + telemetría |
-| RNF-02 | Iniciar check-in en ≤3 acciones | NFR | S | Check-in hablado | HU-02 | Implementado | HU-02 Esc. 1: conteo E2E |
+| RNF-01 | ≥80% de check-ins en < 90 s | NFR | M | Check-in hablado | HU-02 | Parcial | HU-02 Esc. 1 + telemetría · el check-in hablado completo de la prueba e2e dura menos de 90 s; falta medirlo con usuarios (PC5). Código: [`e2e/checkin.spec.js`](../e2e/checkin.spec.js) |
+| RNF-02 | Iniciar check-in en ≤3 acciones | NFR | S | Check-in hablado | HU-02 | Implementado | HU-02 Esc. 1: conteo E2E · clima + micrófono = 2 acciones. Código: [`src/App.jsx`](../src/App.jsx) |
 | RNF-03 | Errores con causa, estado y siguiente acción | NFR | S | Check-in hablado; Registrar sin hablar | HU-02, HU-19 | Parcial | HU-02 Esc. 3, HU-19 Esc. 2 |
-| RNF-04 | WCAG 2.2 AA sin violaciones críticas | NFR | M | Escuchar mi paisaje | HU-15 | Pendiente | HU-15 Esc. 2: axe-core |
-| RNF-05 | Contraste 4.5:1 / 3:1 | NFR | M | Distinguir días sin color | HU-16 | Pendiente | HU-16 Esc. 2 |
-| RNF-06 | Controles 44×44 px y foco visible | NFR | M | Usar sin pantalla táctil | HU-18 | Parcial | HU-18 Esc. 1 y 3 |
+| RNF-04 | WCAG 2.2 AA sin violaciones críticas | NFR | M | Escuchar mi paisaje | HU-15 | Parcial | HU-15 Esc. 2: axe-core · axe sin fallas graves de WCAG 2.2 AA en las 10 pantallas; falta la revisión manual con lector de pantalla. Código: [`e2e/accesibilidad.spec.js`](../e2e/accesibilidad.spec.js) |
+| RNF-05 | Contraste 4.5:1 / 3:1 | NFR | M | Distinguir días sin color | HU-16 | Implementado | HU-16 Esc. 2 · axe revisa el contraste en las 10 pantallas. Código: [`e2e/accesibilidad.spec.js`](../e2e/accesibilidad.spec.js) |
+| RNF-06 | Controles 44×44 px y foco visible | NFR | M | Usar sin pantalla táctil | HU-18 | Implementado | HU-18 Esc. 1 y 3 · min-height 44 px y foco visible. Código: [`src/estilos.css`](../src/estilos.css), [`e2e/accesibilidad.spec.js`](../e2e/accesibilidad.spec.js) |
 | RNF-07 | ≤3 destellos/s; animaciones ≤200 ms | NFR | M | Paisaje que no haga daño | HU-21 | Implementado | HU-21 Esc. 2 |
 | RNF-08 | Texto equivalente en < 1 s | NFR | M | Leer lo que dice el asistente | HU-17 | Parcial | HU-17 Esc. 1 |
-| RNF-09 | Zoom 200% y reflujo 320 px | NFR | S | Usar sin pantalla táctil | HU-18 | Pendiente | HU-18 Esc. 3 |
+| RNF-09 | Zoom 200% y reflujo 320 px | NFR | S | Usar sin pantalla táctil | HU-18 | Parcial | HU-18 Esc. 3 · sin scroll horizontal a 320 px en las 10 pantallas; falta probar zoom al 200 %. Código: [`e2e/accesibilidad.spec.js`](../e2e/accesibilidad.spec.js) |
 | RNF-10 | Modo predecible: ≤15 palabras/oración, ≤80 total | NFR | S | Experiencia predecible | HU-20 | Parcial | HU-20 Esc. 2 |
-| RNF-11 | El audio no se guarda | NFR | M | Decidir qué datos autorizo | HU-23 | Implementado | HU-23 Esc. 2: buffer en 0 bytes |
+| RNF-11 | El audio no se guarda | NFR | M | Decidir qué datos autorizo | HU-23 | Implementado | HU-23 Esc. 2: buffer en 0 bytes · Web Speech no guarda audio; solo se guarda el texto. Código: [`src/voz/stt.js`](../src/voz/stt.js) |
 | RNF-12 | Cero datos sensibles en logs y analítica | NFR | M | Decidir qué datos autorizo | HU-23 | Parcial | HU-23 Esc. 2: escáner con canarios |
-| RNF-13 | Mensajes de sala solo numéricos | NFR | M | Clima compartido anónimo | HU-12 | Pendiente | HU-12 Esc. 3 |
-| RNF-14 | Seudónimos efímeros, borrado a 24 h, 128 bits | NFR | S | Clima compartido; Administrar sala | HU-12, HU-13 | Pendiente | HU-13 Esc. 3 |
-| RNF-15 | TLS y aislamiento entre usuarios y salas | NFR | M | Administrar mi sala | HU-13 | Pendiente | HU-13 Esc. 2: 403 |
-| RNF-16 | Resistencia a inyección de prompts | NFR | M | Cambiar de proveedor | HU-25 | Parcial | HU-25 Esc. 3 |
+| RNF-13 | Mensajes de sala solo numéricos | NFR | M | Clima compartido anónimo | HU-12 | Implementado | HU-12 Esc. 3 · validación estricta en cliente y servidor. Código: [`src/salas/mensaje.js`](../src/salas/mensaje.js), [`server/salas.mjs`](../server/salas.mjs), [`pruebas/salas.test.js`](../pruebas/salas.test.js), [`pruebas/servidor-salas.test.js`](../pruebas/servidor-salas.test.js), [`e2e/salas.spec.js`](../e2e/salas.spec.js) |
+| RNF-14 | Seudónimos efímeros, borrado a 24 h, 128 bits | NFR | S | Clima compartido; Administrar sala | HU-12, HU-13 | Implementado | HU-13 Esc. 3 · código de 128 bits, seudónimo por sesión, borrado al cerrar o a las 24 h. Código: [`src/salas/mensaje.js`](../src/salas/mensaje.js), [`server/salas.mjs`](../server/salas.mjs), [`pruebas/salas.test.js`](../pruebas/salas.test.js) |
+| RNF-15 | TLS y aislamiento entre usuarios y salas | NFR | M | Administrar mi sala | HU-13 | Parcial | HU-13 Esc. 2: 403 · aislamiento entre salas e identidad por conexión; TLS depende del despliegue (wss). Código: [`server/salas.mjs`](../server/salas.mjs), [`pruebas/salas.test.js`](../pruebas/salas.test.js), [`pruebas/servidor-salas.test.js`](../pruebas/servidor-salas.test.js) |
+| RNF-16 | Resistencia a inyección de prompts | NFR | M | Cambiar de proveedor | HU-25 | Parcial | HU-25 Esc. 3 · el relato va delimitado como dato; faltan pruebas de ataque. Código: [`src/llm/proveedores.js`](../src/llm/proveedores.js) |
 | RNF-17 | ≥30 FPS con modo liviano automático | NFR | S | Ver mi día como un paisaje | HU-01 | Pendiente | HU-01 Esc. 3 |
 | RNF-18 | LCP ≤2.5 s, INP ≤200 ms | NFR | S | Instalar y usar sin internet | HU-11 | Pendiente | HU-11 Esc. 1 |
 | RNF-19 | Grabación ≤200 ms; LLM ≤10 s p95 | NFR | S | Check-in hablado | HU-02 | Parcial | HU-02 Esc. 1 |
-| RNF-20 | Funciones clave y recursos de crisis offline | NFR | M | Instalar y usar sin internet; Ayuda si estoy en riesgo | HU-11, HU-06 | Implementado | HU-06 Esc. 2, HU-11 Esc. 2 |
+| RNF-20 | Funciones clave y recursos de crisis offline | NFR | M | Instalar y usar sin internet; Ayuda si estoy en riesgo | HU-11, HU-06 | Implementado | HU-06 Esc. 2, HU-11 Esc. 2 · el detector y las líneas de ayuda funcionan sin red. Código: [`vite.config.js`](../vite.config.js), [`src/datos/riesgo.js`](../src/datos/riesgo.js), [`e2e/pwa.spec.js`](../e2e/pwa.spec.js) |
 | RNF-21 | Sincronización ordenada sin duplicados | NFR | S | Instalar y usar sin internet | HU-11 | Pendiente | HU-11 Esc. 3 |
-| RNF-22 | Proveedor por variable `LLM_PROVIDER` | NFR | M | Cambiar de proveedor | HU-25 | Implementado | HU-25 Esc. 1 |
-| RNF-23 | Esquema común y reflexión local de respaldo | NFR | M | Cambiar de proveedor | HU-25 | Implementado | HU-25 Esc. 2 |
+| RNF-22 | Proveedor por variable `LLM_PROVIDER` | NFR | M | Cambiar de proveedor | HU-25 | Implementado | HU-25 Esc. 1 · VITE_LLM_PROVIDER. Código: [`src/llm/index.js`](../src/llm/index.js) |
+| RNF-23 | Esquema común y reflexión local de respaldo | NFR | M | Cambiar de proveedor | HU-25 | Implementado | HU-25 Esc. 2 · esquema común y respaldo local. Código: [`src/llm/index.js`](../src/llm/index.js), [`pruebas/llm.test.js`](../pruebas/llm.test.js) |
 | RNF-24 | 100% de respuestas sin diagnóstico | NFR | M | Reflexión breve | HU-05 | Pendiente | HU-05 Esc. 2 |
-| RNF-25 | Derivación en ≤1 s sin contactar terceros | NFR | M | Ayuda si estoy en riesgo | HU-06 | Implementado | HU-06 Esc. 1 y 3 |
-| RNF-26 | Inferida nunca sobrescribe declarada | NFR | M | Confirmar o corregir la emoción | HU-04 | Implementado | HU-04 Esc. 3 |
+| RNF-25 | Derivación en ≤1 s sin contactar terceros | NFR | M | Ayuda si estoy en riesgo | HU-06 | Implementado | HU-06 Esc. 1 y 3 · detección local, sin llamadas externas. Código: [`src/datos/riesgo.js`](../src/datos/riesgo.js) |
+| RNF-26 | Inferida nunca sobrescribe declarada | NFR | M | Confirmar o corregir la emoción | HU-04 | Implementado | HU-04 Esc. 3 · emocion_declarada y emocion_inferida en campos separados. Código: [`src/App.jsx`](../src/App.jsx), [`src/datos/perfil.js`](../src/datos/perfil.js) |
 | RNF-27 | Accesibilidad no se usa para inferir riesgo | NFR | M | Controlar lo que sabe de mí | HU-09 | Implementado | HU-09 Esc. 2 |
-| RNF-28 | Rótulo "generado por IA" | NFR | S | Reflexión breve | HU-05 | Implementado | HU-05 Esc. 1 |
+| RNF-28 | Rótulo "generado por IA" | NFR | S | Reflexión breve | HU-05 | Implementado | HU-05 Esc. 1 · rótulo «Propuesto por IA … no es un consejo clínico». Código: [`src/App.jsx`](../src/App.jsx) |
 | RNF-29 | Lenguaje neutro y jerga peruana | NFR | S | Que la app entienda cómo hablo | HU-27 | Pendiente | HU-27 Esc. 1-2 |
 | RNF-30 | Demo en ≤2 s y restablecible | NFR | S | Evaluar el MVP | HU-26 | Parcial | HU-26 Esc. 1-2 |
-| RNF-31 | Check-in sin relato en ≤10 s y ≤2 acciones | NFR | M | Registrar mi día sin hablar | HU-28 | Implementado | HU-28 Esc. 1: conteo E2E |
-| RNF-32 | 0 mensajes de racha perdida o culpa | NFR | S | Ver mi semana sin culpa | HU-31 | Implementado | HU-31 Esc. 2: revisión de cadenas |
+| RNF-31 | Check-in sin relato en ≤10 s y ≤2 acciones | NFR | M | Registrar mi día sin hablar | HU-28 | Implementado | HU-28 Esc. 1: conteo E2E · clima + «Así está bien (10 s)». Código: [`src/App.jsx`](../src/App.jsx), [`e2e/checkin.spec.js`](../e2e/checkin.spec.js) |
+| RNF-32 | 0 mensajes de racha perdida o culpa | NFR | S | Ver mi semana sin culpa | HU-31 | Implementado | HU-31 Esc. 2: revisión de cadenas · días sin registro como cielo despejado. Código: [`src/App.jsx`](../src/App.jsx) |

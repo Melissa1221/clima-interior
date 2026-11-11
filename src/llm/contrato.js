@@ -1,9 +1,10 @@
 // Contrato común de todos los proveedores de LLM (RF-18, RNF-23).
 // La interfaz solo conoce este contrato; cambiar de proveedor es cambiar VITE_LLM_PROVIDER.
 //
-// proponerEmociones(texto) -> { emociones: [{ nombre, confianza }], reflexion: string }
+// proponerEmociones(texto, contexto) -> { emociones: [{ nombre, confianza }], reflexion: string }
 //   - emociones: propuestas, nunca impuestas (RF-12). El usuario confirma, corrige o marca "no sé".
 //   - reflexion: máximo 2 frases, no clínica (RF-13, RF-16).
+//   - contexto: solo preferencias del perfil (p. ej. { frasesCortas }), nunca el diario (RF-22).
 
 export const EMOCIONES_VALIDAS = [
   'calma', 'alegría', 'alivio', 'gratitud', 'cansancio', 'tristeza',

@@ -33,8 +33,8 @@ Proyecto del curso **CC451 Interacción Humano-Computador**, Universidad Naciona
 | Interfaz de voz | STT y TTS con Web Speech API (`src/voz/stt.js`) | Hecho |
 | LLM con capa de abstracción | Contrato común + proveedores `mock`, `ollama`, `remoto` (`src/llm/`) | Hecho |
 | PWA | `vite-plugin-pwa`: instalable, service worker, offline | Hecho |
-| Personalización continua | Perfil persistente con registros y hora habitual (`src/datos/perfil.js`) | Básico |
-| Multiusuario | Salas por código con Supabase Realtime; datos de ejemplo en `public/demo/sala-ejemplo.json` | Diseñado |
+| Personalización continua | El perfil aprende hora habitual, duración, emociones que eliges, si la IA acierta, fallos del micrófono y el largo de reflexión que prefieres; cada cambio anota su motivo y se puede apagar o borrar en «Lo que sabe de ti» (`src/datos/perfil.js`, `src/pantallas/Privacidad.jsx`) | Hecho |
+| Multiusuario | Salas de clima compartido con código de 128 bits, seudónimos efímeros, clima colectivo, retirar, sacar y cerrar. Mensajes solo numéricos validados en cliente y servidor (`src/salas/`, `server/salas.mjs`) | Hecho |
 | Diseño emocional (Norman) | Visceral: paisaje vivo. Conductual: check-in en menos de 90 s y micro-interacciones. Reflexivo: historial y patrones | Parcial |
 | Primer uso y consentimiento | Edad, cuatro permisos independientes y límites no clínicos (`src/pantallas/PrimerUso.jsx`) | Hecho |
 | Privacidad y datos | Permisos, qué datos usa la personalización, exportar PDF y eliminar todo (`src/pantallas/Privacidad.jsx`, `Datos.jsx`) | Hecho |
@@ -53,7 +53,9 @@ cd clima-interior
 npm install
 cp .env.example .env      # por defecto usa el proveedor simulado, sin claves
 npm run dev               # http://localhost:5173
-npm test                  # pruebas de la capa LLM, el riesgo, el perfil, la privacidad, la exportación y la accesibilidad
+npm test                  # pruebas unitarias: capa LLM, riesgo, perfil, privacidad, exportación, accesibilidad y salas
+npx playwright install chromium   # solo la primera vez
+npm run e2e               # pruebas e2e: flujos completos, salas entre dispositivos, WCAG 2.2 AA y PWA offline
 ```
 
 Para probar la PWA instalable y el modo offline, usa la versión compilada:
@@ -67,6 +69,20 @@ En Chrome aparece el botón **Instalar** en la barra de direcciones. En el celul
 "Agregar a pantalla de inicio". El dictado por voz necesita Chrome o Edge; en otros navegadores la app
 ofrece escribir.
 
+### Salas de clima compartido
+
+Sin configurar nada, las salas funcionan entre pestañas del mismo navegador (modo demo). Para usarlas entre
+dispositivos, levanta el relé y apunta la app a él:
+
+```bash
+npm run salas                                   # relé WebSocket en ws://localhost:8787
+echo "VITE_SALAS_URL=ws://localhost:8787" >> .env
+npm run dev -- --host                           # para abrirla también desde el celular en la misma red
+```
+
+En el celular usa `ws://<IP de la laptop>:8787` en `VITE_SALAS_URL`. El relé no guarda diarios ni texto: solo
+reenvía mensajes numéricos entre quienes tienen el mismo código y borra la sala al cerrarla o a las 24 h.
+
 ### Cambiar de proveedor de LLM
 
 Edita `VITE_LLM_PROVIDER` en `.env`:
@@ -75,6 +91,7 @@ Edita `VITE_LLM_PROVIDER` en `.env`:
 |---|---|---|
 | `mock` | Respuestas simuladas por reglas | Nada (por defecto) |
 | `gemini` | Gemini Flash por API (capa gratuita) | `VITE_GEMINI_API_KEY` de [AI Studio](https://aistudio.google.com/apikey) |
+| `groq` | gpt-oss-120b por API (capa gratuita) | `VITE_GROQ_API_KEY` de [Groq](https://console.groq.com/keys) |
 | `ollama` | Modelo local | [Ollama](https://ollama.com) con `ollama pull llama3.2` |
 | `remoto` | Cualquier API vía proxy | `VITE_REMOTO_URL` apuntando al proxy que guarda la clave |
 
@@ -147,6 +164,10 @@ src/
   datos/accesibilidad.js órdenes de voz, vibración, límite de palabras y sonificación
   datos/riesgo.js    detector de riesgo y líneas de ayuda
   estilos.css, componentes.css, microinteracciones.css  tokens del Figma, componentes y animaciones
+  salas/             esquema numérico, transporte (local / WebSocket) y lógica de la sala
+  pantallas/         sala compartida, primer uso, privacidad y accesibilidad
+  componentes/       paisaje del clima
+server/salas.mjs     relé WebSocket de las salas
 public/demo/         datos simulados
 scripts/             datos simulados, capturas, reporte de trazabilidad y video
 docs/                arquitectura, matriz, reporte, capturas y guion del video

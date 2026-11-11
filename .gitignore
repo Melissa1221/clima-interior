@@ -7,3 +7,6 @@ dev-dist/
 docs/reporte-trazabilidad.html
 .vercel
 video-salida/
+dist-e2e/
+test-results/
+playwright-report/

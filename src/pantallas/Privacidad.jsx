@@ -3,6 +3,7 @@ import Paisaje from '../componentes/Paisaje.jsx'
 import Icono from '../componentes/Icono.jsx'
 import { Aviso, Boton, FilaAjuste } from '../componentes/Ui.jsx'
 import { MOTIVOS_DICTADO } from '../datos/privacidad.js'
+import { CATEGORIAS, emocionesFavoritas } from '../datos/perfil.js'
 
 // S07 · Antes de grabar: recomendaciones y qué pasa con el audio. Si no se puede dictar, solo queda escribir.
 export function AntesDeGrabar({ clima, estado, onGrabar, onEscribir }) {
@@ -29,21 +30,58 @@ export function AntesDeGrabar({ clima, estado, onGrabar, onEscribir }) {
 }
 
 // S40 · Lo que Clima Interior sabe de ti: cada dato se apaga y deja de usarse desde el siguiente check-in
-export function SabeDeMi({ perfil, onCambio, onPrivacidad, onAccesibilidad }) {
-  const { personalizacion: p, ritmo, registros } = perfil
+const duracion = (seg) => seg < 60 ? `${seg} s` : `${Math.floor(seg / 60)} min ${seg % 60} s`
+
+// Qué aprendió la app de cada categoría, en palabras (RF-23)
+function aprendidoDe(perfil, id) {
+  const { ritmo, aprendizaje, aprendido, registros } = perfil
+  if (id === 'ritmo') {
+    if (!ritmo.horaHabitual) return 'Aún no hay registros suficientes para conocer tu ritmo.'
+    return `Sueles registrar a las ${ritmo.horaHabitual}:00.${ritmo.segundosCheckin ? ` Tu check-in dura unos ${duracion(ritmo.segundosCheckin)}.` : ''}`
+  }
+  if (id === 'elegidas') {
+    const fav = emocionesFavoritas(perfil)
+    return fav.length ? `Sueles elegir ${fav.join(', ')}: te las ofrecemos aunque la IA no las proponga.`
+      : `${registros.length} ${registros.length === 1 ? 'registro' : 'registros'}. Siempre tienen prioridad.`
+  }
+  if (id === 'propuestas') {
+    return aprendizaje.propuestasIA ? `Aceptaste alguna propuesta de la IA en ${aprendizaje.aceptadasIA} de ${aprendizaje.propuestasIA} check-ins.`
+      : 'Se usan solo como apoyo: nunca reemplazan lo que elegiste.'
+  }
+  if (id === 'tono') return aprendido.frasesCortas ? 'Reflexiones de una sola frase.' : 'Reflexiones de hasta dos frases. Pide «Más corto» y lo recordamos.'
+  return aprendido.entrada === 'texto' ? 'Empiezas escribiendo.' : 'Empiezas hablando.'
+}
+
+// S40 · Lo que la app sabe de ti: cada dato se ve, se apaga o se olvida, y cada cambio dice de dónde salió (RF-22, HU-09)
+export function SabeDeMi({ perfil, onCambio, onOlvidar, onPrivacidad, onAccesibilidad }) {
+  const { personalizacion: p, cambios } = perfil
+  const olvidar = (id) => {
+    if (window.confirm(`¿Olvidar «${CATEGORIAS[id].toLowerCase()}»? Tus registros del diario no se borran.`)) onOlvidar(id)
+  }
   return (
     <section className="pantalla pantalla--con-pestanas">
       <div className="pantalla__cuerpo pantalla__cuerpo--junto">
         <h1>Lo que Clima Interior sabe de ti</h1>
-        <p className="pie">Apaga cualquier dato y dejará de usarse desde el siguiente check-in.</p>
+        <p className="pie">Todo vive en este teléfono. Apagar algo también borra lo que ya se aprendió de eso.</p>
         <FilaAjuste titulo="Preferencias del paisaje" descripcion="Paleta cálida · intensidad media." activo={p.paisaje} onCambio={(v) => onCambio({ paisaje: v })} />
-        <FilaAjuste titulo="Tu ritmo" activo={p.ritmo} onCambio={(v) => onCambio({ ritmo: v })}
-          descripcion={ritmo.horaHabitual ? `Sueles registrar a las ${ritmo.horaHabitual}:00.` : 'Aún no hay registros suficientes para conocer tu ritmo.'} />
-        <FilaAjuste titulo="Emociones que elegiste" activo={p.elegidas} onCambio={(v) => onCambio({ elegidas: v })}
-          descripcion={`${registros.length} ${registros.length === 1 ? 'registro' : 'registros'}. Siempre tienen prioridad.`} />
-        <FilaAjuste titulo="Emociones que propuso la IA" activo={p.propuestas} onCambio={(v) => onCambio({ propuestas: v })}
-          descripcion={p.propuestas ? 'Se usan solo como apoyo: nunca reemplazan lo que elegiste.' : 'Apagado: ya no se usan en reflexiones ni paisajes.'} />
-        <FilaAjuste titulo="Cómo te habla el asistente" descripcion="Frases más cortas." activo={p.tono} onCambio={(v) => onCambio({ tono: v })} />
+        {Object.entries(CATEGORIAS).map(([id, titulo]) => (
+          <div key={id} className="sabe">
+            <FilaAjuste titulo={titulo} activo={p[id]} onCambio={(v) => onCambio({ [id]: v })}
+              descripcion={p[id] ? aprendidoDe(perfil, id) : 'Apagado: no se usa ni se guarda.'} />
+            {p[id] && <button className="enlace" onClick={() => olvidar(id)}>Olvidar esto</button>}
+          </div>
+        ))}
+        <h2 className="sabe__titulo">Lo que cambió por su cuenta</h2>
+        {cambios.length ? (
+          <ol className="cambios">
+            {cambios.slice().reverse().map((c) => (
+              <li key={c.fecha + c.que}>
+                <strong>{c.que}</strong>
+                <span className="pequeno">{c.fuente} · {new Date(c.fecha).toLocaleDateString('es-PE')}</span>
+              </li>
+            ))}
+          </ol>
+        ) : <p className="pie">Nada todavía. Si la app cambia algo, aquí verás por qué.</p>}
         <div className="fila-botones">
           <Boton tipo="secundario" onClick={onAccesibilidad}>Accesibilidad</Boton>
           <Boton tipo="secundario" icono="candado" onClick={onPrivacidad}>Privacidad</Boton>

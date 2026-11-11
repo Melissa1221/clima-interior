@@ -22,4 +22,6 @@ export default defineConfig({
       workbox: { globPatterns: ['**/*.{js,css,html,svg,json,woff2}'] },
     }),
   ],
+  // las pruebas unitarias viven en pruebas/; las e2e (Playwright) en e2e/
+  test: { include: ['pruebas/**/*.test.js'] },
 })
