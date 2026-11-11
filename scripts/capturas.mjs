@@ -109,6 +109,13 @@ try {
   await p.getByLabel(/Lo que entendí/).fill('Hoy fue un día muy pesado y tuve mucha tensión'); await boton(p, 'Listo'); await p.waitForTimeout(600); await foto(p, 'neutral')
   await p.context().close()
 
+  // Sala de clima compartido (S34-S39): sin servidor, la sala conecta pestañas del mismo navegador
+  p = await pagina(PERFIL())
+  await boton(p, 'Sala'); await foto(p, 'sala-entrar')
+  await boton(p, 'Crear una sala'); await boton(p, 'Permitir compartir mi clima')
+  await clima(p, 'Nublado').catch(() => boton(p, /Nublado/)); await foto(p, 'sala')
+  await p.context().close()
+
   if (errores.length) { console.error('Errores de la página:\n' + errores.join('\n')); process.exitCode = 1 }
 } finally {
   await navegador.close()
