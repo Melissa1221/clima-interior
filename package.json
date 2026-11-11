@@ -11,6 +11,7 @@
     "preview": "vite preview",
     "datos": "python3 scripts/generar_datos.py",
     "test": "vitest run",
+    "reporte": "python3 scripts/generar_reporte.py --pdf",
     "capturas": "node scripts/capturas.mjs"
   },
   "dependencies": {

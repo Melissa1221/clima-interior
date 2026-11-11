@@ -1,0 +1,934 @@
+{
+ "RF-01": {
+  "estado": "implementado",
+  "codigo": [
+   "src/componentes/Paisaje.jsx::export function Cielo",
+   "src/datos/climas.js::export const CIELO",
+   "src/datos/climas.js::export function capasVisibles"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S06"
+  ],
+  "captura": "inicio.png",
+  "nota": "Cielo, luz, nubes, viento, lluvia y niebla como capas SVG; la pantalla de inicio no usa formularios para el clima."
+ },
+ "RF-02": {
+  "estado": "parcial",
+  "codigo": [
+   "src/datos/climas.js::export const CIELO"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S06"
+  ],
+  "captura": "inicio.png",
+  "nota": "Los climas se distinguen por densidad de nubes, lluvia y viento; falta la prueba en escala de grises."
+ },
+ "RF-03": {
+  "estado": "implementado",
+  "codigo": [
+   "src/componentes/Paisaje.jsx::aria-label",
+   "src/datos/climas.js::export const DESCRIPCION",
+   "src/App.jsx::function elegirClima"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S46"
+  ],
+  "captura": "accesibilidad.png",
+  "nota": "Cada paisaje tiene descripción textual (`aria-label`) y se puede describir en voz alta."
+ },
+ "RF-04": {
+  "estado": "implementado",
+  "codigo": [
+   "src/datos/accesibilidad.js::export function sonificarClima"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S46"
+  ],
+  "captura": "accesibilidad.png",
+  "nota": "Una nota corta por clima; en modo neutral la tormenta suena como cielo neutro."
+ },
+ "RF-05": {
+  "estado": "parcial",
+  "codigo": [
+   "src/App.jsx::const SEG_SUGERIR_CIERRE",
+   "src/App.jsx::function empezarGrabacion",
+   "src/App.jsx::function terminarMic"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S08"
+  ],
+  "captura": "grabando.png",
+  "nota": "Cierre sugerido a los 60 s sin cortar la frase; «Seguir hablando» agrega al texto sin perder lo anterior, pero no hay un estado de pausa propio (S09)."
+ },
+ "RF-06": {
+  "estado": "implementado",
+  "codigo": [
+   "src/App.jsx::async function listo"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S15"
+  ],
+  "captura": "revision.png",
+  "nota": "La transcripción es editable y solo llega al LLM cuando se toca «Listo»."
+ },
+ "RF-07": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [
+   "S16"
+  ],
+  "captura": null,
+  "nota": "Web Speech API no entrega confianza por frase de forma fiable; falta la revisión obligatoria."
+ },
+ "RF-08": {
+  "estado": "implementado",
+  "codigo": [
+   "src/App.jsx::function escribir",
+   "src/App.jsx::const previo"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S13"
+  ],
+  "captura": "revision.png",
+  "nota": "Cambiar a texto o volver a hablar conserva lo dicho."
+ },
+ "RF-09": {
+  "estado": "parcial",
+  "codigo": [
+   "src/voz/stt.js::export function decir"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S19"
+  ],
+  "captura": "emociones.png",
+  "nota": "La reflexión se escucha con TTS y siempre está escrita en pantalla."
+ },
+ "RF-10": {
+  "estado": "implementado",
+  "codigo": [
+   "src/datos/privacidad.js::export function estadoDictado",
+   "src/datos/privacidad.js::export const MOTIVOS_DICTADO"
+  ],
+  "pruebas": [
+   "pruebas/privacidad.test.js"
+  ],
+  "pantallas": [
+   "S12"
+  ],
+  "captura": "antes-grabar.png",
+  "nota": "Si el micrófono no se puede usar se explica el motivo y queda escribir; el clima elegido no se pierde."
+ },
+ "RF-11": {
+  "estado": "implementado",
+  "codigo": [
+   "src/pantallas/Privacidad.jsx::export function AntesDeGrabar",
+   "src/App.jsx::className=\"punto\""
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S07",
+   "S08"
+  ],
+  "captura": "antes-grabar.png",
+  "nota": "Aviso previo y píldora «Micrófono activo» con el punto rojo."
+ },
+ "RF-12": {
+  "estado": "implementado",
+  "codigo": [
+   "src/App.jsx::Toca las nubes que sientes tuyas",
+   "src/App.jsx::const [elegidas"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S17"
+  ],
+  "captura": "emociones.png",
+  "nota": "La persona elige sus emociones o marca «no sé»; la IA solo propone."
+ },
+ "RF-13": {
+  "estado": "parcial",
+  "codigo": [
+   "src/llm/proveedores.js::const PROMPT",
+   "src/llm/contrato.js::export function validarRespuesta"
+  ],
+  "pruebas": [
+   "pruebas/llm.test.js"
+  ],
+  "pantallas": [
+   "S19"
+  ],
+  "captura": "emociones.png",
+  "nota": "El prompt pide máximo 2 frases y no clínico; el contrato valida la forma pero no cuenta frases."
+ },
+ "RF-14": {
+  "estado": "implementado",
+  "codigo": [
+   "src/datos/riesgo.js::export function hayRiesgo",
+   "src/App.jsx::if (hayRiesgo(texto))"
+  ],
+  "pruebas": [
+   "pruebas/riesgo.test.js"
+  ],
+  "pantallas": [
+   "S22"
+  ],
+  "captura": "riesgo.png",
+  "nota": "Corre antes de pedir la reflexión y es independiente del LLM."
+ },
+ "RF-15": {
+  "estado": "implementado",
+  "codigo": [
+   "src/datos/riesgo.js::export const RECURSOS",
+   "src/App.jsx::pantalla === 'riesgo'"
+  ],
+  "pruebas": [
+   "pruebas/riesgo.test.js"
+  ],
+  "pantallas": [
+   "S22"
+  ],
+  "captura": "riesgo.png",
+  "nota": "Muestra la Línea 113 (opción 5), SAMU 106 y PNP 105 como enlaces `tel:`."
+ },
+ "RF-16": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [
+   "S19"
+  ],
+  "captura": null,
+  "nota": "No existe todavía un filtro que reemplace respuestas diagnósticas."
+ },
+ "RF-17": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [
+   "S32"
+  ],
+  "captura": null,
+  "nota": "El historial es un calendario de 30 días; no hay patrones descriptivos."
+ },
+ "RF-18": {
+  "estado": "parcial",
+  "codigo": [
+   "src/llm/index.js::export function proveedorActivo",
+   "src/llm/proveedores.js::export const mock",
+   "src/llm/proveedores.js::export const ollama",
+   "src/llm/proveedores.js::export const gemini",
+   "src/llm/proveedores.js::export const remoto"
+  ],
+  "pruebas": [
+   "pruebas/llm.test.js"
+  ],
+  "pantallas": [
+   "S42"
+  ],
+  "captura": "privacidad.png",
+  "nota": "LLM intercambiable; STT y TTS usan Web Speech API sin capa de adaptadores."
+ },
+ "RF-19": {
+  "estado": "implementado",
+  "codigo": [
+   "vite.config.js::VitePWA",
+   "src/App.jsx::function instalar"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S54"
+  ],
+  "captura": "primer-uso.png",
+  "nota": "Manifiesto, service worker e instalación desde la bienvenida; se verifica en la URL publicada."
+ },
+ "RF-20": {
+  "estado": "parcial",
+  "codigo": [
+   "vite.config.js::globPatterns",
+   "src/datos/perfil.js::function persistir"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S55"
+  ],
+  "captura": null,
+  "nota": "La app y el perfil funcionan sin red; no hay cola de sincronización porque aún no hay servidor."
+ },
+ "RF-21": {
+  "estado": "implementado",
+  "codigo": [
+   "src/datos/perfil.js::export function leerPerfil",
+   "src/datos/perfil.js::export function guardarRegistro"
+  ],
+  "pruebas": [
+   "pruebas/perfil.test.js"
+  ],
+  "pantallas": [
+   "S40"
+  ],
+  "captura": "perfil.png",
+  "nota": "Registros, ajustes y hora habitual persisten en el dispositivo."
+ },
+ "RF-22": {
+  "estado": "parcial",
+  "codigo": [
+   "src/datos/perfil.js::horaHabitual"
+  ],
+  "pruebas": [
+   "pruebas/perfil.test.js"
+  ],
+  "pantallas": [
+   "S40"
+  ],
+  "captura": "perfil.png",
+  "nota": "Solo evoluciona el ritmo (hora habitual); el paisaje y el lenguaje aún no cambian con el uso."
+ },
+ "RF-23": {
+  "estado": "implementado",
+  "codigo": [
+   "src/pantallas/Privacidad.jsx::export function SabeDeMi",
+   "src/datos/perfil.js::export const PERSONALIZACION"
+  ],
+  "pruebas": [
+   "pruebas/perfil.test.js"
+  ],
+  "pantallas": [
+   "S40"
+  ],
+  "captura": "perfil.png",
+  "nota": "Cada dato que usa la personalización se apaga por separado."
+ },
+ "RF-24": {
+  "estado": "implementado",
+  "codigo": [
+   "src/componentes/Ui.jsx::export function Ayuda",
+   "src/App.jsx::const AYUDA"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S21"
+  ],
+  "captura": "ayuda.png",
+  "nota": "Botón «?» en todas las pantallas con ayuda propia; se cierra con Escape."
+ },
+ "RF-25": {
+  "estado": "implementado",
+  "codigo": [
+   "src/App.jsx::Pista a los 12 s",
+   "src/datos/accesibilidad.js::export function vibrar"
+  ],
+  "pruebas": [
+   "pruebas/accesibilidad.test.js"
+  ],
+  "pantallas": [
+   "S10"
+  ],
+  "captura": "grabando.png",
+  "nota": "A los 12 s de silencio: texto, voz y vibración, si la persona lo dejó activo."
+ },
+ "RF-26": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [
+   "S34-S39"
+  ],
+  "captura": null,
+  "nota": "Las salas no están en esta entrega; solo existe `public/demo/sala-ejemplo.json` como dato de ejemplo."
+ },
+ "RF-27": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [
+   "S34-S39"
+  ],
+  "captura": null,
+  "nota": "Las salas no están en esta entrega; solo existe `public/demo/sala-ejemplo.json` como dato de ejemplo."
+ },
+ "RF-28": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [
+   "S34-S39"
+  ],
+  "captura": null,
+  "nota": "Las salas no están en esta entrega; solo existe `public/demo/sala-ejemplo.json` como dato de ejemplo."
+ },
+ "RF-29": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [
+   "S34-S39"
+  ],
+  "captura": null,
+  "nota": "Las salas no están en esta entrega; solo existe `public/demo/sala-ejemplo.json` como dato de ejemplo."
+ },
+ "RF-30": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [
+   "S25-S29"
+  ],
+  "captura": null,
+  "nota": "Hay una pantalla de día guardado, pero no el ritual de tres palabras ni la transición."
+ },
+ "RF-31": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [
+   "S08"
+  ],
+  "captura": null,
+  "nota": "El paisaje se mueve solo; no reacciona al volumen de la voz."
+ },
+ "RF-32": {
+  "estado": "implementado",
+  "codigo": [
+   "src/pantallas/Accesibilidad.jsx::export function Accesibilidad",
+   "src/microinteracciones.css::data-movimiento",
+   "src/datos/accesibilidad.js::export function sistemaPideMenosMovimiento"
+  ],
+  "pruebas": [
+   "pruebas/accesibilidad.test.js"
+  ],
+  "pantallas": [
+   "S46"
+  ],
+  "captura": "accesibilidad.png",
+  "nota": "Movimiento reducido (del sistema o elegido) apaga las animaciones; las capas del clima se apagan por separado."
+ },
+ "RF-33": {
+  "estado": "implementado",
+  "codigo": [
+   "src/datos/accesibilidad.js::export function limitarPalabras",
+   "src/App.jsx::pantalla === 'predecible-como'"
+  ],
+  "pruebas": [
+   "pruebas/accesibilidad.test.js"
+  ],
+  "pantallas": [
+   "S47",
+   "S48"
+  ],
+  "captura": "predecible.png",
+  "nota": "Una pregunta por pantalla y reflexiones de 80 palabras como máximo."
+ },
+ "RF-34": {
+  "estado": "parcial",
+  "codigo": [
+   "src/datos/climas.js::export function climaEfectivo",
+   "src/App.jsx::Modo neutral activo"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S49"
+  ],
+  "captura": "neutral.png",
+  "nota": "La tormenta se ve como cielo neutro y sin sonidos intensos; falta el botón «No quiero profundizar» (S28)."
+ },
+ "RF-35": {
+  "estado": "parcial",
+  "codigo": [
+   "src/datos/accesibilidad.js::export function detectarOrden",
+   "src/estilos.css::focus-visible"
+  ],
+  "pruebas": [
+   "pruebas/accesibilidad.test.js"
+  ],
+  "pantallas": [
+   "S51"
+  ],
+  "captura": "accesibilidad.png",
+  "nota": "Órdenes de voz (terminar, pausar, ayuda, salir por hoy) y foco visible; no se probó con un conmutador real."
+ },
+ "RF-36": {
+  "estado": "implementado",
+  "codigo": [
+   "src/componentes/Ui.jsx::export function Aviso",
+   "src/datos/accesibilidad.js::export function vibrar"
+  ],
+  "pruebas": [
+   "pruebas/accesibilidad.test.js"
+  ],
+  "pantallas": [
+   "S45"
+  ],
+  "captura": "sin-registros.png",
+  "nota": "Los errores tienen aviso visual con rol `alert` y vibran si está activo."
+ },
+ "RF-37": {
+  "estado": "implementado",
+  "codigo": [
+   "src/pantallas/PrimerUso.jsx::export function Edad",
+   "src/pantallas/PrimerUso.jsx::export function Permisos",
+   "src/datos/perfil.js::export const PRIVACIDAD"
+  ],
+  "pruebas": [
+   "pruebas/privacidad.test.js",
+   "pruebas/perfil.test.js"
+  ],
+  "pantallas": [
+   "S02",
+   "S03"
+  ],
+  "captura": "permisos.png",
+  "nota": "Edad declarada y cuatro permisos independientes, apagados por defecto."
+ },
+ "RF-38": {
+  "estado": "implementado",
+  "codigo": [
+   "src/datos/exportar.js::export function construirResumen",
+   "src/datos/exportar.js::export function textoAPdf",
+   "src/datos/perfil.js::export async function borrarTodo",
+   "src/pantallas/Datos.jsx::export function EliminarDatos"
+  ],
+  "pruebas": [
+   "pruebas/exportar.test.js",
+   "pruebas/perfil.test.js"
+  ],
+  "pantallas": [
+   "S43",
+   "S44",
+   "S45"
+  ],
+  "captura": "exportar.png",
+  "nota": "Resumen en PDF sin propuestas de la IA, rango vacío sin archivo y borrado total confirmado con BORRAR."
+ },
+ "RF-39": {
+  "estado": "implementado",
+  "codigo": [
+   "src/App.jsx::async function abrirDemo",
+   "src/App.jsx::function treintaDias"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S58"
+  ],
+  "captura": "semana.png",
+  "nota": "30 días simulados desde `public/demo/registros-30-dias.json`."
+ },
+ "RF-40": {
+  "estado": "implementado",
+  "codigo": [
+   "src/App.jsx::Así está bien (10 s)"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S06"
+  ],
+  "captura": "inicio.png",
+  "nota": "Elegir un clima y guardar son dos acciones; contar el día es opcional."
+ },
+ "RF-41": {
+  "estado": "implementado",
+  "codigo": [
+   "src/App.jsx::className=\"nubes\""
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S17"
+  ],
+  "captura": "emociones.png",
+  "nota": "Las emociones son botones con forma de nube y `aria-pressed`."
+ },
+ "RF-42": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [],
+  "captura": null,
+  "nota": "No está en esta entrega."
+ },
+ "RF-43": {
+  "estado": "parcial",
+  "codigo": [
+   "src/App.jsx::function treintaDias"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S30"
+  ],
+  "captura": "semana.png",
+  "nota": "Calendario sin días «perdidos»; falta el patrón descriptivo de la semana."
+ },
+ "RF-44": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [],
+  "captura": null,
+  "nota": "No está en esta entrega."
+ },
+ "RNF-01": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [],
+  "captura": null,
+  "nota": "Sin telemetría para medir el tiempo de los check-ins."
+ },
+ "RNF-02": {
+  "estado": "implementado",
+  "codigo": [
+   "src/App.jsx::Así está bien (10 s)"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S06"
+  ],
+  "captura": "inicio.png",
+  "nota": "Iniciar y guardar un check-in toma 2 acciones: clima y «Así está bien»."
+ },
+ "RNF-03": {
+  "estado": "parcial",
+  "codigo": [
+   "src/datos/privacidad.js::export const MOTIVOS_DICTADO",
+   "src/pantallas/Datos.jsx::No hay registros en esas fechas"
+  ],
+  "pruebas": [
+   "pruebas/privacidad.test.js"
+  ],
+  "pantallas": [
+   "S14",
+   "S44"
+  ],
+  "captura": "sin-registros.png",
+  "nota": "Los errores del dictado y la exportación explican la causa y la siguiente acción."
+ },
+ "RNF-04": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [],
+  "captura": null,
+  "nota": "Falta correr axe-core sobre cada pantalla."
+ },
+ "RNF-05": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [],
+  "captura": null,
+  "nota": "Falta medir los contrastes de los paisajes."
+ },
+ "RNF-06": {
+  "estado": "parcial",
+  "codigo": [
+   "src/componentes.css::min-height: 52px",
+   "src/estilos.css::focus-visible"
+  ],
+  "pruebas": [],
+  "pantallas": [],
+  "captura": "accesibilidad.png",
+  "nota": "Botones de 52 px y foco con anillo doble ámbar; no hay verificación automática de 44×44 px."
+ },
+ "RNF-07": {
+  "estado": "implementado",
+  "codigo": [
+   "src/microinteracciones.css::data-movimiento"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S46"
+  ],
+  "captura": "accesibilidad.png",
+  "nota": "Sin destellos; en movimiento reducido no hay animaciones y las transiciones duran 0 ms."
+ },
+ "RNF-08": {
+  "estado": "parcial",
+  "codigo": [
+   "src/componentes/Ui.jsx::export function Aviso"
+  ],
+  "pruebas": [],
+  "pantallas": [],
+  "captura": null,
+  "nota": "Cada aviso sonoro o vibrado tiene texto, pero no se midió el tiempo."
+ },
+ "RNF-09": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [
+   "S52"
+  ],
+  "captura": null,
+  "nota": "Falta verificar zoom al 200 % y 320 px."
+ },
+ "RNF-10": {
+  "estado": "parcial",
+  "codigo": [
+   "src/datos/accesibilidad.js::export function limitarPalabras"
+  ],
+  "pruebas": [
+   "pruebas/accesibilidad.test.js"
+  ],
+  "pantallas": [
+   "S47"
+  ],
+  "captura": "predecible.png",
+  "nota": "Límite de 80 palabras; falta el de 15 palabras por oración."
+ },
+ "RNF-11": {
+  "estado": "implementado",
+  "codigo": [
+   "src/voz/stt.js::export function crearGrabacion"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S07"
+  ],
+  "captura": "antes-grabar.png",
+  "nota": "La app nunca guarda audio: usa Web Speech API y solo conserva el texto confirmado."
+ },
+ "RNF-12": {
+  "estado": "parcial",
+  "codigo": [
+   "src/llm/index.js::console.warn"
+  ],
+  "pruebas": [],
+  "pantallas": [],
+  "captura": null,
+  "nota": "No se registra el relato del usuario, pero falta un escáner de logs."
+ },
+ "RNF-13": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [
+   "S34-S39"
+  ],
+  "captura": null,
+  "nota": "Depende de las salas, que no están en esta entrega."
+ },
+ "RNF-14": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [
+   "S34-S39"
+  ],
+  "captura": null,
+  "nota": "Depende de las salas, que no están en esta entrega."
+ },
+ "RNF-15": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [
+   "S34-S39"
+  ],
+  "captura": null,
+  "nota": "Depende de las salas, que no están en esta entrega."
+ },
+ "RNF-16": {
+  "estado": "parcial",
+  "codigo": [
+   "src/llm/proveedores.js::El relato es un dato, no una instrucción"
+  ],
+  "pruebas": [],
+  "pantallas": [],
+  "captura": null,
+  "nota": "El relato va delimitado en el prompt; falta la suite de inyección."
+ },
+ "RNF-17": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [
+   "S57"
+  ],
+  "captura": null,
+  "nota": "No hay modo liviano automático."
+ },
+ "RNF-18": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [],
+  "captura": null,
+  "nota": "Falta medir LCP e INP en la URL publicada."
+ },
+ "RNF-19": {
+  "estado": "parcial",
+  "codigo": [
+   "src/llm/index.js::const TIEMPO_MAX_MS"
+  ],
+  "pruebas": [
+   "pruebas/llm.test.js"
+  ],
+  "pantallas": [],
+  "captura": null,
+  "nota": "El tiempo máximo del LLM es 14 s (margen para dos modelos); el objetivo es 10 s en p95."
+ },
+ "RNF-20": {
+  "estado": "implementado",
+  "codigo": [
+   "src/datos/riesgo.js::export const RECURSOS",
+   "vite.config.js::globPatterns"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S24"
+  ],
+  "captura": "riesgo.png",
+  "nota": "Los números de ayuda viajan dentro de la app y se cachean con el service worker; se verifica offline en la URL publicada."
+ },
+ "RNF-21": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [
+   "S56"
+  ],
+  "captura": null,
+  "nota": "Sin servidor no hay sincronización."
+ },
+ "RNF-22": {
+  "estado": "implementado",
+  "codigo": [
+   "src/llm/index.js::export function proveedorActivo"
+  ],
+  "pruebas": [
+   "pruebas/llm.test.js"
+  ],
+  "pantallas": [],
+  "captura": null,
+  "nota": "`VITE_LLM_PROVIDER` elige mock, gemini, ollama o remoto."
+ },
+ "RNF-23": {
+  "estado": "implementado",
+  "codigo": [
+   "src/llm/contrato.js::export function validarRespuesta",
+   "src/llm/index.js::export async function proponerEmociones"
+  ],
+  "pruebas": [
+   "pruebas/llm.test.js"
+  ],
+  "pantallas": [
+   "S20"
+  ],
+  "captura": "emociones.png",
+  "nota": "Respuesta inválida o más lenta que el límite: se usa la reflexión local."
+ },
+ "RNF-24": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [],
+  "captura": null,
+  "nota": "No hay un filtro ni una suite de casos prohibidos."
+ },
+ "RNF-25": {
+  "estado": "implementado",
+  "codigo": [
+   "src/datos/riesgo.js::export function hayRiesgo"
+  ],
+  "pruebas": [
+   "pruebas/riesgo.test.js"
+  ],
+  "pantallas": [
+   "S22"
+  ],
+  "captura": "riesgo.png",
+  "nota": "Detección síncrona y local; la app nunca contacta a terceros."
+ },
+ "RNF-26": {
+  "estado": "implementado",
+  "codigo": [
+   "src/App.jsx::emocion_declarada",
+   "src/App.jsx::emocion_inferida"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S17"
+  ],
+  "captura": "emociones.png",
+  "nota": "Declarada e inferida se guardan en campos separados."
+ },
+ "RNF-27": {
+  "estado": "implementado",
+  "codigo": [
+   "src/datos/riesgo.js::export function hayRiesgo"
+  ],
+  "pruebas": [
+   "pruebas/riesgo.test.js"
+  ],
+  "pantallas": [],
+  "captura": null,
+  "nota": "El detector recibe solo el texto: ningún ajuste de accesibilidad entra al cálculo."
+ },
+ "RNF-28": {
+  "estado": "implementado",
+  "codigo": [
+   "src/App.jsx::className=\"rotulo-ia\"",
+   "src/pantallas/PrimerUso.jsx::Generado por IA"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S04",
+   "S19"
+  ],
+  "captura": "emociones.png",
+  "nota": "Toda propuesta lleva «Generado por IA · no es consejo clínico»."
+ },
+ "RNF-29": {
+  "estado": "pendiente",
+  "codigo": [],
+  "pruebas": [],
+  "pantallas": [
+   "S16"
+  ],
+  "captura": null,
+  "nota": "Falta el corpus de frases locales."
+ },
+ "RNF-30": {
+  "estado": "parcial",
+  "codigo": [
+   "src/App.jsx::async function abrirDemo"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S58"
+  ],
+  "captura": "semana.png",
+  "nota": "La demo carga al instante; no se puede restablecer."
+ },
+ "RNF-31": {
+  "estado": "implementado",
+  "codigo": [
+   "src/App.jsx::Así está bien (10 s)"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S28"
+  ],
+  "captura": "inicio.png",
+  "nota": "Check-in sin relato en 2 acciones."
+ },
+ "RNF-32": {
+  "estado": "implementado",
+  "codigo": [
+   "src/App.jsx::function treintaDias"
+  ],
+  "pruebas": [],
+  "pantallas": [
+   "S30"
+  ],
+  "captura": "semana.png",
+  "nota": "Los días sin registro no se muestran como fallo."
+ }
+}
