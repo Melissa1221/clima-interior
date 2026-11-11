@@ -413,6 +413,7 @@ export default function App() {
         <Paisaje clima={climaVista} capas={preferencias.capas}>
           <section className="tarjeta">
             {climaVista !== clima && <Aviso titulo="Modo neutral activo">Tu tormenta se guardó y hoy se muestra como cielo neutro.</Aviso>}
+            <span className="sello"><Icono nombre="check" /></span>
             <h2>Tu día quedó guardado</h2>
             <p>{DESCRIPCION[climaVista]}</p>
             <p className="pequeno">Llevas {perfil.registros.length} registro(s).

@@ -1,0 +1,47 @@
+/* Micro-interacciones. Todas se apagan con «Movimiento reducido» o la preferencia del sistema (RF-32, RNF-07):
+   en ese modo ninguna animación no esencial dura más de 200 ms. */
+
+/* Entrada de cada pantalla: aparece y sube un poco */
+@keyframes entra { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.pantalla, .paisaje, .riesgo, .historial { animation: entra 260ms ease-out both; }
+
+/* Respuesta al toque: los controles se hunden un poco */
+.btn, .btn-icono, .clima, .nube, .opcion, .pestana, .fila-ajuste, .enlace-fila, .capa, .mic-grande, .ctrl span, .segmentos button {
+  transition: transform 120ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+.btn:active:not(:disabled), .btn-icono:active, .clima:active, .nube:active, .opcion:active, .pestana:active,
+.enlace-fila:active, .capa:active, .segmentos button:active { transform: scale(.96); }
+.fila-ajuste:active .interruptor__perilla { width: 28px; }
+.fila-ajuste:active[aria-checked='true'] .interruptor__perilla { transform: translateX(20px); }
+
+/* Elegir algo confirma con un rebote corto */
+@keyframes rebote { 0% { transform: scale(1); } 45% { transform: scale(1.07); } 100% { transform: scale(1); } }
+.nube.activa, .clima.activo, .opcion--marcada, .capa[aria-pressed='true'] { animation: rebote 220ms ease-out; }
+@keyframes aparece-check { from { transform: scale(.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.interruptor__perilla .icono, .capa .icono { animation: aparece-check 180ms ease-out; }
+.opcion__circulo span { animation: aparece-check 160ms ease-out; }
+
+/* Micrófono activo: el punto rojo late despacio */
+@keyframes late { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .45; transform: scale(.8); } }
+.punto { animation: late 1.4s ease-in-out infinite; }
+
+/* Día guardado: el sello se dibuja al aparecer */
+.sello { width: 56px; height: 56px; border-radius: 50%; background: var(--exito-suave); color: var(--exito); display: grid; place-items: center;
+  animation: aparece-check 320ms cubic-bezier(.2, 1.4, .4, 1) both; }
+.sello .icono { width: 28px !important; height: 28px !important; }
+
+/* Paisaje vivo: nubes a la deriva, viento que sopla y lluvia que cae (sin destellos ni parpadeos) */
+@keyframes deriva { to { translate: 26px 0; } }
+@keyframes sopla { to { stroke-dashoffset: -64; } }
+@keyframes cae { from { translate: 0 -14px; opacity: 0; } 20% { opacity: .6; } to { translate: -5px 36px; opacity: 0; } }
+.cielo__nube { animation: deriva 32s ease-in-out infinite alternate; }
+.cielo__nube:nth-child(even) { animation-duration: 44s; animation-direction: alternate-reverse; }
+.cielo__viento { stroke-dasharray: 40 24; animation: sopla 6s linear infinite; }
+.cielo__gota { animation: cae 1.6s linear infinite; }
+.cielo__gota:nth-child(3n) { animation-delay: -.5s; }
+.cielo__gota:nth-child(3n + 1) { animation-delay: -1s; }
+
+/* Movimiento reducido: sin animaciones; los cambios de estado son inmediatos */
+[data-movimiento='reducido'] *, [data-movimiento='reducido'] *::before, [data-movimiento='reducido'] *::after {
+  animation: none !important; transition-duration: 0ms !important; scroll-behavior: auto !important;
+}
