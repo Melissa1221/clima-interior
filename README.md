@@ -10,14 +10,21 @@ Proyecto del curso **CC451 Interacción Humano-Computador**, Universidad Naciona
 |---|---|---|
 | ![Inicio](docs/capturas/inicio.png) | ![Emociones](docs/capturas/emociones.png) | ![Historial](docs/capturas/semana.png) |
 
+| Primer uso | Permisos por separado | Privacidad y datos | Accesibilidad |
+|---|---|---|---|
+| ![Primer uso](docs/capturas/primer-uso.png) | ![Permisos](docs/capturas/permisos.png) | ![Privacidad](docs/capturas/privacidad.png) | ![Accesibilidad](docs/capturas/accesibilidad.png) |
+
 ## Qué hace
 
+0. La primera vez pasas por cinco pasos: bienvenida, edad, permisos por separado, límites no clínicos y ajustes iniciales de accesibilidad. Nada sale del dispositivo antes del permiso correspondiente.
 1. Eliges el clima del día: soleado, nublado, lluvia, tormenta o niebla. Si no tienes ganas de hablar, con eso basta.
 2. Si quieres, lo cuentas por voz o lo escribes. Puedes corregir la transcripción antes de que la lea la IA.
 3. Antes de llamar a la IA se revisa si hay frases de riesgo. Si las hay, la app muestra la Línea 113 (opción 5), el SAMU 106 y la PNP 105, y no genera reflexión.
 4. La IA propone emociones y tú eliges las tuyas o marcas "no sé". Lo que infiere la IA no reemplaza lo que eliges.
 5. Ves una reflexión corta, que también se puede escuchar.
 6. El historial de ejemplo muestra 30 días simulados.
+7. En **Perfil** ves lo que la app sabe de ti y apagas cada dato, cambias los permisos, exportas un resumen en PDF para tu psicóloga o psicólogo, o eliminas todos tus datos.
+8. En **Accesibilidad** activas movimiento reducido, apagas cada capa del clima, y eliges el modo predecible o el neutral, la descripción hablada del paisaje, la vibración, las pistas y las órdenes de voz.
 
 ## Requerimientos del proyecto y dónde están
 
@@ -28,7 +35,10 @@ Proyecto del curso **CC451 Interacción Humano-Computador**, Universidad Naciona
 | PWA | `vite-plugin-pwa`: instalable, service worker, offline | Hecho |
 | Personalización continua | Perfil persistente con registros y hora habitual (`src/datos/perfil.js`) | Básico |
 | Multiusuario | Salas por código con Supabase Realtime; datos de ejemplo en `public/demo/sala-ejemplo.json` | Diseñado |
-| Diseño emocional (Norman) | Visceral: paisaje. Conductual: check-in en menos de 90 s. Reflexivo: historial y patrones | Parcial |
+| Diseño emocional (Norman) | Visceral: paisaje vivo. Conductual: check-in en menos de 90 s y micro-interacciones. Reflexivo: historial y patrones | Parcial |
+| Primer uso y consentimiento | Edad, cuatro permisos independientes y límites no clínicos (`src/pantallas/PrimerUso.jsx`) | Hecho |
+| Privacidad y datos | Permisos, qué datos usa la personalización, exportar PDF y eliminar todo (`src/pantallas/Privacidad.jsx`, `Datos.jsx`) | Hecho |
+| Accesibilidad | Movimiento reducido, capas, modos predecible y neutral, voz, vibración (`src/pantallas/Accesibilidad.jsx`) | Hecho |
 
 La matriz de trazabilidad completa (44 RF, 32 RNF, 32 historias de usuario) está en
 [`docs/matriz-trazabilidad.md`](docs/matriz-trazabilidad.md).
@@ -43,7 +53,7 @@ cd clima-interior
 npm install
 cp .env.example .env      # por defecto usa el proveedor simulado, sin claves
 npm run dev               # http://localhost:5173
-npm test                  # pruebas de la capa LLM, el detector de riesgo y el perfil
+npm test                  # pruebas de la capa LLM, el riesgo, el perfil, la privacidad, la exportación y la accesibilidad
 ```
 
 Para probar la PWA instalable y el modo offline, usa la versión compilada:
@@ -83,17 +93,24 @@ npm run datos
 
 - [Arquitectura (C4)](docs/arquitectura.md)
 - [Matriz de trazabilidad](docs/matriz-trazabilidad.md)
-- Prototipo de fidelidad media en Figma: *Clima Interior · MVP* (58 pantallas)
+- Prototipo de fidelidad media en Figma: *Clima Interior · MVP* (58 pantallas). Ya están programadas S01 a S05 (primer uso), S07, S40, S42 a S45 (privacidad) y S46 a S49 (accesibilidad)
 
 ## Estructura
 
 ```
 src/
-  App.jsx            flujo del check-in e historial
+  App.jsx            flujo del check-in, historial y navegación entre pantallas
+  componentes/       paisaje, íconos del Figma y piezas del sistema de diseño (botón, aviso, fila de ajuste…)
+  pantallas/         primer uso, privacidad, exportar y eliminar, accesibilidad
+  iconos/            íconos SVG de 24 px exportados del Figma
   llm/               contrato, proveedores e índice con respaldo local
-  voz/stt.js         voz a texto y texto a voz
-  datos/perfil.js    perfil persistente
+  voz/stt.js         voz a texto (local o en internet según el permiso) y texto a voz
+  datos/perfil.js    perfil persistente: registros, permisos, ajustes y borrado total
+  datos/privacidad.js reglas de consentimiento para dictar
+  datos/exportar.js  resumen y PDF sin dependencias
+  datos/accesibilidad.js órdenes de voz, vibración, límite de palabras y sonificación
   datos/riesgo.js    detector de riesgo y líneas de ayuda
+  estilos.css, componentes.css, microinteracciones.css  tokens del Figma, componentes y animaciones
 public/demo/         datos simulados
 scripts/             generador de datos
 docs/                arquitectura, matriz, capturas
