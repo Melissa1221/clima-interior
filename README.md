@@ -89,9 +89,45 @@ seudónimos. No hay datos reales. Para regenerarlos (semilla fija, siempre salen
 npm run datos
 ```
 
+## Despliegue
+
+La app es estática (`npm run build` genera `dist/`) y se publica en Vercel con `vercel.json`: caché larga para los archivos con hash, sin caché para `sw.js` y el manifiesto, para que cada versión nueva llegue sola.
+
+```bash
+npx vercel login          # una vez, con tu cuenta
+npx vercel deploy --prod  # publica la versión de producción
+```
+
+La versión pública usa el proveedor `mock` (sin claves). Una clave de Gemini en `VITE_GEMINI_API_KEY` quedaría dentro del bundle y visible para cualquiera: para usar una IA remota hay que ponerla detrás de un proxy (`VITE_REMOTO_URL`). Para despliegues automáticos por cada PR, conecta el repositorio desde el panel de Vercel.
+
+Comprobado sobre la versión compilada: se instala como PWA y, tras la primera visita, funciona sin conexión, incluida la pantalla de ayuda en crisis.
+
+## Reporte de trazabilidad
+
+[`docs/reporte-trazabilidad.md`](docs/reporte-trazabilidad.md) (también en [PDF](docs/reporte-trazabilidad.pdf)) une cada una de las 32 historias de usuario con los requerimientos que cubre, el código que los implementa (enlaces a la línea), las pruebas y una captura. Hoy: 35 de 76 requerimientos implementados, 18 parciales y 23 pendientes; el reporte explica cada hueco.
+
+```bash
+npm run capturas   # regenera docs/capturas recorriendo la app en un navegador real (Chrome o Chromium)
+npm run reporte    # regenera el reporte y su PDF, y el estado de la matriz; falla si un enlace ya no coincide con el código
+```
+
+Los datos de partida son `docs/historias-de-usuario.json`, `docs/trazabilidad-codigo.json` y la [matriz](docs/matriz-trazabilidad.md). Al cambiar el código, se actualiza `trazabilidad-codigo.json` y se vuelve a correr `npm run reporte`.
+
+## Video
+
+El guion está en [`docs/video/guion.md`](docs/video/guion.md) y los subtítulos en `docs/video/guion.srt`. El video se arma solo con la app real, sin narración; el grupo graba la voz de cada escena.
+
+```bash
+npm run video:grabar   # graba los clips con la app compilada y genera las placas (video-salida/)
+npm run video:montar   # monta video-salida/clima-interior.mp4 con subtítulos; mezcla video-salida/narracion/NN.m4a si existe
+```
+
+Necesita Chrome o Chromium y `ffmpeg`. `npx playwright-core install ffmpeg` baja el ffmpeg que usa Playwright para grabar.
+
 ## Documentación
 
-- [Arquitectura (C4)](docs/arquitectura.md)
+- [Arquitectura (C4), con diagrama de despliegue](docs/arquitectura.md)
+- [Reporte de trazabilidad](docs/reporte-trazabilidad.md) y su [PDF](docs/reporte-trazabilidad.pdf)
 - [Matriz de trazabilidad](docs/matriz-trazabilidad.md)
 - Prototipo de fidelidad media en Figma: *Clima Interior · MVP* (58 pantallas). Ya están programadas S01 a S05 (primer uso), S07, S40, S42 a S45 (privacidad) y S46 a S49 (accesibilidad)
 
@@ -112,8 +148,8 @@ src/
   datos/riesgo.js    detector de riesgo y líneas de ayuda
   estilos.css, componentes.css, microinteracciones.css  tokens del Figma, componentes y animaciones
 public/demo/         datos simulados
-scripts/             generador de datos
-docs/                arquitectura, matriz, capturas
+scripts/             datos simulados, capturas, reporte de trazabilidad y video
+docs/                arquitectura, matriz, reporte, capturas y guion del video
 ```
 
 ## Aviso

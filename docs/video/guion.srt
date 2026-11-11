@@ -1,0 +1,143 @@
+1
+00:00:00,400 --> 00:00:06,550
+Clima Interior es un diario emocional generativo: cuentas tu día en un minuto y lo ves convertido en un clima.
+
+2
+00:00:07,400 --> 00:00:13,693
+A muchas personas les cuesta ponerle nombre a lo que sienten, y los formularios y las encuestas no ayudan.
+
+3
+00:00:13,743 --> 00:00:20,515
+Clima Interior propone otra cosa: elegir un clima, contar el día si quieres, y decidir tú qué palabras son tuyas.
+
+4
+00:00:20,565 --> 00:00:22,550
+La IA propone, la persona decide.
+
+5
+00:00:23,400 --> 00:00:31,418
+La primera vez, la app te recibe sin pedirte nada: puedes mirar la demo de treinta días o empezar.
+
+6
+00:00:31,468 --> 00:00:36,440
+Primero, tu edad, porque las emociones son un dato sensible.
+
+7
+00:00:36,490 --> 00:00:44,343
+Después, cuatro permisos por separado, todos apagados: nada sale de tu teléfono sin tu permiso.
+
+8
+00:00:44,393 --> 00:00:52,164
+Luego, lo que la app es y lo que no es: no diagnostica ni reemplaza a una persona profesional.
+
+9
+00:00:52,214 --> 00:00:57,350
+Y por último, ajustes de accesibilidad desde el primer minuto.
+
+10
+00:00:58,200 --> 00:01:01,901
+Para el check-in eliges el clima de hoy.
+
+11
+00:01:01,951 --> 00:01:06,027
+Con eso basta si no tienes ganas de hablar.
+
+12
+00:01:06,077 --> 00:01:12,684
+Si quieres contarlo, un aviso te recuerda cómo cuidamos tu privacidad.
+
+13
+00:01:12,734 --> 00:01:19,342
+Mientras dictas, ves el micrófono activo y puedes terminar con la voz.
+
+14
+00:01:19,392 --> 00:01:25,624
+Revisas lo que entendimos y lo corriges antes de que lo lea la IA.
+
+15
+00:01:25,674 --> 00:01:34,720
+Entonces la IA propone emociones, siempre con su etiqueta, y tú eliges las tuyas o marcas no sé.
+
+16
+00:01:34,770 --> 00:01:41,190
+Al guardar, lo que propuso la IA queda aparte de lo que tú elegiste.
+
+17
+00:01:42,040 --> 00:01:48,892
+Antes de cualquier reflexión corre un detector de riesgo, independiente del modelo.
+
+18
+00:01:48,942 --> 00:01:56,542
+Si aparece una señal, no se reflexiona: se muestran la Línea 113, el SAMU 106 y la PNP 105.
+
+19
+00:01:56,592 --> 00:01:58,870
+La app no contacta a nadie.
+
+20
+00:01:59,720 --> 00:02:03,897
+El historial muestra treinta días simulados.
+
+21
+00:02:03,947 --> 00:02:10,910
+Los días sin registro no se marcan como fallo: el cielo sigue despejado.
+
+22
+00:02:11,760 --> 00:02:19,204
+En Perfil ves lo que la app sabe de ti y apagas cada dato.
+
+23
+00:02:19,254 --> 00:02:33,030
+En Privacidad cambias los permisos y eliges dónde se genera la reflexión: en tu dispositivo o en internet.
+
+24
+00:02:33,880 --> 00:02:47,170
+Puedes exportar un resumen para tu psicóloga o psicólogo: tú eliges qué incluir y se genera en tu teléfono.
+
+25
+00:02:47,220 --> 00:02:51,409
+Nunca lleva lo que propuso la IA.
+
+26
+00:02:51,459 --> 00:02:59,762
+Si no hay registros en esas fechas, no se genera un archivo vacío.
+
+27
+00:02:59,812 --> 00:03:07,990
+Y puedes eliminar todos tus datos, escribiendo la palabra borrar.
+
+28
+00:03:08,840 --> 00:03:21,318
+En Accesibilidad activas movimiento reducido y apagas cada capa del clima por separado.
+
+29
+00:03:21,368 --> 00:03:32,982
+El modo neutral muestra una tormenta como un cielo neutro, sin sonidos intensos.
+
+30
+00:03:33,032 --> 00:03:40,326
+El modo predecible hace una pregunta por pantalla.
+
+31
+00:03:40,376 --> 00:03:49,110
+También hay descripción hablada, vibración y órdenes de voz.
+
+32
+00:03:49,960 --> 00:04:10,630
+Clima Interior es una PWA: se instala en la pantalla de inicio y funciona sin conexión, incluida la ayuda en crisis.
+
+33
+00:04:11,480 --> 00:04:19,778
+Cada historia de usuario se enlaza con sus requerimientos, el código y las pruebas en un reporte que se genera solo.
+
+34
+00:04:19,828 --> 00:04:28,630
+Hoy, 35 de 76 requerimientos están implementados, 18 parciales y 23 pendientes, y el reporte dice cuáles faltan y por qué.
+
+35
+00:04:29,480 --> 00:04:29,995
+Gracias.
+
+36
+00:04:30,045 --> 00:04:36,630
+El código, la arquitectura y el reporte de trazabilidad están en el repositorio del proyecto.
