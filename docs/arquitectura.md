@@ -1,7 +1,7 @@
 # Arquitectura (modelo C4)
 
 Los diagramas usan la notación C4 de Mermaid, que GitHub muestra directamente.
-Las partes marcadas como **(pendiente)** están diseñadas pero todavía no están en el código.
+Las partes marcadas como **(pendiente)** están diseñadas pero todavía no están en el código. El estado de cada requerimiento está en el [reporte de trazabilidad](reporte-trazabilidad.md).
 
 ## Nivel 1: contexto
 
@@ -36,9 +36,9 @@ C4Container
   title Clima Interior: contenedores
   Person(usuario, "Usuario")
   System_Boundary(app, "Clima Interior") {
-    Container(pwa, "PWA", "React + Vite", "Interfaz, paisaje, voz y flujo del check-in.")
+    Container(pwa, "PWA", "React + Vite", "Primer uso, check-in por voz, paisaje, privacidad, exportar resumen y accesibilidad.")
     Container(sw, "Service worker", "Workbox", "Caché offline de la app, los datos demo y los recursos de crisis.")
-    ContainerDb(local, "Perfil local", "localStorage → IndexedDB", "Registros, preferencias y ritmo. El audio no se guarda.")
+    ContainerDb(local, "Perfil local", "localStorage → IndexedDB", "Registros, permisos, ajustes de accesibilidad y ritmo. El audio no se guarda.")
     Container(proxy, "Proxy LLM", "Función serverless", "Guarda la clave de la API remota (pendiente).")
   }
   System_Ext(llm, "LLM", "Claude / Gemini / Ollama")
@@ -84,6 +84,42 @@ flowchart LR
   guardado --> perfil["Perfil persistente<br/>src/datos/perfil.js"]
 ```
 
+## Despliegue
+
+Cómo llega la PWA al dispositivo. La app es estática: no hay servidor propio ni base de datos; el perfil vive en el navegador de cada persona.
+
+```mermaid
+C4Deployment
+  title Clima Interior: despliegue
+  Deployment_Node(cdn, "Vercel", "CDN estática") {
+    Container(estaticos, "Archivos estáticos", "dist/", "HTML, JS, CSS, fuentes, íconos, datos demo y manifiesto de la PWA.")
+  }
+  Deployment_Node(cel, "Dispositivo de la persona", "Android, iOS o escritorio") {
+    Deployment_Node(nav, "Navegador", "Chrome, Edge o Safari") {
+      Container(pwa, "PWA instalada", "React + Vite", "Se instala en la pantalla de inicio.")
+      Container(sw, "Service worker", "Workbox", "Caché offline: app, fuentes, demo y recursos de crisis.")
+      ContainerDb(local, "Perfil local", "localStorage", "Registros, permisos y ajustes. Nada sale sin permiso.")
+    }
+    Deployment_Node(ollama, "Ollama (opcional)", "localhost:11434") {
+      Container(modelo, "Modelo local", "llama3.2", "Reflexión generada en el dispositivo.")
+    }
+  }
+  Deployment_Node(prox, "Proxy LLM (opcional)", "Función serverless") {
+    Container(proxy, "Proxy", "HTTPS", "Guarda la clave de la API remota.")
+  }
+  System_Ext(llm, "API del LLM", "Claude o Gemini")
+
+  Rel(pwa, estaticos, "Primera visita y versiones nuevas", "HTTPS")
+  Rel(pwa, sw, "Pide recursos")
+  Rel(pwa, local, "Lee y escribe")
+  Rel(pwa, modelo, "Relato, si el permiso de IA en internet está apagado", "HTTP")
+  Rel(pwa, proxy, "Relato, solo con permiso de IA en internet", "HTTPS")
+  Rel(proxy, llm, "Prompt", "HTTPS")
+  UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+```
+
+La versión pública usa el proveedor `mock` (sin claves). Una clave `VITE_GEMINI_API_KEY` se incrusta en el bundle y quedaría visible para cualquiera, por eso en producción la clave solo puede vivir en el proxy.
+
 ## Decisiones de arquitectura
 
 | Decisión | Por qué | Requerimientos |
@@ -96,5 +132,6 @@ flowchart LR
 | El audio no se guarda; el perfil vive en el dispositivo | Privacidad de datos emocionales | RNF-11, RNF-12 |
 | Cada permiso es independiente y arranca apagado: sin permiso de internet el dictado solo corre en el dispositivo y la IA en la nube se reemplaza por el modelo local | Nada sale del teléfono antes del consentimiento correspondiente | RF-37, RNF-11 |
 | El resumen para la psicóloga o el psicólogo se arma en el teléfono y nunca incluye lo que propuso la IA | La persona decide qué comparte y la IA no deja diagnósticos escritos | RF-38, RNF-24 |
+| La versión pública es estática y sin claves | Un bundle de navegador no puede guardar secretos; el LLM remoto pasa por un proxy | RNF-15, RNF-22 |
 | Las animaciones se apagan con «Movimiento reducido» o la preferencia del sistema | Sin destellos ni movimiento no esencial | RF-32, RNF-07 |
 | Las salas comparten solo números y seudónimos | Nadie ve el diario de otra persona | RF-27, RNF-13, RNF-14 |
