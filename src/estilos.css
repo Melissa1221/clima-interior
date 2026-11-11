@@ -15,9 +15,6 @@
 * { box-sizing: border-box; }
 body { margin: 0; }
 .app { display: flow-root; max-width: 480px; margin: 0 auto; min-height: 100dvh; position: relative; }
-.barra { position: absolute; top: 14px; right: 14px; z-index: 3; }
-.salir { background: #2b3447; color: #fff; padding: 12px 18px; border-radius: 999px; text-decoration: none;
-  font-weight: 600; font-size: 15px; display: flex; align-items: center; }
 .paisaje { min-height: 100dvh; padding: 80px 14px 86px; display: flex; flex-direction: column; justify-content: flex-end;
   gap: 14px; position: relative; overflow: hidden; transition: background 600ms ease; }
 .paisaje > :not(.cielo) { position: relative; z-index: 1; }
@@ -52,11 +49,6 @@ body { margin: 0; }
 .ctrl { background: none; color: #fff; display: grid; justify-items: center; gap: 6px; }
 .ctrl span { width: 52px; height: 52px; border-radius: 50%; background: #3a4458; display: grid; place-items: center; font-size: 20px; }
 .ctrl--parar span { width: 76px; height: 76px; background: #d9534f; font-size: 28px; }
-.nav { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); width: min(452px, calc(100% - 28px)); z-index: 4;
-  background: #fff; border-radius: 18px; display: grid; grid-template-columns: 1fr 1fr; padding: 6px; box-shadow: 0 4px 18px rgba(0,0,0,.12); }
-.nav button { background: none; display: grid; justify-items: center; font-size: 13px; color: #5a6475; min-height: 52px; }
-.nav button span { font-size: 18px; }
-.nav button[aria-current] { background: #dbe6f5; color: #2f4466; font-weight: 600; }
 .paisaje--inicio { background: linear-gradient(#bcd3ee, #f4f1ea); }
 .paisaje--soleado { background: linear-gradient(#6fa8e8, #f6d98a); }
 .paisaje--nublado { background: linear-gradient(#9fb0c4, #dfe4ea); }

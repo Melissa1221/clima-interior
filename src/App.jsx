@@ -3,22 +3,25 @@ import { proponerEmociones, proveedorActivo } from './llm/index.js'
 import { crearGrabacion, decir, sttDisponible } from './voz/stt.js'
 import { leerPerfil, guardarRegistro } from './datos/perfil.js'
 import { hayRiesgo, RECURSOS } from './datos/riesgo.js'
+import { CLIMAS, DESCRIPCION } from './datos/climas.js'
+import Paisaje from './componentes/Paisaje.jsx'
+import Icono from './componentes/Icono.jsx'
+import { Ayuda, BarraSuperior } from './componentes/Ui.jsx'
 
-const CLIMAS = [
-  { id: 'soleado', etiqueta: 'Soleado', icono: '☀️' },
-  { id: 'nublado', etiqueta: 'Nublado', icono: '⛅' },
-  { id: 'lluvia', etiqueta: 'Lluvia', icono: '🌧️' },
-  { id: 'tormenta', etiqueta: 'Tormenta', icono: '⛈️' },
-  { id: 'niebla', etiqueta: 'Niebla', icono: '🌫️' },
-]
-const DESCRIPCION = {
-  soleado: 'Cielo despejado, luz cálida y viento suave.',
-  nublado: 'Cielo cubierto, luz tenue y poco viento.',
-  lluvia: 'Lluvia suave y constante, nubes bajas.',
-  tormenta: 'Nubes densas, viento fuerte y lluvia intensa.',
-  niebla: 'Niebla espesa que deja ver poco el horizonte.',
-}
 const SEG_SUGERIR_CIERRE = 60
+
+// Pantallas con paisaje de fondo: ahí la barra superior usa el velo oscuro (contraste ≥4.5:1)
+const FONDO_PAISAJE = new Set(['inicio', 'contar', 'pensando', 'emociones', 'guardado'])
+
+// Ayuda contextual (RF-24): qué hacer en cada pantalla, sin salir del flujo
+const AYUDA = {
+  general: ['Cuenta cómo fue tu día en un minuto. Tú decides qué se guarda y cómo se llama lo que sientes.',
+    '«Salir por hoy» está siempre arriba a la derecha: no pierdes nada de lo que ya elegiste.'],
+  inicio: ['Elige el clima que se parece a tu día. Con eso basta si hoy no tienes ganas de hablar.',
+    'Después puedes contarlo por voz o escribirlo, o guardar solo el clima.'],
+  contar: ['Revisa lo que entendimos antes de que lo lea la IA y corrígelo si hace falta.'],
+  emociones: ['La IA propone palabras para lo que podrías sentir. Tú eliges las tuyas o marcas «no sé».'],
+}
 
 // Los 30 días del periodo demo, incluidos los que no tienen registro (RF-43: sin rachas que castiguen)
 function treintaDias(registros) {
@@ -30,48 +33,6 @@ function treintaDias(registros) {
     const fecha = d.toISOString().slice(0, 10)
     return { fecha, r: porFecha[fecha] }
   })
-}
-
-// Capa decorativa del cielo: sol, nubes y viento según el clima (RF-01)
-const CIELO = {
-  inicio: { sol: true, nubes: 2, viento: 3 },
-  soleado: { sol: true, nubes: 1, viento: 2 },
-  nublado: { sol: true, nubes: 4, viento: 2 },
-  lluvia: { sol: false, nubes: 5, viento: 1, lluvia: true },
-  tormenta: { sol: false, nubes: 6, viento: 4, lluvia: true },
-  niebla: { sol: true, nubes: 3, viento: 5, niebla: true },
-}
-const NUBES = [[30, 120, 1], [250, 170, 0.8], [60, 250, 1.2], [300, 60, 0.9], [150, 320, 1], [330, 280, 0.7]]
-
-function Cielo({ clima }) {
-  const c = CIELO[clima || 'inicio']
-  return (
-    <svg className="cielo" viewBox="0 0 400 420" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
-      {c.sol && <circle cx="300" cy="150" r="46" className="cielo__sol" />}
-      {NUBES.slice(0, c.nubes).map(([x, y, k], i) => (
-        <g key={i} className="cielo__nube" transform={`translate(${x} ${y}) scale(${k})`}>
-          <ellipse cx="60" cy="20" rx="70" ry="14" /><ellipse cx="50" cy="8" rx="34" ry="16" /><ellipse cx="88" cy="10" rx="24" ry="12" />
-        </g>
-      ))}
-      {Array.from({ length: c.viento }, (_, i) => (
-        <path key={i} className="cielo__viento" d={`M ${-20 + i * 40} ${200 + i * 45} q 90 -18 180 0 t 180 0 q 20 6 6 22`} />
-      ))}
-      {c.lluvia && Array.from({ length: 28 }, (_, i) => (
-        <line key={i} className="cielo__gota" x1={(i * 37) % 400} y1={190 + (i * 53) % 200} x2={(i * 37) % 400 - 6} y2={210 + (i * 53) % 200} />
-      ))}
-      {c.niebla && <rect y="230" width="400" height="190" className="cielo__niebla" />}
-    </svg>
-  )
-}
-
-function Paisaje({ clima, children }) {
-  return (
-    <div className={`paisaje paisaje--${clima || 'inicio'}`} role="img"
-      aria-label={clima ? DESCRIPCION[clima] : 'Cielo de inicio'}>
-      <Cielo clima={clima} />
-      {children}
-    </div>
-  )
 }
 
 function saludo() {
@@ -91,6 +52,7 @@ export default function App() {
   const [elegidas, setElegidas] = useState([])
   const [demo, setDemo] = useState(null)
   const [errorMic, setErrorMic] = useState(null)
+  const [ayuda, setAyuda] = useState(false)
   const rec = useRef(null)
   const consulta = useRef(0) // invalida respuestas del LLM que llegan después de salir
 
@@ -182,9 +144,12 @@ export default function App() {
 
   return (
     <main className="app">
-      <header className="barra">
-        <a className="salir" href="#" onClick={(e) => { e.preventDefault(); reiniciar() }}>⇥ Salir por hoy</a>
-      </header>
+      <BarraSuperior fondo={FONDO_PAISAJE.has(pantalla) ? 'paisaje' : 'claro'} onAyuda={() => setAyuda(true)} onSalir={reiniciar} />
+      {ayuda && (
+        <Ayuda titulo="Ayuda" onCerrar={() => setAyuda(false)}>
+          {(AYUDA[pantalla] ?? AYUDA.general).map((t) => <p key={t}>{t}</p>)}
+        </Ayuda>
+      )}
 
       {pantalla === 'inicio' && (
         <Paisaje clima={clima}>
@@ -324,9 +289,9 @@ export default function App() {
       )}
 
       {(pantalla === 'inicio' || pantalla === 'semana') && (
-        <nav className="nav" aria-label="Secciones">
-          <button aria-current={pantalla === 'inicio' ? 'page' : undefined} onClick={reiniciar}><span>⌂</span>Inicio</button>
-          <button aria-current={pantalla === 'semana' ? 'page' : undefined} onClick={abrirDemo}><span>▦</span>Historial</button>
+        <nav className="pestanas" aria-label="Secciones">
+          <button className="pestana" aria-current={pantalla === 'inicio' ? 'page' : undefined} onClick={reiniciar}><Icono nombre="inicio" />Inicio</button>
+          <button className="pestana" aria-current={pantalla === 'semana' ? 'page' : undefined} onClick={abrirDemo}><Icono nombre="calendario" />Historial</button>
         </nav>
       )}
       <footer className="pie">LLM activo: {proveedorActivo().nombre}</footer>
