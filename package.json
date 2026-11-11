@@ -12,7 +12,9 @@
     "datos": "python3 scripts/generar_datos.py",
     "test": "vitest run",
     "reporte": "python3 scripts/generar_reporte.py --pdf",
-    "capturas": "node scripts/capturas.mjs"
+    "capturas": "node scripts/capturas.mjs",
+    "video:grabar": "node scripts/video/grabar.mjs",
+    "video:montar": "node scripts/video/montar.mjs"
   },
   "dependencies": {
     "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",

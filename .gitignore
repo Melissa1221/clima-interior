@@ -5,3 +5,5 @@ dev-dist/
 .env.local
 .DS_Store
 docs/reporte-trazabilidad.html
+.vercel
+video-salida/
