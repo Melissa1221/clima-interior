@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { proponerEmociones, proveedorActivo, proveedorSegunPermiso } from './llm/index.js'
 import { crearGrabacion, decir, sttDisponible, transcripcionLocalDisponible } from './voz/stt.js'
-import { leerPerfil, guardarRegistro, guardarAjustes, guardarPreferencias, borrarTodo } from './datos/perfil.js'
-import { sistemaPideMenosMovimiento, vibrar } from './datos/accesibilidad.js'
+import { leerPerfil, guardarRegistro, guardarAjustes, guardarPreferencias, alternarCapa, borrarTodo } from './datos/perfil.js'
+import { detectarOrden, limitarPalabras, sistemaPideMenosMovimiento, sonificarClima, vibrar } from './datos/accesibilidad.js'
 import { estadoDictado, MOTIVOS_DICTADO } from './datos/privacidad.js'
 import { hayRiesgo, RECURSOS } from './datos/riesgo.js'
-import { CLIMAS, DESCRIPCION } from './datos/climas.js'
+import { CLIMAS, DESCRIPCION, climaEfectivo } from './datos/climas.js'
 import Paisaje from './componentes/Paisaje.jsx'
 import Icono from './componentes/Icono.jsx'
-import { Ayuda, BarraSuperior, Pestanas } from './componentes/Ui.jsx'
+import { Accesibilidad } from './pantallas/Accesibilidad.jsx'
+import { Aviso, Ayuda, BarraSuperior, Boton, Pestanas } from './componentes/Ui.jsx'
 import { AjustesIniciales, Bienvenida, Edad, Limites, Permisos } from './pantallas/PrimerUso.jsx'
 import { AntesDeGrabar, PrivacidadYDatos, SabeDeMi } from './pantallas/Privacidad.jsx'
 import { EliminarDatos, ExportarResumen } from './pantallas/Datos.jsx'
@@ -69,7 +70,20 @@ export default function App() {
   const [instalacion, setInstalacion] = useState(null) // evento beforeinstallprompt
   const [edad, setEdad] = useState(perfil.primerUso.edad)
   const rec = useRef(null)
+  const orden = useRef(null) // última versión de «ejecutar orden de voz», para el dictado en curso
+  const ultimaOrden = useRef(null)
   const consulta = useRef(0) // invalida respuestas del LLM que llegan después de salir
+
+  const { preferencias, privacidad } = perfil
+  const climaVista = climaEfectivo(clima, preferencias) // modo neutral: la tormenta se ve como cielo neutro (RF-34)
+  const predecible = preferencias.modoPredecible
+
+  // Pista a los 12 s de silencio: en texto, en voz y con vibración (S10, RF-35)
+  useEffect(() => {
+    if (!grabando || segundos !== 12 || texto || !preferencias.pistas) return
+    vibrar(preferencias)
+    decir('¿Sigues ahí? Puedes contarlo con pocas palabras o escribirlo.')
+  }, [segundos]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const guardar = (e) => { e.preventDefault(); setInstalacion(e) }
@@ -106,9 +120,15 @@ export default function App() {
     const previo = texto.trim() // volver a grabar agrega al texto, no lo borra
     rec.current = crearGrabacion({
       local: !perfil.privacidad.transcribirEnInternet,
-      alTexto: (t) => setTexto(previo ? `${previo} ${t}` : t),
+      alTexto: (t) => {
+        const { orden: cual, texto: limpio } = preferencias.comandosVoz ? detectarOrden(t) : { orden: null, texto: t }
+        setTexto(previo ? `${previo} ${limpio}`.trim() : limpio)
+        if (cual && ultimaOrden.current !== cual) { ultimaOrden.current = cual; orden.current?.(cual) }
+        else if (!cual) ultimaOrden.current = null
+      },
       alError: (e) => {
         setGrabando(false)
+        vibrar(preferencias)
         setErrorMic(e === 'not-allowed' || e === 'service-not-allowed'
           ? 'El micrófono está bloqueado. Puedes escribirlo aquí; tu clima sigue guardado.'
           : 'No pudimos escucharte. Puedes escribirlo aquí o volver a intentar.')
@@ -135,6 +155,21 @@ export default function App() {
     setGrabando(false)
   }
 
+  function elegirClima(id) {
+    setClima(id)
+    if (!preferencias.describirEnVoz) return
+    const visto = climaEfectivo(id, preferencias)
+    decir(DESCRIPCION[visto])
+    sonificarClima(visto, preferencias)
+  }
+
+  // Órdenes de voz al final del dictado: terminar, pausar, ayuda, salir por hoy (S51)
+  orden.current = (cual) => {
+    if (cual === 'terminar' || cual === 'pausar') terminarMic()
+    else if (cual === 'salir') reiniciar()
+    else if (cual === 'ayuda') abrirAyuda('Ayuda', AYUDA.contar)
+  }
+
   function escribir() {
     detenerMic()
     setErrorMic(null)
@@ -143,7 +178,7 @@ export default function App() {
 
   async function listo() {
     detenerMic()
-    if (hayRiesgo(texto)) return setPantalla('riesgo')
+    if (hayRiesgo(texto)) { vibrar(preferencias); return setPantalla('riesgo') }
     setPantalla('pensando')
     const id = ++consulta.current
     const r = await proponerEmociones(texto, { proveedor: proveedorSegunPermiso(perfil.privacidad.iaEnInternet) })
@@ -227,7 +262,7 @@ export default function App() {
       )}
 
       {pantalla === 'inicio' && (
-        <Paisaje clima={clima}>
+        <Paisaje clima={climaVista} capas={preferencias.capas}>
           <section className="saludo">
             <h1>{saludo()}</h1>
             <p>¿Cómo fue tu día?</p>
@@ -240,33 +275,40 @@ export default function App() {
             <div className="climas" role="radiogroup" aria-label="Clima del día">
               {CLIMAS.map((c) => (
                 <button key={c.id} role="radio" aria-checked={clima === c.id}
-                  className={clima === c.id ? 'clima activo' : 'clima'} onClick={() => setClima(c.id)}>
+                  className={clima === c.id ? 'clima activo' : 'clima'} onClick={() => elegirClima(c.id)}>
                   <span aria-hidden="true">{c.icono}</span>{c.etiqueta}
                 </button>
               ))}
             </div>
-            <div className="contar">
-              <button className="mic-grande" disabled={!clima} onClick={() => setPantalla('antes-grabar')} aria-label="Contar mi día por voz"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" /></svg></button>
-              <div>
-                <h2>Contar mi día</h2>
-                <p className="pequeno">Más o menos 1 minuto. Puedes cambiar a texto cuando quieras.</p>
-              </div>
-            </div>
-            <div className="fila">
-              <button className="secundario" disabled={!clima} onClick={escribir}>✎ Escribir</button>
-              <button className="secundario" disabled={!clima} onClick={() => guardar()}>Así está bien (10 s)</button>
-            </div>
+            {predecible ? (
+              <Boton disabled={!clima} onClick={() => setPantalla('predecible-como')}>Continuar</Boton>
+            ) : (
+              <>
+                <div className="contar">
+                  <button className="mic-grande" disabled={!clima} onClick={() => setPantalla('antes-grabar')} aria-label="Contar mi día por voz"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" /></svg></button>
+                  <div>
+                    <h2>Contar mi día</h2>
+                    <p className="pequeno">Más o menos 1 minuto. Puedes cambiar a texto cuando quieras.</p>
+                  </div>
+                </div>
+                <div className="fila">
+                  <button className="secundario" disabled={!clima} onClick={escribir}>✎ Escribir</button>
+                  <button className="secundario" disabled={!clima} onClick={() => guardar()}>Así está bien (10 s)</button>
+                </div>
+              </>
+            )}
           </section>
         </Paisaje>
       )}
 
       {pantalla === 'contar' && grabando && (
-        <Paisaje clima={clima}>
+        <Paisaje clima={climaVista} capas={preferencias.capas}>
           <div className="grabando">
             <p className="pildora" aria-live="polite"><span className="punto" /> Micrófono activo · {mmss(segundos)}</p>
             <div className="reloj" style={{ '--avance': `${Math.min(segundos / SEG_SUGERIR_CIERRE, 1) * 360}deg` }}>
               <div><strong>{mmss(segundos)}</strong><span>de ~1:00</span></div>
             </div>
+            {preferencias.pistas && segundos >= 12 && !texto && <p className="pildora" role="status">¿Sigues ahí? Puedes contarlo con pocas palabras o escribirlo.</p>}
             {segundos >= SEG_SUGERIR_CIERRE && <p className="pildora">Ya va un minuto. Termina cuando cierres la idea.</p>}
             <p className="transcripcion" aria-live="polite">{texto ? `«${texto}»` : 'Te escucho…'}</p>
           </div>
@@ -279,7 +321,7 @@ export default function App() {
       )}
 
       {pantalla === 'contar' && !grabando && (
-        <Paisaje clima={clima}>
+        <Paisaje clima={climaVista} capas={preferencias.capas}>
           <section className="hoja">
             {estadoVoz() !== 'ok' && <p role="status">{MOTIVOS_DICTADO[estadoVoz()]}</p>}
             {errorMic && <p role="alert">{errorMic}</p>}
@@ -294,6 +336,17 @@ export default function App() {
         </Paisaje>
       )}
 
+      {pantalla === 'predecible-como' && (
+        <section className="pantalla" aria-labelledby="como-titulo">
+          <div className="pantalla__cuerpo">
+            <h1 id="como-titulo">¿Cómo quieres contarlo?</h1>
+            <p className="cuerpo">Elige una opción. Después te haremos la siguiente pregunta.</p>
+            <Boton icono="mic" onClick={() => setPantalla('antes-grabar')}>Hablar</Boton>
+            <Boton tipo="secundario" icono="texto" onClick={escribir}>Escribir</Boton>
+            <Boton tipo="fantasma" onClick={() => guardar()}>Guardar solo el clima</Boton>
+          </div>
+        </section>
+      )}
       {pantalla === 'antes-grabar' && (
         <AntesDeGrabar clima={clima} estado={estadoVoz()} onGrabar={empezarGrabacion} onEscribir={escribir} />
       )}
@@ -306,6 +359,9 @@ export default function App() {
           onExportar={() => setPantalla('exportar')} onEliminar={() => setPantalla('eliminar')} onDemo={abrirDemo} />
       )}
 
+      {pantalla === 'accesibilidad' && (
+        <Accesibilidad preferencias={preferencias} onCambio={cambiarPreferencias} onAlternarCapa={(c) => setPerfil((p) => alternarCapa(p, c))} />
+      )}
       {pantalla === 'exportar' && (
         <ExportarResumen registros={perfil.registros} vibrar={() => vibrar(perfil.preferencias)} onListo={() => setPantalla('privacidad')} />
       )}
@@ -313,13 +369,15 @@ export default function App() {
         <EliminarDatos onEliminar={eliminarTodo} onCancelar={() => setPantalla('privacidad')} onExportar={() => setPantalla('exportar')} />
       )}
 
-      {pantalla === 'pensando' && <Paisaje clima={clima}><p className="tarjeta" aria-live="polite">Mirando tu cielo…</p></Paisaje>}
+      {pantalla === 'pensando' && <Paisaje clima={climaVista} capas={preferencias.capas}><p className="tarjeta" aria-live="polite">Mirando tu cielo…</p></Paisaje>}
 
       {pantalla === 'emociones' && (
-        <Paisaje clima={clima}>
+        <Paisaje clima={climaVista} capas={preferencias.capas}>
           <section className="tarjeta">
-            <h2>Toca las nubes que sientes tuyas</h2>
-            <p className="rotulo">Propuesto por IA ({propuesta.proveedor ?? 'respaldo local'}), no es un consejo clínico</p>
+            {climaVista !== clima && <Aviso titulo="Modo neutral activo">Hoy tu registro generaría tormenta. Lo mostramos como cielo neutro y sin sonidos intensos.</Aviso>}
+            <h2>{predecible ? '¿Cuáles de estas emociones sientes?' : 'Toca las nubes que sientes tuyas'}</h2>
+            <span className="rotulo-ia"><Icono nombre="ia" tam={17} />Generado por IA · no es consejo clínico</span>
+            <p className="rotulo">Propuesto por {propuesta.proveedor ?? 'respaldo local'}. Tú decides cuáles son tuyas.</p>
             <div className="nubes">
               {propuesta.emociones.map((e) => (
                 <button key={e.nombre} aria-pressed={elegidas.includes(e.nombre)}
@@ -329,7 +387,7 @@ export default function App() {
                 </button>
               ))}
             </div>
-            <p className="reflexion">{propuesta.reflexion}
+            <p className="reflexion">{predecible ? limitarPalabras(propuesta.reflexion) : propuesta.reflexion}
               <button className="enlace" onClick={() => decir(propuesta.reflexion)} aria-label="Escuchar la reflexión">🔊</button>
             </p>
             <button className="principal" onClick={() => guardar({ emociones: elegidas })}>
@@ -352,10 +410,11 @@ export default function App() {
       )}
 
       {pantalla === 'guardado' && (
-        <Paisaje clima={clima}>
+        <Paisaje clima={climaVista} capas={preferencias.capas}>
           <section className="tarjeta">
+            {climaVista !== clima && <Aviso titulo="Modo neutral activo">Tu tormenta se guardó y hoy se muestra como cielo neutro.</Aviso>}
             <h2>Tu día quedó guardado</h2>
-            <p>{DESCRIPCION[clima]}</p>
+            <p>{DESCRIPCION[climaVista]}</p>
             <p className="pequeno">Llevas {perfil.registros.length} registro(s).
               {perfil.ritmo.horaHabitual && ` Sueles registrar a las ${perfil.ritmo.horaHabitual}:00.`}</p>
             <button className="principal" onClick={reiniciar}>Hasta mañana</button>

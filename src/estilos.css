@@ -74,7 +74,7 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .reflexion .enlace { color: #fff; }
 textarea { font: inherit; padding: 10px; border-radius: 12px; border: 1px solid #b8c0cc; }
 .mic { color: #b3261e; font-weight: 600; margin: 0; }
-.riesgo { margin: 80px 14px; width: auto; }
+.riesgo { margin: 88px 14px; width: auto; }
 .recurso { display: grid; padding: 12px; border-radius: 12px; background: #fbe9ea; color: #1f2a3c; text-decoration: none; }
 .pequeno { font-size: 13px; color: #5a6475; margin: 0; }
 .historial { margin: 88px 14px 104px; width: auto; }
