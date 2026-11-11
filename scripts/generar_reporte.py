@@ -61,7 +61,7 @@ def enlace_codigo(ref, item, ref_git):
 def enlace_prueba(archivo, ref_git):
     if not os.path.isfile(ruta(archivo)):
         errores.append(f'No existe la prueba {archivo}')
-    cantidad = len(re.findall(r'^\s*it\(', open(ruta(archivo), encoding='utf-8').read(), re.M)) if os.path.isfile(ruta(archivo)) else 0
+    cantidad = len(re.findall(r'^\s*(?:it|test)\(', open(ruta(archivo), encoding='utf-8').read(), re.M)) if os.path.isfile(ruta(archivo)) else 0
     return {'texto': f'{archivo} ({cantidad} pruebas)', 'url': f'{REPO}/blob/{ref_git}/{archivo}'}
 
 
