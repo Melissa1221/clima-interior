@@ -1,4 +1,17 @@
-:root { font-family: system-ui, sans-serif; color: #1f2a3c; background: #f4f1ea; }
+:root {
+  /* Tokens del Figma «Clima Interior · MVP» */
+  --texto-principal: #1e2433; --texto-secundario: #4a5468; --texto-invertido: #fff;
+  --marca-primario: #34507a;
+  --superficie-base: #f6f3ee; --superficie-tarjeta: #fff; --superficie-suave: #ece7df;
+  --velo-oscuro: rgba(20, 27, 45, .78); --velo-claro: rgba(255, 255, 255, .92);
+  --borde-sutil: #d9d3c9;
+  --info-suave: #e6eef8; --exito: #2e7d5b; --exito-suave: #e3f3ea;
+  --ayuda: #9e2f45; --ayuda-suave: #fbe9ec; --aviso: #7a4f00;
+  --ia-rotulo: #5b4b8a; --ia-rotulo-suave: #eeeaf7; --foco-anillo: #ffc23d;
+  --fuente-texto: 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;
+  --fuente-titulo: 'Fraunces Variable', Georgia, serif;
+  font-family: var(--fuente-texto); color: var(--texto-principal); background: var(--superficie-base);
+}
 * { box-sizing: border-box; }
 body { margin: 0; }
 .app { display: flow-root; max-width: 480px; margin: 0 auto; min-height: 100dvh; position: relative; }
@@ -32,7 +45,7 @@ body { margin: 0; }
 .reloj { width: 200px; height: 200px; border-radius: 50%; display: grid; place-items: center;
   background: conic-gradient(#e9b562 var(--avance), #59647a 0); }
 .reloj > div { width: 172px; height: 172px; border-radius: 50%; background: #2b3447; color: #fff; display: grid; place-content: center; text-align: center; }
-.reloj strong { font-family: Georgia, serif; font-size: 44px; }
+.reloj strong { font-family: var(--fuente-titulo); font-size: 44px; }
 .reloj span { font-size: 13px; opacity: .8; }
 .transcripcion { background: #3a4458; color: #fff; border-radius: 16px; padding: 14px 16px; margin: 0; font-size: 17px; width: 100%; }
 .controles { background: #2b3447; border-radius: 24px; padding: 18px; display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; }
@@ -51,9 +64,9 @@ body { margin: 0; }
 .paisaje--tormenta { background: linear-gradient(#2a3446, #5d6a7e); }
 .paisaje--niebla { background: linear-gradient(#c9ccd1, #eceef0); }
 .tarjeta { background: #fff; border-radius: 20px; padding: 20px; width: 100%; display: grid; gap: 12px; }
-h1, h2 { margin: 0; font-family: Georgia, serif; }
-button { font: inherit; min-height: 44px; border-radius: 12px; border: 2px solid transparent; cursor: pointer; }
-button:focus-visible, a:focus-visible, textarea:focus-visible { outline: 3px solid #f2c14e; outline-offset: 2px; }
+h1, h2 { margin: 0; font-family: var(--fuente-titulo); font-weight: 600; font-variation-settings: 'SOFT' 0, 'WONK' 1; }
+button { font: inherit; color: inherit; min-height: 44px; border-radius: 12px; border: 2px solid transparent; cursor: pointer; }
+button:focus-visible, a:focus-visible, textarea:focus-visible, input:focus-visible { outline: 3px solid var(--foco-anillo); outline-offset: 2px; box-shadow: 0 0 0 1px var(--texto-principal); }
 button:disabled { opacity: .45; cursor: not-allowed; }
 .principal { background: #2f4466; color: #fff; }
 .secundario { background: #fff; border-color: #2f4466; color: #2f4466; }
