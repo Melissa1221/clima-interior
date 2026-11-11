@@ -6,6 +6,8 @@ sientes, y tú decides cuáles son tuyas.
 Proyecto del curso **CC451 Interacción Humano-Computador**, Universidad Nacional de Ingeniería, 2026-2.
 **Grupo 8:** Melissa Iman Noriega · Benjamin Seminario Serna · Ivett Mera Amado.
 
+**App publicada:** https://clima-interior.vercel.app (se instala como PWA y funciona sin conexión).
+
 | Inicio | Emociones propuestas | Historial demo |
 |---|---|---|
 | ![Inicio](docs/capturas/inicio.png) | ![Emociones](docs/capturas/emociones.png) | ![Historial](docs/capturas/semana.png) |
@@ -117,7 +119,7 @@ npx vercel deploy --prod  # publica la versión de producción
 
 La versión pública usa el proveedor `mock` (sin claves). Una clave de Gemini en `VITE_GEMINI_API_KEY` quedaría dentro del bundle y visible para cualquiera: para usar una IA remota hay que ponerla detrás de un proxy (`VITE_REMOTO_URL`). Para despliegues automáticos por cada PR, conecta el repositorio desde el panel de Vercel.
 
-Comprobado sobre la versión compilada: se instala como PWA y, tras la primera visita, funciona sin conexión, incluida la pantalla de ayuda en crisis.
+Comprobado en https://clima-interior.vercel.app: el service worker toma el control, el manifiesto es válido, las fuentes cargan y, tras la primera visita, funcionan sin conexión el primer uso, la demo de 30 días y la pantalla de ayuda en crisis (aparece en menos de 1 s).
 
 ## Reporte de trazabilidad
 
