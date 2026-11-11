@@ -4,21 +4,21 @@
 
 **Prioridad (MoSCoW):** M = Must, S = Should, C = Could.
 
-**Estado:** *Prototipado* = ya está en el prototipo de fidelidad media. *Pendiente* = definido, aún sin diseñar ni implementar.
+**Estado:** *Prototipado* = ya está en el prototipo de fidelidad media. *Implementado* = ya funciona en la app y tiene prueba automática o verificación en el navegador. *Pendiente* = definido, aún sin diseñar ni implementar.
 
 | ID Req | Descripción del requerimiento | Tipo | Prioridad | Historia(s) de usuario que lo cubre(n) | ID HU | Estado | Evidencia / criterio de aceptación |
 |---|---|---|---|---|---|---|---|
 | RF-01 | Paisaje de 5 capas sin formularios | FR | M | Ver mi día como un paisaje | HU-01 | Pendiente | HU-01 Esc. 1: paisaje con 5 capas y sin `<form>` |
 | RF-02 | Codificación no cromática | FR | S | Distinguir días sin color | HU-16 | Pendiente | HU-16 Esc. 1: diferencia en escala de grises |
-| RF-03 | Descripción textual y hablada del paisaje | FR | M | Escuchar mi paisaje | HU-15 | Pendiente | HU-15 Esc. 1: anuncio del lector de pantalla |
-| RF-04 | Sonificación del clima | FR | C | Escuchar mi paisaje | HU-15 | Pendiente | HU-15 Esc. 1: sonido asociado al clima |
+| RF-03 | Descripción textual y hablada del paisaje | FR | M | Escuchar mi paisaje | HU-15 | Implementado | HU-15 Esc. 1: anuncio del lector de pantalla. Prueba: `aria-label` del paisaje y descripción hablada (S46) |
+| RF-04 | Sonificación del clima | FR | C | Escuchar mi paisaje | HU-15 | Implementado | HU-15 Esc. 1: sonido asociado al clima. Sonificación breve por clima, sin sonidos intensos en modo neutral |
 | RF-05 | Check-in de 60 s con pausa y cierre sugerido | FR | M | Check-in hablado | HU-02 | Prototipado | HU-02 Esc. 1-2: sugerencia a 60 s, pausa sin pérdida |
 | RF-06 | Transcripción plegada bajo el paisaje ("Listo" / "Ver lo que entendí"); va al LLM solo tras confirmar | FR | M | Revisar lo que entendió | HU-03 | Prototipado | HU-03 Esc. 1: envío solo tras confirmar |
 | RF-07 | Revisión si confianza STT < 0.75 | FR | S | Revisar lo que entendió | HU-03 | Pendiente | HU-03 Esc. 2: edición obligatoria |
 | RF-08 | Entrada alternativa sin perder borrador | FR | M | Registrar sin hablar | HU-19 | Pendiente | HU-19 Esc. 1: borrador intacto al cambiar |
 | RF-09 | TTS con subtítulos integrados | FR | S | Leer lo que dice el asistente | HU-17 | Pendiente | HU-17 Esc. 1 y 3 |
 | RF-10 | Micrófono denegado con ruta alternativa | FR | M | Registrar sin hablar | HU-19 | Pendiente | HU-19 Esc. 2 |
-| RF-11 | Indicador de micrófono y aviso de privacidad | FR | M | Check-in hablado | HU-02 | Prototipado | HU-02 Esc. 1: indicador en ≤200 ms |
+| RF-11 | Indicador de micrófono y aviso de privacidad | FR | M | Check-in hablado | HU-02 | Implementado | HU-02 Esc. 1: indicador en ≤200 ms. S07 antes de grabar + indicador rojo |
 | RF-12 | Emoción propuesta que el usuario confirma o corrige | FR | M | Confirmar o corregir la emoción | HU-04 | Prototipado | HU-04 Esc. 1-2 |
 | RF-13 | Reflexión no clínica de máx. 2 frases, como subtítulo | FR | M | Reflexión breve | HU-05 | Prototipado | HU-05 Esc. 1: regenerar, omitir, simplificar |
 | RF-14 | Detector de riesgo independiente y previo | FR | M | Ayuda si estoy en riesgo | HU-06 | Pendiente | HU-06 Esc. 1: sin reflexión ante riesgo |
@@ -30,22 +30,22 @@
 | RF-20 | Check-in offline con cola | FR | S | Instalar y usar sin internet | HU-11 | Pendiente | HU-11 Esc. 2-3 |
 | RF-21 | Perfil persistente | FR | M | Que se adapte a mí | HU-08 | Pendiente | HU-08 Esc. 2 |
 | RF-22 | Paisaje y lenguaje que evolucionan | FR | S | Que se adapte a mí | HU-08 | Pendiente | HU-08 Esc. 1 |
-| RF-23 | Control sobre la personalización | FR | S | Controlar lo que sabe de mí | HU-09 | Pendiente | HU-09 Esc. 1 |
-| RF-24 | Ayuda contextual por paso | FR | M | Ayuda en el momento | HU-10 | Pendiente | HU-10 Esc. 1 |
-| RF-25 | Pista proactiva a los 12 s | FR | C | Ayuda en el momento | HU-10 | Pendiente | HU-10 Esc. 2-3 |
+| RF-23 | Control sobre la personalización | FR | S | Controlar lo que sabe de mí | HU-09 | Implementado | HU-09 Esc. 1. S40: cada dato se apaga y deja de usarse; `perfil.test.js` |
+| RF-24 | Ayuda contextual por paso | FR | M | Ayuda en el momento | HU-10 | Implementado | HU-10 Esc. 1. Botón «?» en cada pantalla con ayuda propia |
+| RF-25 | Pista proactiva a los 12 s | FR | C | Ayuda en el momento | HU-10 | Implementado | HU-10 Esc. 2-3. Pista a los 12 s en texto, voz y vibración |
 | RF-26 | Salas con código que caduca | FR | M | Clima compartido anónimo | HU-12 | Pendiente | HU-12 Esc. 1 |
 | RF-27 | Solo parámetros del clima con seudónimo | FR | M | Clima compartido anónimo | HU-12 | Pendiente | HU-12 Esc. 2-3 |
 | RF-28 | Clima colectivo de la sala | FR | C | Clima compartido anónimo | HU-12 | Pendiente | HU-12 Esc. 1 |
 | RF-29 | Moderación sin acceso a diarios | FR | S | Administrar mi sala | HU-13 | Pendiente | HU-13 Esc. 1-2 |
 | RF-30 | Ritual de cierre | FR | S | Cerrar mi día con calma | HU-14 | Pendiente | HU-14 Esc. 1-2 |
 | RF-31 | Paisaje que reacciona a la voz | FR | C | Ver mi día como un paisaje | HU-01 | Prototipado | HU-01 Esc. 2 |
-| RF-32 | Modo movimiento reducido | FR | M | Paisaje que no haga daño | HU-21 | Pendiente | HU-21 Esc. 1-2 |
-| RF-33 | Modo predecible | FR | S | Experiencia predecible | HU-20 | Pendiente | HU-20 Esc. 1 |
+| RF-32 | Modo movimiento reducido | FR | M | Paisaje que no haga daño | HU-21 | Implementado | HU-21 Esc. 1-2. S46: movimiento reducido y capas apagables; `prefers-reduced-motion` |
+| RF-33 | Modo predecible | FR | S | Experiencia predecible | HU-20 | Implementado | HU-20 Esc. 1. S47/S48: una pregunta por pantalla y 80 palabras como máximo; `accesibilidad.test.js` |
 | RF-34 | Modo neutral y "no quiero profundizar" | FR | M | Un día en que no quiero profundizar | HU-22 | Pendiente | HU-22 Esc. 1-2 |
 | RF-35 | Teclado, conmutador y comandos de voz | FR | M | Usar sin pantalla táctil | HU-18 | Pendiente | HU-18 Esc. 1-2 |
-| RF-36 | Alertas visuales y hápticas | FR | S | Leer lo que dice el asistente | HU-17 | Pendiente | HU-17 Esc. 2 |
-| RF-37 | Edad y consentimiento granular | FR | M | Decidir qué datos autorizo | HU-23 | Pendiente | HU-23 Esc. 1 |
-| RF-38 | Exportar para psicóloga y eliminar datos | FR | S | Resumen o borrar todo | HU-24 | Prototipado | HU-24 Esc. 1-3 |
+| RF-36 | Alertas visuales y hápticas | FR | S | Leer lo que dice el asistente | HU-17 | Implementado | HU-17 Esc. 2. Aviso visual y vibración en errores y alertas; `accesibilidad.test.js` |
+| RF-37 | Edad y consentimiento granular | FR | M | Decidir qué datos autorizo | HU-23 | Implementado | HU-23 Esc. 1. S02/S03: edad y cuatro permisos independientes; `privacidad.test.js` |
+| RF-38 | Exportar para psicóloga y eliminar datos | FR | S | Resumen o borrar todo | HU-24 | Implementado | HU-24 Esc. 1-3. S43-S45: PDF sin propuestas de la IA y borrado total; `exportar.test.js` |
 | RF-39 | Demo de 30 días simulados | FR | M | Evaluar el MVP | HU-26 | Pendiente | HU-26 Esc. 1 |
 | RF-40 | Check-in rápido: elegir 1 de 5 climas primero; contarlo es opcional | FR | M | Registrar mi día sin hablar | HU-28 | Prototipado | HU-28 Esc. 1-2 |
 | RF-41 | Emociones como nubes tocables, con equivalente en botones accesibles | FR | S | Elegir mis emociones tocando nubes | HU-29 | Prototipado | HU-29 Esc. 1-2 |

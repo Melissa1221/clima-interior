@@ -4,9 +4,17 @@ export function sttDisponible() {
   return 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window
 }
 
-export function crearGrabacion({ alTexto, alError, alTerminar }) {
+// ¿Puede el navegador transcribir sin mandar el audio a internet? (Chrome reciente: processLocally)
+export function transcripcionLocalDisponible() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition
+  return Boolean(SR) && 'processLocally' in SR.prototype
+}
+
+// `local: true` pide transcribir en el dispositivo; el permiso «Transcribir en internet» lo apaga
+export function crearGrabacion({ alTexto, alError, alTerminar, local = false }) {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition
   const rec = new SR()
+  if (local && 'processLocally' in rec) rec.processLocally = true
   rec.lang = 'es-PE'
   rec.continuous = true
   rec.interimResults = true

@@ -63,7 +63,17 @@ flowchart LR
     contar --> emociones["Nubes de emociones"]
     emociones --> guardado["Día guardado"]
     inicio --> semana["Historial 30 días"]
+    bienvenida["Primer uso S01-S05<br/>edad · permisos · límites · ajustes"] --> inicio
+    inicio --> antes["Antes de grabar (S07)"] --> contar
+    inicio --> miperfil["Perfil: lo que sabe de mí (S40)"]
+    miperfil --> priv["Privacidad y datos (S42)"]
+    priv --> exportar["Exportar PDF (S43-S44)"]
+    priv --> borrar["Eliminar todo (S45)"]
+    miperfil --> acc["Accesibilidad (S46-S49)"]
   end
+  priv -- "permiso apagado" --> consent["Consentimiento<br/>src/datos/privacidad.js"]
+  consent -.-> voz
+  consent -.-> llm
   contar --> riesgo["Detector de riesgo<br/>src/datos/riesgo.js"]
   riesgo -- "hay riesgo" --> crisis["Pantalla 113 / 106 / 105"]
   riesgo -- "sin riesgo" --> llm["Capa LLM<br/>src/llm/index.js"]
@@ -84,4 +94,7 @@ flowchart LR
 | El relato va delimitado en el prompt | El texto del diario es un dato, no una instrucción (inyección de prompts) | RNF-16 |
 | La clave de la API vive en un proxy | Nunca se expone en el navegador | RNF-15 |
 | El audio no se guarda; el perfil vive en el dispositivo | Privacidad de datos emocionales | RNF-11, RNF-12 |
+| Cada permiso es independiente y arranca apagado: sin permiso de internet el dictado solo corre en el dispositivo y la IA en la nube se reemplaza por el modelo local | Nada sale del teléfono antes del consentimiento correspondiente | RF-37, RNF-11 |
+| El resumen para la psicóloga o el psicólogo se arma en el teléfono y nunca incluye lo que propuso la IA | La persona decide qué comparte y la IA no deja diagnósticos escritos | RF-38, RNF-24 |
+| Las animaciones se apagan con «Movimiento reducido» o la preferencia del sistema | Sin destellos ni movimiento no esencial | RF-32, RNF-07 |
 | Las salas comparten solo números y seudónimos | Nadie ve el diario de otra persona | RF-27, RNF-13, RNF-14 |

@@ -19,7 +19,7 @@ export default defineConfig({
         display: 'standalone',
         icons: [{ src: 'icono.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' }],
       },
-      workbox: { globPatterns: ['**/*.{js,css,html,svg,json}'] },
+      workbox: { globPatterns: ['**/*.{js,css,html,svg,json,woff2}'] },
     }),
   ],
 })
