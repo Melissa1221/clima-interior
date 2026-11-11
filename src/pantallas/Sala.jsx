@@ -18,7 +18,7 @@ const FIN = {
 }
 
 // Clima compartido (RF-26 a RF-29, HU-12, HU-13): ves cómo está tu grupo sin nombres ni textos
-export default function Sala({ climaHoy, codigoInicial = '', permitido = true, onPermitir = () => {}, alVolver }) {
+export default function Sala({ climaHoy, codigoInicial = '', permitido = true, onPermitir = () => {}, onDentro = () => {}, alVolver }) {
   const [estado, setEstado] = useState(null)
   const [codigo, setCodigo] = useState(codigoInicial)
   const [error, setError] = useState(null)
@@ -26,6 +26,9 @@ export default function Sala({ climaHoy, codigoInicial = '', permitido = true, o
   const sala = useRef(null)
 
   useEffect(() => () => sala.current?.salir(), [])
+  // Dentro de la sala hay paisaje de fondo; la barra superior lo necesita saber para su contraste
+  const dentro = Boolean(estado && !estado.fin)
+  useEffect(() => onDentro(dentro), [dentro]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function entrar(cod, creador) {
     setError(null)

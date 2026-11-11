@@ -21,7 +21,7 @@ import Sala from './pantallas/Sala.jsx'
 const SEG_SUGERIR_CIERRE = 60
 
 // Pantallas con paisaje de fondo: ahí la barra superior usa el velo oscuro (contraste ≥4.5:1)
-const FONDO_PAISAJE = new Set(['bienvenida', 'antes-grabar', 'inicio', 'contar', 'pensando', 'emociones', 'guardado', 'sala'])
+const FONDO_PAISAJE = new Set(['bienvenida', 'antes-grabar', 'inicio', 'contar', 'pensando', 'emociones', 'guardado'])
 
 // Pantallas con barra de pestañas y la pestaña que las contiene
 const PESTANA_DE = { inicio: 'inicio', semana: 'historial', sala: 'sala', perfil: 'perfil', privacidad: 'perfil', accesibilidad: 'perfil' }
@@ -89,6 +89,7 @@ export default function App() {
   const [ayuda, setAyuda] = useState(null) // { titulo, parrafos } mientras el diálogo está abierto
   const [instalacion, setInstalacion] = useState(null) // evento beforeinstallprompt
   const [edad, setEdad] = useState(perfil.primerUso.edad)
+  const [enSala, setEnSala] = useState(false) // dentro de una sala: paisaje de fondo
   const rec = useRef(null)
   const orden = useRef(null) // última versión de «ejecutar orden de voz», para el dictado en curso
   const ultimaOrden = useRef(null)
@@ -296,7 +297,7 @@ export default function App() {
 
   return (
     <main className="app" data-movimiento={perfil.preferencias.movimientoReducido ? 'reducido' : 'normal'}>
-      <BarraSuperior fondo={FONDO_PAISAJE.has(pantalla) ? 'paisaje' : 'claro'} soloAyuda={pantalla === 'bienvenida'}
+      <BarraSuperior fondo={FONDO_PAISAJE.has(pantalla) || (pantalla === 'sala' && enSala) ? 'paisaje' : 'claro'} soloAyuda={pantalla === 'bienvenida'}
         onAyuda={() => abrirAyuda('Ayuda', AYUDA[pantalla] ?? AYUDA.general)} onSalir={reiniciar} />
       {ayuda && (
         <Ayuda titulo={ayuda.titulo} onCerrar={() => setAyuda(null)}>
@@ -427,7 +428,7 @@ export default function App() {
 
       {pantalla === 'sala' && (
         <Sala key={codigoInvitacion} climaHoy={climaHoy} codigoInicial={codigoInvitacion}
-          permitido={privacidad.climaCompartido} onPermitir={() => cambiarAjustes('privacidad')({ climaCompartido: true })}
+          permitido={privacidad.climaCompartido} onDentro={setEnSala} onPermitir={() => cambiarAjustes('privacidad')({ climaCompartido: true })}
           alVolver={() => { history.replaceState(null, '', location.pathname); reiniciar() }} />
       )}
 
