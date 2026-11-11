@@ -9,6 +9,13 @@ export function proveedorActivo() {
   return proveedores[import.meta.env.VITE_LLM_PROVIDER] || proveedores.mock
 }
 
+// «Usar IA en internet» apagado: los proveedores en la nube se reemplazan por el modelo local (Ollama).
+// Si tampoco hay modelo local, proponerEmociones cae al respaldo por reglas y nada sale del dispositivo (S03, S42).
+const EN_INTERNET = new Set(['gemini', 'remoto'])
+export function proveedorSegunPermiso(iaEnInternet, activo = proveedorActivo()) {
+  return !iaEnInternet && EN_INTERNET.has(activo.nombre) ? proveedores.ollama : activo
+}
+
 // Los modelos devuelven "Cansancio", " calma " o emociones fuera de la lista.
 // Se pasan a minúsculas y se descartan las que no están en la lista; la reflexión se conserva.
 export function normalizar(r) {

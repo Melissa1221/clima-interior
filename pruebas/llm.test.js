@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { normalizar, proponerEmociones } from '../src/llm/index.js'
+import { normalizar, proponerEmociones, proveedorSegunPermiso } from '../src/llm/index.js'
 import { gemini } from '../src/llm/proveedores.js'
 
 const ok = { emociones: [{ nombre: 'calma', confianza: 0.8 }], reflexion: 'Hoy hubo calma.' }
@@ -99,5 +99,18 @@ describe('proveedor gemini', () => {
     global.fetch = vi.fn()
     await expect(gemini.proponerEmociones('hola')).rejects.toThrow('falta VITE_GEMINI_API_KEY')
     expect(fetch).not.toHaveBeenCalled()
+  })
+})
+
+describe('proveedorSegunPermiso', () => {
+  const nube = { nombre: 'gemini' }
+  it('sin permiso de internet cambia la nube por el modelo local', () => {
+    expect(proveedorSegunPermiso(false, nube).nombre).toBe('ollama')
+    expect(proveedorSegunPermiso(false, { nombre: 'remoto' }).nombre).toBe('ollama')
+  })
+  it('con permiso deja el proveedor elegido', () => expect(proveedorSegunPermiso(true, nube)).toBe(nube))
+  it('los proveedores locales no se tocan', () => {
+    const mock = { nombre: 'mock' }
+    expect(proveedorSegunPermiso(false, mock)).toBe(mock)
   })
 })

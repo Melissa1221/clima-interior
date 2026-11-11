@@ -1,19 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
-import { proponerEmociones, proveedorActivo } from './llm/index.js'
-import { crearGrabacion, decir, sttDisponible } from './voz/stt.js'
+import { proponerEmociones, proveedorActivo, proveedorSegunPermiso } from './llm/index.js'
+import { crearGrabacion, decir, sttDisponible, transcripcionLocalDisponible } from './voz/stt.js'
 import { leerPerfil, guardarRegistro, guardarAjustes, guardarPreferencias } from './datos/perfil.js'
 import { sistemaPideMenosMovimiento } from './datos/accesibilidad.js'
+import { estadoDictado, MOTIVOS_DICTADO } from './datos/privacidad.js'
 import { hayRiesgo, RECURSOS } from './datos/riesgo.js'
 import { CLIMAS, DESCRIPCION } from './datos/climas.js'
 import Paisaje from './componentes/Paisaje.jsx'
 import Icono from './componentes/Icono.jsx'
-import { Ayuda, BarraSuperior } from './componentes/Ui.jsx'
+import { Ayuda, BarraSuperior, Pestanas } from './componentes/Ui.jsx'
 import { AjustesIniciales, Bienvenida, Edad, Limites, Permisos } from './pantallas/PrimerUso.jsx'
+import { AntesDeGrabar, PrivacidadYDatos, SabeDeMi } from './pantallas/Privacidad.jsx'
 
 const SEG_SUGERIR_CIERRE = 60
 
 // Pantallas con paisaje de fondo: ahí la barra superior usa el velo oscuro (contraste ≥4.5:1)
-const FONDO_PAISAJE = new Set(['bienvenida', 'inicio', 'contar', 'pensando', 'emociones', 'guardado'])
+const FONDO_PAISAJE = new Set(['bienvenida', 'antes-grabar', 'inicio', 'contar', 'pensando', 'emociones', 'guardado'])
+
+// Pantallas con barra de pestañas y la pestaña que las contiene
+const PESTANA_DE = { inicio: 'inicio', semana: 'historial', perfil: 'perfil', privacidad: 'perfil', accesibilidad: 'perfil' }
 
 // Ayuda contextual (RF-24): qué hacer en cada pantalla, sin salir del flujo
 const AYUDA = {
@@ -91,12 +96,15 @@ export default function App() {
     setPantalla('guardado')
   }
 
+  const estadoVoz = () => estadoDictado(perfil.privacidad, { dictado: sttDisponible(), local: transcripcionLocalDisponible() })
+
   function empezarGrabacion() {
     setPantalla('contar')
-    if (!sttDisponible()) return
+    if (estadoVoz() !== 'ok') return
     setErrorMic(null)
     const previo = texto.trim() // volver a grabar agrega al texto, no lo borra
     rec.current = crearGrabacion({
+      local: !perfil.privacidad.transcribirEnInternet,
       alTexto: (t) => setTexto(previo ? `${previo} ${t}` : t),
       alError: (e) => {
         setGrabando(false)
@@ -137,7 +145,7 @@ export default function App() {
     if (hayRiesgo(texto)) return setPantalla('riesgo')
     setPantalla('pensando')
     const id = ++consulta.current
-    const r = await proponerEmociones(texto)
+    const r = await proponerEmociones(texto, { proveedor: proveedorSegunPermiso(perfil.privacidad.iaEnInternet) })
     if (id !== consulta.current) return
     setPropuesta(r)
     setElegidas([])
@@ -169,6 +177,12 @@ export default function App() {
   function terminarPrimerUso() {
     cambiarAjustes('primerUso')({ completo: true, edad })
     setPantalla('inicio')
+  }
+
+  function irAPestana(id) {
+    if (id === 'inicio') return reiniciar()
+    if (id === 'historial') return abrirDemo()
+    setPantalla('perfil')
   }
 
   const reiniciar = () => {
@@ -223,7 +237,7 @@ export default function App() {
               ))}
             </div>
             <div className="contar">
-              <button className="mic-grande" disabled={!clima} onClick={empezarGrabacion} aria-label="Contar mi día por voz"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" /></svg></button>
+              <button className="mic-grande" disabled={!clima} onClick={() => setPantalla('antes-grabar')} aria-label="Contar mi día por voz"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" /></svg></button>
               <div>
                 <h2>Contar mi día</h2>
                 <p className="pequeno">Más o menos 1 minuto. Puedes cambiar a texto cuando quieras.</p>
@@ -258,17 +272,29 @@ export default function App() {
       {pantalla === 'contar' && !grabando && (
         <Paisaje clima={clima}>
           <section className="hoja">
-            {!sttDisponible() && <p role="status">Tu navegador no permite dictar. Puedes escribirlo aquí.</p>}
+            {estadoVoz() !== 'ok' && <p role="status">{MOTIVOS_DICTADO[estadoVoz()]}</p>}
             {errorMic && <p role="alert">{errorMic}</p>}
             <label htmlFor="relato" className="hoja__titulo">Lo que entendí (puedes corregirlo)</label>
             <textarea id="relato" value={texto} onChange={(e) => setTexto(e.target.value)} rows={5}
               placeholder="Hoy me desperté con sueño y el tráfico me quitó energía…" />
             <button className="principal" disabled={!texto.trim()} onClick={listo}>Listo</button>
-            {sttDisponible() && (
+            {estadoVoz() === 'ok' && (
               <button className="secundario" onClick={empezarGrabacion}>🎙️ {texto.trim() ? 'Seguir hablando' : 'Hablar'}</button>
             )}
           </section>
         </Paisaje>
+      )}
+
+      {pantalla === 'antes-grabar' && (
+        <AntesDeGrabar clima={clima} estado={estadoVoz()} onGrabar={empezarGrabacion} onEscribir={escribir} />
+      )}
+      {pantalla === 'perfil' && (
+        <SabeDeMi perfil={perfil} onCambio={cambiarAjustes('personalizacion')}
+          onPrivacidad={() => setPantalla('privacidad')} onAccesibilidad={() => setPantalla('accesibilidad')} />
+      )}
+      {pantalla === 'privacidad' && (
+        <PrivacidadYDatos privacidad={perfil.privacidad} onCambio={cambiarAjustes('privacidad')}
+          onExportar={() => setPantalla('exportar')} onEliminar={() => setPantalla('eliminar')} onDemo={abrirDemo} />
       )}
 
       {pantalla === 'pensando' && <Paisaje clima={clima}><p className="tarjeta" aria-live="polite">Mirando tu cielo…</p></Paisaje>}
@@ -340,12 +366,7 @@ export default function App() {
         </section>
       )}
 
-      {(pantalla === 'inicio' || pantalla === 'semana') && (
-        <nav className="pestanas" aria-label="Secciones">
-          <button className="pestana" aria-current={pantalla === 'inicio' ? 'page' : undefined} onClick={reiniciar}><Icono nombre="inicio" />Inicio</button>
-          <button className="pestana" aria-current={pantalla === 'semana' ? 'page' : undefined} onClick={abrirDemo}><Icono nombre="calendario" />Historial</button>
-        </nav>
-      )}
+      {PESTANA_DE[pantalla] && <Pestanas actual={PESTANA_DE[pantalla]} onIr={irAPestana} />}
       <footer className="pie">LLM activo: {proveedorActivo().nombre}</footer>
     </main>
   )

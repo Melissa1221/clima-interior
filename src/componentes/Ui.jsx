@@ -99,3 +99,17 @@ export function Ayuda({ titulo, children, onCerrar }) {
     </div>
   )
 }
+
+// Barra de pestañas: cada una es un objetivo de 84×60 px; la activa se marca con fondo, negrita y color (no solo color)
+export function Pestanas({ actual, onIr }) {
+  const items = [['inicio', 'inicio', 'Inicio'], ['historial', 'calendario', 'Historial'], ['perfil', 'perfil', 'Perfil']]
+  return (
+    <nav className="pestanas" aria-label="Secciones">
+      {items.map(([id, icono, etiqueta]) => (
+        <button key={id} className="pestana" aria-current={actual === id ? 'page' : undefined} onClick={() => onIr(id)}>
+          <Icono nombre={icono} />{etiqueta}
+        </button>
+      ))}
+    </nav>
+  )
+}

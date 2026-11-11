@@ -77,7 +77,7 @@ textarea { font: inherit; padding: 10px; border-radius: 12px; border: 1px solid 
 .riesgo { margin: 80px 14px; width: auto; }
 .recurso { display: grid; padding: 12px; border-radius: 12px; background: #fbe9ea; color: #1f2a3c; text-decoration: none; }
 .pequeno { font-size: 13px; color: #5a6475; margin: 0; }
-.historial { margin: 80px 14px 96px; width: auto; }
+.historial { margin: 88px 14px 104px; width: auto; }
 .calendario { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
 .dia { aspect-ratio: 1; border-radius: 8px; }
 .dia--vacio { background: linear-gradient(#dcebfa, #f7f9fc); border: 1px dashed #b8c0cc; }

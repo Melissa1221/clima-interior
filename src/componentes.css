@@ -26,7 +26,7 @@
 .pantalla h1 { font-size: 26px; line-height: 1.22; }
 .pantalla .titulo-2 { font-size: 21px; line-height: 1.26; }
 .pantalla .cuerpo { margin: 0; font-size: 16px; line-height: 1.5; color: var(--texto-secundario); }
-.pantalla .pie { position: static; font-size: 13px; line-height: 1.4; color: var(--texto-secundario); }
+.pantalla .pie { position: static; text-align: left; font-size: 13px; line-height: 1.4; color: var(--texto-secundario); }
 .acciones { display: flex; flex-direction: column; gap: 10px; margin-top: auto; padding-top: 8px; }
 
 .fila-ajuste { width: 100%; display: flex; align-items: center; gap: 16px; padding: 14px 16px; min-height: 72px; text-align: left;
@@ -121,3 +121,14 @@
 .tarjeta-boton { border: 0; text-align: left; width: 100%; }
 .tarjeta-boton small { font-size: 13px; line-height: 1.4; color: var(--texto-principal); }
 .barra--derecha { justify-content: flex-end; }
+
+/* S07 · Antes de grabar */
+.paisaje:has(.hoja-privacidad) { padding: 0; gap: 0; justify-content: flex-end; }
+.atenuado { position: absolute !important; inset: 0; background: rgba(15, 20, 36, .45); z-index: 1; }
+.hoja-privacidad { position: relative; z-index: 2; background: var(--superficie-tarjeta); border-radius: 28px 28px 0 0; padding: 24px 20px; display: flex; flex-direction: column; gap: 14px; }
+.hoja-privacidad h1 { font-size: 26px; line-height: 1.22; }
+.recomendacion { margin: 0; display: flex; gap: 12px; align-items: flex-start; font-size: 16px; line-height: 1.5; }
+.recomendacion .icono { color: var(--marca-primario); }
+.pantalla__cuerpo--junto { flex: none; gap: 8px; }
+.fila-botones { display: flex; gap: 8px; }
+.fila-botones .btn { flex: 1; padding: 0 12px; }
