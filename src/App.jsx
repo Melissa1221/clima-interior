@@ -1,22 +1,29 @@
 import { useEffect, useRef, useState } from 'react'
 import { proponerEmociones, proveedorActivo } from './llm/index.js'
 import { crearGrabacion, decir, sttDisponible } from './voz/stt.js'
-import { leerPerfil, guardarRegistro } from './datos/perfil.js'
+import { leerPerfil, guardarRegistro, guardarAjustes, guardarPreferencias } from './datos/perfil.js'
+import { sistemaPideMenosMovimiento } from './datos/accesibilidad.js'
 import { hayRiesgo, RECURSOS } from './datos/riesgo.js'
 import { CLIMAS, DESCRIPCION } from './datos/climas.js'
 import Paisaje from './componentes/Paisaje.jsx'
 import Icono from './componentes/Icono.jsx'
 import { Ayuda, BarraSuperior } from './componentes/Ui.jsx'
+import { AjustesIniciales, Bienvenida, Edad, Limites, Permisos } from './pantallas/PrimerUso.jsx'
 
 const SEG_SUGERIR_CIERRE = 60
 
 // Pantallas con paisaje de fondo: ahí la barra superior usa el velo oscuro (contraste ≥4.5:1)
-const FONDO_PAISAJE = new Set(['inicio', 'contar', 'pensando', 'emociones', 'guardado'])
+const FONDO_PAISAJE = new Set(['bienvenida', 'inicio', 'contar', 'pensando', 'emociones', 'guardado'])
 
 // Ayuda contextual (RF-24): qué hacer en cada pantalla, sin salir del flujo
 const AYUDA = {
   general: ['Cuenta cómo fue tu día en un minuto. Tú decides qué se guarda y cómo se llama lo que sientes.',
     '«Salir por hoy» está siempre arriba a la derecha: no pierdes nada de lo que ya elegiste.'],
+  bienvenida: ['Clima Interior es un diario: cuentas tu día y lo ves convertido en un clima.', 'Puedes mirar la app con 30 días de ejemplo sin dar ningún permiso.'],
+  edad: ['Preguntamos tu edad porque las emociones son un dato sensible según la Ley 29733.'],
+  permisos: ['Cada permiso es independiente. Lo que dejes apagado no sale de tu teléfono.', 'Puedes cambiarlos cuando quieras en Perfil › Privacidad.'],
+  limites: ['Clima Interior no diagnostica ni da tratamiento. Si estás en peligro, te mostramos a quién llamar.'],
+  'ajustes-iniciales': ['Estos ajustes cambian cómo se ve y se escucha la app. Puedes modificarlos después en Accesibilidad.'],
   inicio: ['Elige el clima que se parece a tu día. Con eso basta si hoy no tienes ganas de hablar.',
     'Después puedes contarlo por voz o escribirlo, o guardar solo el clima.'],
   contar: ['Revisa lo que entendimos antes de que lo lea la IA y corrígelo si hace falta.'],
@@ -43,7 +50,7 @@ const mmss = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 
 export default function App() {
   const [perfil, setPerfil] = useState(leerPerfil)
-  const [pantalla, setPantalla] = useState('inicio')
+  const [pantalla, setPantalla] = useState(() => (perfil.primerUso.completo ? 'inicio' : 'bienvenida'))
   const [clima, setClima] = useState(null)
   const [texto, setTexto] = useState('')
   const [grabando, setGrabando] = useState(false)
@@ -52,9 +59,17 @@ export default function App() {
   const [elegidas, setElegidas] = useState([])
   const [demo, setDemo] = useState(null)
   const [errorMic, setErrorMic] = useState(null)
-  const [ayuda, setAyuda] = useState(false)
+  const [ayuda, setAyuda] = useState(null) // { titulo, parrafos } mientras el diálogo está abierto
+  const [instalacion, setInstalacion] = useState(null) // evento beforeinstallprompt
+  const [edad, setEdad] = useState(perfil.primerUso.edad)
   const rec = useRef(null)
   const consulta = useRef(0) // invalida respuestas del LLM que llegan después de salir
+
+  useEffect(() => {
+    const guardar = (e) => { e.preventDefault(); setInstalacion(e) }
+    window.addEventListener('beforeinstallprompt', guardar)
+    return () => window.removeEventListener('beforeinstallprompt', guardar)
+  }, [])
 
   useEffect(() => {
     if (!grabando) return
@@ -135,20 +150,57 @@ export default function App() {
     setPantalla('semana')
   }
 
+  const cambiarAjustes = (grupo) => (cambios) => setPerfil((p) => guardarAjustes(p, grupo, cambios))
+  const cambiarPreferencias = (cambios) => setPerfil((p) => guardarPreferencias(p, cambios))
+  const abrirAyuda = (titulo, parrafos) => setAyuda({ titulo, parrafos })
+
+  function instalar() {
+    if (instalacion) return instalacion.prompt()
+    abrirAyuda('Instalar la app', ['En Chrome o Edge, toca el botón «Instalar» de la barra de direcciones.',
+      'En el celular, abre el menú del navegador y elige «Agregar a pantalla de inicio».'])
+  }
+
+  function irAAjustes() {
+    // Si el sistema ya pide menos movimiento, el paisaje arranca estático (S05)
+    if (sistemaPideMenosMovimiento()) cambiarPreferencias({ movimientoReducido: true })
+    setPantalla('ajustes-iniciales')
+  }
+
+  function terminarPrimerUso() {
+    cambiarAjustes('primerUso')({ completo: true, edad })
+    setPantalla('inicio')
+  }
+
   const reiniciar = () => {
     detenerMic()
     consulta.current++
     setErrorMic(null)
-    setClima(null); setTexto(''); setPropuesta(null); setElegidas([]); setPantalla('inicio')
+    setClima(null); setTexto(''); setPropuesta(null); setElegidas([]); setPantalla(perfil.primerUso.completo ? 'inicio' : 'bienvenida')
   }
 
   return (
-    <main className="app">
-      <BarraSuperior fondo={FONDO_PAISAJE.has(pantalla) ? 'paisaje' : 'claro'} onAyuda={() => setAyuda(true)} onSalir={reiniciar} />
+    <main className="app" data-movimiento={perfil.preferencias.movimientoReducido ? 'reducido' : 'normal'}>
+      <BarraSuperior fondo={FONDO_PAISAJE.has(pantalla) ? 'paisaje' : 'claro'} soloAyuda={pantalla === 'bienvenida'}
+        onAyuda={() => abrirAyuda('Ayuda', AYUDA[pantalla] ?? AYUDA.general)} onSalir={reiniciar} />
       {ayuda && (
-        <Ayuda titulo="Ayuda" onCerrar={() => setAyuda(false)}>
-          {(AYUDA[pantalla] ?? AYUDA.general).map((t) => <p key={t}>{t}</p>)}
+        <Ayuda titulo={ayuda.titulo} onCerrar={() => setAyuda(null)}>
+          {ayuda.parrafos.map((t) => <p key={t}>{t}</p>)}
         </Ayuda>
+      )}
+
+      {pantalla === 'bienvenida' && (
+        <Bienvenida onEmpezar={() => setPantalla('edad')} onDemo={abrirDemo} onInstalar={instalar} />
+      )}
+      {pantalla === 'edad' && (
+        <Edad edad={edad} onElegir={setEdad} onContinuar={() => setPantalla('permisos')} />
+      )}
+      {pantalla === 'permisos' && (
+        <Permisos privacidad={perfil.privacidad} edad={edad} onCambio={cambiarAjustes('privacidad')} onGuardar={() => setPantalla('limites')} />
+      )}
+      {pantalla === 'limites' && <Limites onRecursos={() => setPantalla('riesgo')} onEntendido={irAAjustes} />}
+      {pantalla === 'ajustes-iniciales' && (
+        <AjustesIniciales preferencias={perfil.preferencias} sistemaReducido={sistemaPideMenosMovimiento()}
+          onCambio={cambiarPreferencias} onListo={terminarPrimerUso} />
       )}
 
       {pantalla === 'inicio' && (

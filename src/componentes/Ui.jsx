@@ -12,11 +12,11 @@ export function Boton({ tipo = 'primario', icono, children, className = '', ...p
 }
 
 // Ayuda contextual a la izquierda y «Salir por hoy» siempre visible (RF-24, RF-34)
-export function BarraSuperior({ fondo = 'claro', onAyuda, onSalir }) {
+export function BarraSuperior({ fondo = 'claro', soloAyuda = false, onAyuda, onSalir }) {
   return (
-    <header className={`barra barra--${fondo}`}>
+    <header className={`barra barra--${fondo} ${soloAyuda ? 'barra--derecha' : ''}`}>
       <button className="btn-icono" onClick={onAyuda} aria-label="Ayuda contextual"><Icono nombre="ayuda" /></button>
-      <Boton tipo={fondo === 'paisaje' ? 'velo' : 'secundario'} icono="salir" onClick={onSalir}>Salir por hoy</Boton>
+      {!soloAyuda && <Boton tipo={fondo === 'paisaje' ? 'velo' : 'secundario'} icono="salir" onClick={onSalir}>Salir por hoy</Boton>}
     </header>
   )
 }
