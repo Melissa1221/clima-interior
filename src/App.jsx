@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { proponerEmociones, proveedorActivo, proveedorSegunPermiso } from './llm/index.js'
 import { crearGrabacion, decir, sttDisponible, transcripcionLocalDisponible } from './voz/stt.js'
-import { leerPerfil, guardarRegistro, guardarAjustes, guardarPreferencias } from './datos/perfil.js'
-import { sistemaPideMenosMovimiento } from './datos/accesibilidad.js'
+import { leerPerfil, guardarRegistro, guardarAjustes, guardarPreferencias, borrarTodo } from './datos/perfil.js'
+import { sistemaPideMenosMovimiento, vibrar } from './datos/accesibilidad.js'
 import { estadoDictado, MOTIVOS_DICTADO } from './datos/privacidad.js'
 import { hayRiesgo, RECURSOS } from './datos/riesgo.js'
 import { CLIMAS, DESCRIPCION } from './datos/climas.js'
@@ -11,6 +11,7 @@ import Icono from './componentes/Icono.jsx'
 import { Ayuda, BarraSuperior, Pestanas } from './componentes/Ui.jsx'
 import { AjustesIniciales, Bienvenida, Edad, Limites, Permisos } from './pantallas/PrimerUso.jsx'
 import { AntesDeGrabar, PrivacidadYDatos, SabeDeMi } from './pantallas/Privacidad.jsx'
+import { EliminarDatos, ExportarResumen } from './pantallas/Datos.jsx'
 
 const SEG_SUGERIR_CIERRE = 60
 
@@ -174,6 +175,14 @@ export default function App() {
     setPantalla('ajustes-iniciales')
   }
 
+  async function eliminarTodo() {
+    vibrar(perfil.preferencias)
+    setPerfil(await borrarTodo())
+    setEdad(null); setClima(null); setTexto(''); setPropuesta(null); setElegidas([]); setDemo(null)
+    setPantalla('bienvenida')
+    abrirAyuda('Tus datos se eliminaron', ['Borramos tus registros, tu perfil y la caché de este teléfono.', 'Puedes empezar de nuevo cuando quieras.'])
+  }
+
   function terminarPrimerUso() {
     cambiarAjustes('primerUso')({ completo: true, edad })
     setPantalla('inicio')
@@ -295,6 +304,13 @@ export default function App() {
       {pantalla === 'privacidad' && (
         <PrivacidadYDatos privacidad={perfil.privacidad} onCambio={cambiarAjustes('privacidad')}
           onExportar={() => setPantalla('exportar')} onEliminar={() => setPantalla('eliminar')} onDemo={abrirDemo} />
+      )}
+
+      {pantalla === 'exportar' && (
+        <ExportarResumen registros={perfil.registros} vibrar={() => vibrar(perfil.preferencias)} onListo={() => setPantalla('privacidad')} />
+      )}
+      {pantalla === 'eliminar' && (
+        <EliminarDatos onEliminar={eliminarTodo} onCancelar={() => setPantalla('privacidad')} onExportar={() => setPantalla('exportar')} />
       )}
 
       {pantalla === 'pensando' && <Paisaje clima={clima}><p className="tarjeta" aria-live="polite">Mirando tu cielo…</p></Paisaje>}
