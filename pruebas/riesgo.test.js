@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { hayRiesgo } from '../src/datos/riesgo.js'
+import { hayRiesgo, RECURSOS } from '../src/datos/riesgo.js'
 
 describe('hayRiesgo', () => {
   it.each([
@@ -14,3 +14,9 @@ describe('hayRiesgo', () => {
   ])('no marca: "%s"', (t) => expect(hayRiesgo(t)).toBe(false))
 })
 
+describe('RECURSOS', () => {
+  it('incluye Bienestar Universitario UNI sin quitar 113, 106 ni 105', () => {
+    expect(RECURSOS.map((r) => r.tel)).toEqual(['113', '106', '105', '014811070'])
+    expect(RECURSOS.at(-1).detalle).toMatch(/gratuita/)
+  })
+})

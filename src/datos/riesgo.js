@@ -18,4 +18,6 @@ export const RECURSOS = [
   { nombre: 'Línea 113, opción 5', detalle: 'Salud mental (MINSA), las 24 horas', tel: '113' },
   { nombre: 'SAMU 106', detalle: 'Emergencia médica', tel: '106' },
   { nombre: 'PNP 105', detalle: 'Si hay violencia o peligro inmediato', tel: '105' },
+  // Servicio de Orientación Psicopedagógica y Psicológica (DBU-OCBU). Contacto por confirmar: el portal solo da la central.
+  { nombre: 'Bienestar Universitario UNI', detalle: 'Orientación psicológica gratuita · central (01) 481-1070', tel: '014811070' },
 ]
