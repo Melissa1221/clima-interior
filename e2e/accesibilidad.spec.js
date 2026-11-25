@@ -31,6 +31,54 @@ const PANTALLAS = {
     await p.getByRole('button', { name: 'Listo' }).click()
   },
   historial: async (p) => p.getByRole('button', { name: /Historial/ }).click(),
+  'refugio: antes': async (p) => {
+    await p.getByRole('button', { name: 'Necesito un respiro' }).click()
+    await p.getByRole('radio', { name: /Lluvia/ }).click()
+  },
+  'refugio: elegir técnica': async (p) => {
+    await p.getByRole('button', { name: 'Necesito un respiro' }).click()
+    await p.getByRole('radio', { name: /Lluvia/ }).click()
+    await p.getByRole('button', { name: 'Continuar' }).click()
+  },
+  'refugio: respirar': async (p) => {
+    await p.getByRole('button', { name: 'Necesito un respiro' }).click()
+    await p.getByRole('radio', { name: /Tormenta/ }).click()
+    await p.getByRole('button', { name: 'Continuar' }).click()
+    await p.getByRole('button', { name: /Respirar con la lluvia/ }).click()
+    await p.getByRole('button', { name: 'Empezar' }).click()
+  },
+  'refugio: 5-4-3-2-1': async (p) => {
+    await p.getByRole('button', { name: 'Necesito un respiro' }).click()
+    await p.getByRole('radio', { name: /Tormenta/ }).click()
+    await p.getByRole('button', { name: 'Continuar' }).click()
+    await p.getByRole('button', { name: /5-4-3-2-1/ }).click()
+  },
+  'refugio: partir la tarea': async (p) => {
+    await p.getByRole('button', { name: 'Necesito un respiro' }).click()
+    await p.getByRole('radio', { name: /Niebla/ }).click()
+    await p.getByRole('button', { name: 'Continuar' }).click()
+    await p.getByRole('button', { name: /Partir la tarea/ }).click()
+    await p.locator('#tarea-paso').fill('Leer la primera página de la PC')
+    await p.getByRole('button', { name: 'Agregar' }).click()
+  },
+  'refugio: antes y después': async (p) => {
+    await p.getByRole('button', { name: 'Necesito un respiro' }).click()
+    await p.getByRole('radio', { name: /Lluvia/ }).click()
+    await p.getByRole('button', { name: 'Continuar' }).click()
+    await p.getByRole('button', { name: /qué le dirías/i }).click()
+    await p.getByRole('button', { name: 'Seguir' }).click()
+    await p.getByRole('button', { name: 'Listo' }).click()
+    await p.getByRole('radio', { name: /Nublado/ }).click()
+    await p.getByRole('button', { name: 'Guardar' }).click()
+  },
+  'trampa de pensamiento': async (p) => {
+    await p.getByRole('radio', { name: /Lluvia/ }).click()
+    await p.getByRole('button', { name: /Escribir/ }).click()
+    await p.getByRole('textbox').fill('seguro que voy a jalar el parcial')
+    await p.getByRole('button', { name: 'Listo' }).click()
+    await p.getByRole('button', { name: /guardar/i }).click()
+    await p.getByText('¿Puede ser que').waitFor()
+  },
   'antes de grabar': async (p) => {
     await p.getByRole('radio', { name: /Lluvia/ }).click()
     await p.getByRole('button', { name: 'Contar mi día por voz' }).click()
