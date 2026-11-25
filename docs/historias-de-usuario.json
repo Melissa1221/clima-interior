@@ -755,5 +755,30 @@
   "cubre": [
    "RF-44"
   ]
+ },
+ {
+  "id": "HU-33",
+  "titulo": "Mirar un pensamiento sin que me juzguen",
+  "historia": "Como estudiante que acaba de contar un mal momento (ST-01), quiero que la app me pregunte si un pensamiento puede ser una trampa, para mirarlo desde otro ángulo sin sentir que me corrigen.",
+  "escenarios": [
+   {
+    "n": 1,
+    "titulo": "me suena",
+    "texto": "Dado que conté «seguro que voy a jalar», cuando guardo mi día, entonces veo mi frase citada, una validación y la pregunta «¿Puede ser que tu mente esté adivinando el futuro?»; si toco «Sí, puede ser», veo una sola pregunta para mirarlo o «¿Qué le dirías a una amiga?»."
+   },
+   {
+    "n": 2,
+    "titulo": "no me suena",
+    "texto": "Dado que la tarjeta no me representa, cuando toco «No es así», entonces vuelvo al resumen y, tras dos descartes de la misma trampa, la app deja de preguntarla y lo anota en «Lo que sabe de ti»."
+   },
+   {
+    "n": 3,
+    "titulo": "crisis primero",
+    "texto": "Dado que mi relato incluye una frase de riesgo, cuando toco «Listo», entonces solo veo la pantalla de líneas de ayuda (113, 106, 105 y Bienestar UNI), sin trampas ni técnicas."
+   }
+  ],
+  "cubre": [
+   "RF-45"
+  ]
  }
 ]

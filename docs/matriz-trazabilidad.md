@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-44 RF, 32 RNF y 32 historias de usuario. Cada requerimiento tiene al menos una historia y cada historia cubre al menos un requerimiento.
+45 RF, 32 RNF y 33 historias de usuario. Cada requerimiento tiene al menos una historia y cada historia cubre al menos un requerimiento.
 
 **Prioridad (MoSCoW):** M = Must, S = Should, C = Could.
 
@@ -49,9 +49,10 @@
 | RF-39 | Demo de 30 días simulados | FR | M | Evaluar el MVP | HU-26 | Implementado | HU-26 Esc. 1 · 30 días con semilla fija. Código: [`public/demo/registros-30-dias.json`](../public/demo/registros-30-dias.json), [`scripts/generar_datos.py`](../scripts/generar_datos.py), [`e2e/checkin.spec.js`](../e2e/checkin.spec.js) |
 | RF-40 | Check-in rápido: elegir 1 de 5 climas primero; contarlo es opcional | FR | M | Registrar mi día sin hablar | HU-28 | Implementado | HU-28 Esc. 1-2 · elegir clima y «Así está bien». Código: [`src/App.jsx`](../src/App.jsx), [`e2e/checkin.spec.js`](../e2e/checkin.spec.js) |
 | RF-41 | Emociones como nubes tocables, con equivalente en botones accesibles | FR | S | Elegir mis emociones tocando nubes | HU-29 | Implementado | HU-29 Esc. 1-2 · botones con aria-pressed. Código: [`src/App.jsx`](../src/App.jsx) |
-| RF-42 | "1 minuto de lluvia para respirar", opcional | FR | S | Calmarme un minuto con la lluvia | HU-30 | Pendiente | HU-30 Esc. 1-3 |
+| RF-42 | "1 minuto de lluvia para respirar", opcional | FR | S | Calmarme un minuto con la lluvia | HU-30 | Implementado | HU-30 Esc. 1-3 · Refugio: respiración lenta o suspiro cíclico, 5-4-3-2-1, partir la tarea y «¿qué le dirías a una amiga?», con clima de antes y después. Código: [`src/pantallas/Refugio.jsx`](../src/pantallas/Refugio.jsx), [`e2e/refugio.spec.js`](../e2e/refugio.spec.js) |
 | RF-43 | "Tu cielo de la semana" con patrón descriptivo | FR | S | Ver mi semana sin culpa | HU-31 | Parcial | HU-31 Esc. 1 · calendario de 30 días sin rachas; falta el patrón descriptivo. Código: [`src/App.jsx`](../src/App.jsx) |
 | RF-44 | Paisaje del día como fondo de pantalla, solo si el usuario lo pide | FR | C | Llevar mi clima fuera de la app | HU-32 | Pendiente | HU-32 Esc. 1-2 |
+| RF-45 | Trampas de pensamiento propuestas como pregunta, nunca como diagnóstico; la crisis va primero | FR | S | Mirar un pensamiento sin que me juzguen | HU-33 | Implementado | HU-33 Esc. 1-3 · tarjeta que valida, cita la frase y pregunta. Código: [`src/datos/trampas.js`](../src/datos/trampas.js), [`pruebas/trampas.test.js`](../pruebas/trampas.test.js) |
 | RNF-01 | ≥80% de check-ins en < 90 s | NFR | M | Check-in hablado | HU-02 | Parcial | HU-02 Esc. 1 + telemetría · el check-in hablado completo de la prueba e2e dura menos de 90 s; falta medirlo con usuarios (PC5). Código: [`e2e/checkin.spec.js`](../e2e/checkin.spec.js) |
 | RNF-02 | Iniciar check-in en ≤3 acciones | NFR | S | Check-in hablado | HU-02 | Implementado | HU-02 Esc. 1: conteo E2E · clima + micrófono = 2 acciones. Código: [`src/App.jsx`](../src/App.jsx) |
 | RNF-03 | Errores con causa, estado y siguiente acción | NFR | S | Check-in hablado; Registrar sin hablar | HU-02, HU-19 | Parcial | HU-02 Esc. 3, HU-19 Esc. 2 |

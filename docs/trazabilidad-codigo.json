@@ -587,12 +587,20 @@
     "nota": "Las emociones son botones con forma de nube y `aria-pressed`."
   },
   "RF-42": {
-    "estado": "pendiente",
-    "codigo": [],
-    "pruebas": [],
+    "estado": "implementado",
+    "codigo": [
+      "src/pantallas/Refugio.jsx::export default function Refugio",
+      "src/datos/refugio.js::export const RITMOS",
+      "src/datos/perfil.js::export function guardarRefugio",
+      "src/App.jsx::Necesito un respiro"
+    ],
+    "pruebas": [
+      "pruebas/refugio.test.js",
+      "e2e/refugio.spec.js"
+    ],
     "pantallas": [],
-    "captura": null,
-    "nota": "No está en esta entrega."
+    "captura": "refugio/04-respirar.png",
+    "nota": "Refugio de autocuidado: respiración lenta (4 s / 6 s) o suspiro cíclico al ritmo de la lluvia, 5-4-3-2-1 (práctica clínica, sin ensayos), partir la tarea y «¿qué le dirías a una amiga?». Botón en el inicio y oferta tras un check-in pesado («Ahora no» no la repite ese día). Guarda solo el clima de antes y después, y aprende qué técnica ayuda más."
   },
   "RF-43": {
     "estado": "parcial",
@@ -613,6 +621,23 @@
     "pantallas": [],
     "captura": null,
     "nota": "No está en esta entrega."
+  },
+  "RF-45": {
+    "estado": "implementado",
+    "codigo": [
+      "src/datos/trampas.js::export function detectarTrampas",
+      "src/datos/trampas.js::export function trampaParaMostrar",
+      "src/llm/contrato.js::export function validarTrampas",
+      "src/App.jsx::Sí, puede ser"
+    ],
+    "pruebas": [
+      "pruebas/trampas.test.js",
+      "pruebas/llm.test.js",
+      "e2e/refugio.spec.js"
+    ],
+    "pantallas": [],
+    "captura": "refugio/08-trampa.png",
+    "nota": "La trampa se propone como pregunta y con la frase literal de la persona; máximo una tarjeta por check-in. El detector por reglas cubre el modo mock y el respaldo; con riesgo no se muestra nada salvo la pantalla de crisis."
   },
   "RNF-01": {
     "estado": "parcial",
