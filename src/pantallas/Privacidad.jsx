@@ -4,6 +4,8 @@ import Icono from '../componentes/Icono.jsx'
 import { Aviso, Boton, FilaAjuste } from '../componentes/Ui.jsx'
 import { MOTIVOS_DICTADO } from '../datos/privacidad.js'
 import { CATEGORIAS, emocionesFavoritas } from '../datos/perfil.js'
+import { TECNICAS } from '../datos/refugio.js'
+import { TRAMPAS } from '../datos/trampas.js'
 
 // S07 · Antes de grabar: recomendaciones y qué pasa con el audio. Si no se puede dictar, solo queda escribir.
 export function AntesDeGrabar({ clima, estado, onGrabar, onEscribir }) {
@@ -47,6 +49,17 @@ function aprendidoDe(perfil, id) {
   if (id === 'propuestas') {
     return aprendizaje.propuestasIA ? `Aceptaste alguna propuesta de la IA en ${aprendizaje.aceptadasIA} de ${aprendizaje.propuestasIA} check-ins.`
       : 'Se usan solo como apoyo: nunca reemplazan lo que elegiste.'
+  }
+  if (id === 'refugio') {
+    if (aprendido.tecnicaFavorita) return `Te ofrecemos primero «${TECNICAS[aprendido.tecnicaFavorita].titulo}», la que más despejó tu cielo.`
+    const n = perfil.refugios.length
+    return n ? `${n} ${n === 1 ? 'respiro guardado' : 'respiros guardados'} (solo el clima de antes y de después).`
+      : 'Guarda el clima de antes y de después de cada respiro para ofrecerte primero lo que te sirve.'
+  }
+  if (id === 'trampas') {
+    const silenciadas = aprendido.trampasSilenciadas.map((t) => TRAMPAS[t]?.nombre.toLowerCase()).filter(Boolean)
+    return silenciadas.length ? `Ya no te preguntamos por: ${silenciadas.join(', ')}.`
+      : 'Si dices «No es así» seguido a una trampa, dejamos de preguntarla.'
   }
   if (id === 'tono') return aprendido.frasesCortas ? 'Reflexiones de una sola frase.' : 'Reflexiones de hasta dos frases. Pide «Más corto» y lo recordamos.'
   return aprendido.entrada === 'texto' ? 'Empiezas escribiendo.' : 'Empiezas hablando.'
