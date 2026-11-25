@@ -7,9 +7,11 @@ import Icono from '../componentes/Icono.jsx'
 import { Boton } from '../componentes/Ui.jsx'
 import { CLIMAS, climaEfectivo } from '../datos/climas.js'
 import { RITMOS, TECNICAS, duracionRitmo, fraseDeCambio, ordenarTecnicas } from '../datos/refugio.js'
-import { decir } from '../voz/stt.js'
+import { crearGrabacion, decir } from '../voz/stt.js'
 import { vibrar } from '../datos/accesibilidad.js'
+import { hayRiesgo } from '../datos/riesgo.js'
 
+const DISPONIBLES = new Set(['respirar', 'tierra'])
 const fechaLocal = (d) => d.toLocaleDateString('en-CA')
 const climaDe = (id) => CLIMAS.find((c) => c.id === id)
 
@@ -23,6 +25,70 @@ function ElegirClima({ valor, onElegir, etiqueta }) {
         </button>
       ))}
     </div>
+  )
+}
+
+// Dictado corto dentro del Refugio (reusa la Web Speech API del check-in). Nada de lo dicho se guarda.
+function useDictado({ voz, onRiesgo }) {
+  const rec = useRef(null)
+  const [escuchando, setEscuchando] = useState(false)
+  const [oido, setOido] = useState('')
+  useEffect(() => () => rec.current?.abort?.(), [])
+  function empezar(alTerminar) {
+    if (!voz.disponible) return
+    setOido('')
+    rec.current = crearGrabacion({
+      local: voz.local,
+      alTexto: (t) => { setOido(t); if (hayRiesgo(t)) { rec.current?.abort?.(); onRiesgo() } },
+      alError: () => setEscuchando(false),
+      alTerminar: (t) => { setEscuchando(false); alTerminar?.(t) },
+    })
+    try { rec.current.start(); setEscuchando(true) } catch { setEscuchando(false) }
+  }
+  const parar = () => { rec.current?.stop?.(); setEscuchando(false) }
+  const cancelar = () => { rec.current?.abort?.(); rec.current = null; setEscuchando(false); setOido('') }
+  return { escuchando, oido, empezar, parar, cancelar }
+}
+
+// 5-4-3-2-1 (grounding). Práctica clínica muy usada, SIN ensayos controlados (validación 03 §1): se dice así en la
+// pantalla. La persona responde en voz alta, en su mente o solo toca «Listo». No se guarda nada salvo que terminó.
+const SENTIDOS = [
+  [5, 'cosas que ves', 'Mira a tu alrededor sin apuro: colores, formas, la luz.'],
+  [4, 'cosas que oyes', 'Sonidos cerca y lejos, aunque sean pequeños.'],
+  [3, 'cosas que puedes tocar', 'Tu ropa, la mesa, tus pies en el piso.'],
+  [2, 'cosas que hueles', 'O dos olores que te gusten, si no notas ninguno.'],
+  [1, 'cosa que saboreas', 'O un sabor que te guste recordar.'],
+]
+
+function Tierra({ voz, onRiesgo, onTerminar }) {
+  const [i, setI] = useState(0)
+  const dictado = useDictado({ voz, onRiesgo })
+  const [n, que, pista] = SENTIDOS[i]
+  const siguiente = () => {
+    dictado.cancelar()
+    if (i + 1 >= SENTIDOS.length) onTerminar()
+    else setI(i + 1)
+  }
+  return (
+    <section className="hoja" aria-labelledby="tierra-titulo">
+      <div className="progreso">
+        <small id="tierra-avance">Paso {i + 1} de {SENTIDOS.length}</small>
+        <div className="progreso__barra" role="progressbar" aria-labelledby="tierra-avance" aria-valuemin={1} aria-valuemax={SENTIDOS.length} aria-valuenow={i + 1}>
+          <div className="progreso__relleno" style={{ width: `${((i + 1) / SENTIDOS.length) * 100}%` }} />
+        </div>
+      </div>
+      <p className="tierra__numero" aria-hidden="true">{n}</p>
+      <h1 id="tierra-titulo" className="hoja__titulo-grande" aria-live="polite">{n} {que}</h1>
+      <p className="pequeno">{pista} Puedes decirlas en voz alta o solo pensarlas.</p>
+      {dictado.escuchando && <p className="pildora" aria-live="polite"><span className="punto" /> Te escucho…</p>}
+      {dictado.oido && <p className="escucha">«{dictado.oido}»</p>}
+      <Boton onClick={siguiente}>{i + 1 >= SENTIDOS.length ? 'Terminar' : 'Listo'}</Boton>
+      {voz.disponible && !dictado.escuchando && (
+        <Boton tipo="secundario" icono="mic" onClick={() => dictado.empezar()}>Decirlo en voz alta</Boton>
+      )}
+      {dictado.escuchando && <Boton tipo="secundario" onClick={dictado.parar}>Ya lo dije</Boton>}
+      <p className="pequeno">{TECNICAS.tierra.evidencia} No se guarda lo que digas.</p>
+    </section>
   )
 }
 
@@ -113,7 +179,7 @@ function AntesDespues({ antes, despues }) {
   )
 }
 
-export default function Refugio({ preferencias, favorita, inicial, onPaso, onGuardar, onSalir }) {
+export default function Refugio({ preferencias, voz = { disponible: false }, favorita, inicial, onPaso, onGuardar, onSalir, onRiesgo }) {
   const [paso, setPaso] = useState('antes')
   const [antes, setAntes] = useState(null)
   const [despues, setDespues] = useState(null)
@@ -156,7 +222,7 @@ export default function Refugio({ preferencias, favorita, inicial, onPaso, onGua
           <h1 id="refugio-elegir" className="hoja__titulo-grande">¿Qué te vendría bien?</h1>
           <p className="pequeno">Cada una dura poco y puedes dejarla cuando quieras.</p>
           <div className="tecnicas">
-            {ordenarTecnicas(favorita).filter((id) => id === 'respirar').map((id) => (
+            {ordenarTecnicas(favorita).filter((id) => DISPONIBLES.has(id)).map((id) => (
               <button key={id} type="button" className="enlace-fila tecnica" onClick={() => elegirTecnica(id)}>
                 <span className="enlace-fila__textos">
                   <strong>{TECNICAS[id].titulo}</strong>
@@ -169,6 +235,8 @@ export default function Refugio({ preferencias, favorita, inicial, onPaso, onGua
           </div>
         </section>
       )}
+
+      {paso === 'tierra' && <Tierra voz={voz} onRiesgo={onRiesgo} onTerminar={() => ir('despues')} />}
 
       {paso === 'despues' && (
         <section className="hoja" aria-labelledby="refugio-despues">
