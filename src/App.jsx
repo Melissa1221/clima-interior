@@ -4,7 +4,9 @@ import { crearGrabacion, decir, sttDisponible, transcripcionLocalDisponible } fr
 import {
   leerPerfil, guardarRegistro, guardarAjustes, guardarPreferencias, alternarCapa, borrarTodo, registrarFalloMic, pedirMasCorto,
   personalizarPropuesta, contextoParaLLM, notaDeRitmo, empiezaEscribiendo, cambiarCategoria, restablecer,
+  guardarRefugio, tecnicaFavorita, saltarOfertaRefugio,
 } from './datos/perfil.js'
+import { debeOfrecerRefugio } from './datos/refugio.js'
 import { detectarOrden, limitarPalabras, sistemaPideMenosMovimiento, sonificarClima, vibrar } from './datos/accesibilidad.js'
 import { estadoDictado, MOTIVOS_DICTADO } from './datos/privacidad.js'
 import { hayRiesgo, RECURSOS } from './datos/riesgo.js'
@@ -17,11 +19,12 @@ import { AjustesIniciales, Bienvenida, Edad, Limites, Permisos } from './pantall
 import { AntesDeGrabar, PrivacidadYDatos, SabeDeMi } from './pantallas/Privacidad.jsx'
 import { EliminarDatos, ExportarResumen } from './pantallas/Datos.jsx'
 import Sala from './pantallas/Sala.jsx'
+import Refugio from './pantallas/Refugio.jsx'
 
 const SEG_SUGERIR_CIERRE = 60
 
 // Pantallas con paisaje de fondo: ahí la barra superior usa el velo oscuro (contraste ≥4.5:1)
-const FONDO_PAISAJE = new Set(['bienvenida', 'antes-grabar', 'inicio', 'contar', 'pensando', 'emociones', 'guardado'])
+const FONDO_PAISAJE = new Set(['bienvenida', 'antes-grabar', 'inicio', 'contar', 'pensando', 'emociones', 'guardado', 'refugio'])
 
 // Pantallas con barra de pestañas y la pestaña que las contiene
 const PESTANA_DE = { inicio: 'inicio', semana: 'historial', sala: 'sala', perfil: 'perfil', privacidad: 'perfil', accesibilidad: 'perfil' }
@@ -45,6 +48,20 @@ const AYUDA = {
     'Quien crea la sala puede sacar a alguien o cerrarla. La sala se borra al cerrarla o a las 24 horas.'],
   perfil: ['Aquí ves lo que la app aprendió de cómo la usas y por qué cambió algo.',
     'Si apagas una categoría, también se borra lo que ya se había aprendido de ella.'],
+  // Refugio (RF-42): una ayuda por paso
+  'refugio:antes': ['Un respiro es una pausa corta de autocuidado. No es terapia ni reemplaza a una persona.',
+    'Primero eliges cómo estás y al final cómo quedaste: así ves qué te ayuda. «Ahora no» te devuelve al inicio.'],
+  'refugio:elegir': ['Cada técnica dura de 1 a 3 minutos y puedes dejarla cuando quieras.',
+    'Debajo de cada una dice qué tanto respaldo tiene. Si una te ayudó antes, aparece primero.'],
+  'refugio:respirar': ['Inhala mientras la nube crece y exhala, más largo, mientras se encoge. Con movimiento reducido, sigue el texto.',
+    'Si te mareas, vuelve a respirar normal. «Terminar» te lleva al final sin perder nada.'],
+  'refugio:tierra': ['Nombra lo que percibes, en voz alta o en tu mente, y toca «Listo». No se guarda nada de lo que digas.'],
+  'refugio:tarea': ['Escribe lo que tienes pendiente y pártelo en pasos chiquitos; el primero, de unos 15 minutos.',
+    'Marca cada paso al terminarlo. La lista se queda en este teléfono hasta que la borres.'],
+  'refugio:amiga': ['Imagina que alguien que quieres te cuenta esto. Lo que le dirías suele ser más justo que lo que te dices.',
+    'Lo que escribas aquí no se guarda.'],
+  'refugio:despues': ['Elige cómo quedaste. Se guarda solo el clima de antes y de después, nunca lo que dijiste.'],
+  'refugio:resumen': ['En Historial, «Lo que te ayudó» junta tus respiros, sin rachas ni metas.'],
 }
 
 // Fecha en la zona del usuario: con toISOString un registro de las 20:00 en Lima caía en el día siguiente
@@ -90,6 +107,8 @@ export default function App() {
   const [instalacion, setInstalacion] = useState(null) // evento beforeinstallprompt
   const [edad, setEdad] = useState(perfil.primerUso.edad)
   const [enSala, setEnSala] = useState(false) // dentro de una sala: paisaje de fondo
+  const [refugio, setRefugio] = useState(null) // { tecnica?, frase? } con el que se abrió el Refugio
+  const [pasoRefugio, setPasoRefugio] = useState('antes')
   const rec = useRef(null)
   const orden = useRef(null) // última versión de «ejecutar orden de voz», para el dictado en curso
   const ultimaOrden = useRef(null)
@@ -277,6 +296,15 @@ export default function App() {
     setPantalla('inicio')
   }
 
+  // Refugio: gratis, a un toque desde el inicio, o se ofrece tras un check-in pesado (RF-42)
+  function abrirRefugio(inicial = {}) {
+    detenerMic()
+    setRefugio(inicial)
+    setPasoRefugio('antes')
+    setPantalla('refugio')
+  }
+  const alRiesgo = () => { vibrar(preferencias); setPantalla('riesgo') }
+
   function irAPestana(id) {
     if (id === 'inicio') return reiniciar()
     if (id === 'historial') return abrirHistorial()
@@ -292,13 +320,16 @@ export default function App() {
   }
 
   const porTexto = empiezaEscribiendo(perfil)
+  const hoy = fechaLocal(new Date())
+  const ofrecerRefugio = pantalla === 'guardado' && perfil.refugioSaltado !== hoy &&
+    debeOfrecerRefugio({ clima, emociones: perfil.registros.at(-1)?.emocion_declarada, texto })
   const ultimo = perfil.registros.at(-1)
   const climaHoy = ultimo?.fecha === fechaLocal(new Date()) ? ultimo.clima : null
 
   return (
     <main className="app" data-movimiento={perfil.preferencias.movimientoReducido ? 'reducido' : 'normal'}>
       <BarraSuperior fondo={FONDO_PAISAJE.has(pantalla) || (pantalla === 'sala' && enSala) ? 'paisaje' : 'claro'} soloAyuda={pantalla === 'bienvenida'}
-        onAyuda={() => abrirAyuda('Ayuda', AYUDA[pantalla] ?? AYUDA.general)} onSalir={reiniciar} />
+        onAyuda={() => abrirAyuda('Ayuda', (pantalla === 'refugio' ? AYUDA[`refugio:${pasoRefugio}`] : AYUDA[pantalla]) ?? AYUDA.general)} onSalir={reiniciar} />
       {ayuda && (
         <Ayuda titulo={ayuda.titulo} onCerrar={() => setAyuda(null)}>
           {ayuda.parrafos.map((t) => <p key={t}>{t}</p>)}
@@ -330,6 +361,7 @@ export default function App() {
           {perfil.registros.at(-1) && (
             <p className="ayer">Último registro: {DESCRIPCION[perfil.registros.at(-1).clima]}</p>
           )}
+          <Boton tipo="velo" icono="viento" className="entrada-refugio" onClick={() => abrirRefugio()}>Necesito un respiro</Boton>
           <section className="hoja">
             <p className="hoja__titulo">¿Qué clima hay hoy?</p>
             <div className="climas" role="radiogroup" aria-label="Clima del día">
@@ -492,9 +524,23 @@ export default function App() {
             <p>{DESCRIPCION[climaVista]}</p>
             <p className="pequeno">Llevas {perfil.registros.length} registro(s).
               {perfil.ritmo.horaHabitual && ` Sueles registrar a las ${perfil.ritmo.horaHabitual}:00.`}</p>
+            {ofrecerRefugio && (
+              <div className="oferta-refugio" role="group" aria-labelledby="oferta-titulo">
+                <strong id="oferta-titulo">¿Te tomas un respiro?</strong>
+                <p className="pequeno">Un minuto de lluvia para respirar, o partir lo que tienes pendiente. Si no, no pasa nada.</p>
+                <Boton icono="viento" onClick={() => abrirRefugio()}>Necesito un respiro</Boton>
+                <Boton tipo="fantasma" onClick={() => setPerfil((p) => saltarOfertaRefugio(p, hoy))}>Ahora no</Boton>
+              </div>
+            )}
             <button className="principal" onClick={reiniciar}>Hasta mañana</button>
           </section>
         </Paisaje>
+      )}
+
+      {pantalla === 'refugio' && (
+        <Refugio key={JSON.stringify(refugio)} preferencias={preferencias} favorita={tecnicaFavorita(perfil)} inicial={refugio}
+          voz={{ disponible: estadoVoz() === 'ok', local: !perfil.privacidad.transcribirEnInternet }}
+          onPaso={setPasoRefugio} onGuardar={(r) => setPerfil((p) => guardarRefugio(p, r))} onSalir={reiniciar} onRiesgo={alRiesgo} />
       )}
 
       {pantalla === 'semana' && (demo || perfil.registros.length > 0) && (
