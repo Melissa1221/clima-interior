@@ -79,6 +79,7 @@ export function EliminarDatos({ onEliminar, onCancelar, onExportar }) {
           <ul>
             <li>Tus registros, paisajes y reflexiones.</li>
             <li>Tu perfil de personalización.</li>
+            <li>Tus respiros y tu lista de «partir la tarea».</li>
             <li>La caché de la app en este teléfono.</li>
             <li>Los registros pendientes de sincronizar.</li>
             <li>Las copias en el servidor.</li>
