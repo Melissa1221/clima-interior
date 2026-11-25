@@ -4,8 +4,9 @@ import { crearGrabacion, decir, sttDisponible, transcripcionLocalDisponible } fr
 import {
   leerPerfil, guardarRegistro, guardarAjustes, guardarPreferencias, alternarCapa, borrarTodo, registrarFalloMic, pedirMasCorto,
   personalizarPropuesta, contextoParaLLM, notaDeRitmo, empiezaEscribiendo, cambiarCategoria, restablecer,
-  guardarRefugio, tecnicaFavorita, saltarOfertaRefugio,
+  guardarRefugio, tecnicaFavorita, saltarOfertaRefugio, registrarTrampa, trampasSilenciadas,
 } from './datos/perfil.js'
+import { TRAMPAS, trampaParaMostrar } from './datos/trampas.js'
 import { debeOfrecerRefugio } from './datos/refugio.js'
 import { detectarOrden, limitarPalabras, sistemaPideMenosMovimiento, sonificarClima, vibrar } from './datos/accesibilidad.js'
 import { estadoDictado, MOTIVOS_DICTADO } from './datos/privacidad.js'
@@ -24,7 +25,7 @@ import Refugio from './pantallas/Refugio.jsx'
 const SEG_SUGERIR_CIERRE = 60
 
 // Pantallas con paisaje de fondo: ahí la barra superior usa el velo oscuro (contraste ≥4.5:1)
-const FONDO_PAISAJE = new Set(['bienvenida', 'antes-grabar', 'inicio', 'contar', 'pensando', 'emociones', 'guardado', 'refugio'])
+const FONDO_PAISAJE = new Set(['bienvenida', 'antes-grabar', 'inicio', 'contar', 'pensando', 'emociones', 'guardado', 'refugio', 'trampa'])
 
 // Pantallas con barra de pestañas y la pestaña que las contiene
 const PESTANA_DE = { inicio: 'inicio', semana: 'historial', sala: 'sala', perfil: 'perfil', privacidad: 'perfil', accesibilidad: 'perfil' }
@@ -48,6 +49,8 @@ const AYUDA = {
     'Quien crea la sala puede sacar a alguien o cerrarla. La sala se borra al cerrarla o a las 24 horas.'],
   perfil: ['Aquí ves lo que la app aprendió de cómo la usas y por qué cambió algo.',
     'Si apagas una categoría, también se borra lo que ya se había aprendido de ella.'],
+  trampa: ['Con presión, la mente cae a veces en trampas comunes. La app solo pregunta: tú decides si te suena.',
+    'Es una sugerencia automática, no un diagnóstico. Si dices «No es así», lo tomamos en cuenta y no insistimos.'],
   // Refugio (RF-42): una ayuda por paso
   'refugio:antes': ['Un respiro es una pausa corta de autocuidado. No es terapia ni reemplaza a una persona.',
     'Primero eliges cómo estás y al final cómo quedaste: así ves qué te ayuda. «Ahora no» te devuelve al inicio.'],
@@ -109,6 +112,8 @@ export default function App() {
   const [enSala, setEnSala] = useState(false) // dentro de una sala: paisaje de fondo
   const [refugio, setRefugio] = useState(null) // { tecnica?, frase? } con el que se abrió el Refugio
   const [pasoRefugio, setPasoRefugio] = useState('antes')
+  const [trampa, setTrampa] = useState(null) // como máximo una tarjeta de trampa por check-in
+  const [trampaSi, setTrampaSi] = useState(false)
   const rec = useRef(null)
   const orden = useRef(null) // última versión de «ejecutar orden de voz», para el dictado en curso
   const ultimaOrden = useRef(null)
@@ -164,7 +169,8 @@ export default function App() {
     }
     const segundos = inicioCheckin.current ? Math.round((Date.now() - inicioCheckin.current) / 1000) : undefined
     setPerfil((p) => guardarRegistro(p, registro, { segundos }))
-    setPantalla('guardado')
+    // El día ya quedó guardado; la trampa se pregunta después, sin bloquear nada
+    setPantalla(trampa && texto && !hayRiesgo(texto) ? 'trampa' : 'guardado')
   }
 
   const estadoVoz = () => estadoDictado(perfil.privacidad, { dictado: sttDisponible(), local: transcripcionLocalDisponible() })
@@ -245,6 +251,8 @@ export default function App() {
     })
     if (id !== consulta.current) return
     setPropuesta(personalizarPropuesta(perfil, r))
+    setTrampa(trampaParaMostrar(texto, r.trampas, trampasSilenciadas(perfil)))
+    setTrampaSi(false)
     setElegidas([])
     setPantalla('emociones')
   }
@@ -316,6 +324,7 @@ export default function App() {
     consulta.current++
     setErrorMic(null)
     inicioCheckin.current = null
+    setTrampa(null); setTrampaSi(false)
     setClima(null); setTexto(''); setPropuesta(null); setElegidas([]); setPantalla(perfil.primerUso.completo ? 'inicio' : 'bienvenida')
   }
 
@@ -513,6 +522,32 @@ export default function App() {
           <p className="pequeno">La app no contactó a nadie. Tú decides si llamas.</p>
           <button className="secundario" onClick={reiniciar}>Ahora no</button>
         </section>
+      )}
+
+      {pantalla === 'trampa' && trampa && (
+        <Paisaje clima={climaVista} capas={preferencias.capas}>
+          <section className="tarjeta" aria-labelledby="trampa-titulo">
+            <span className="rotulo-ia"><Icono nombre="ia" tam={17} />Sugerencia automática · no es un diagnóstico</span>
+            <h2 id="trampa-titulo">Una pregunta, si quieres</h2>
+            {!trampaSi ? (
+              <>
+                <p className="trampa__cita">Dijiste <strong>«{trampa.frase}»</strong>.</p>
+                <p className="trampa__cita">Tiene sentido que te sientas así con todo lo que tienes encima.</p>
+                <p className="trampa__hipotesis">{TRAMPAS[trampa.tipo].hipotesis}</p>
+                <Boton onClick={() => { setPerfil((p) => registrarTrampa(p, trampa.tipo, 'si')); setTrampaSi(true) }}>Sí, puede ser</Boton>
+                <Boton tipo="secundario" onClick={() => { setPerfil((p) => registrarTrampa(p, trampa.tipo, 'no')); setPantalla('guardado') }}>No es así</Boton>
+              </>
+            ) : (
+              <>
+                <p className="trampa__cita">No se trata de pensar bonito, sino de ver si hay algo más probable.</p>
+                <p className="trampa__pregunta" role="status">{TRAMPAS[trampa.tipo].pregunta}</p>
+                <p className="pequeno">No hace falta responder aquí. Puedes pensarlo un momento.</p>
+                <Boton tipo="secundario" onClick={() => abrirRefugio({ tecnica: 'amiga', frase: trampa.frase })}>¿Qué le dirías a una amiga?</Boton>
+                <Boton onClick={() => setPantalla('guardado')}>Seguir</Boton>
+              </>
+            )}
+          </section>
+        </Paisaje>
       )}
 
       {pantalla === 'guardado' && (
