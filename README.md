@@ -26,7 +26,8 @@ Proyecto del curso **CC451 Interacción Humano-Computador**, Universidad Naciona
 5. Ves una reflexión corta, que también se puede escuchar.
 6. El historial de ejemplo muestra 30 días simulados.
 7. En **Perfil** ves lo que la app sabe de ti y apagas cada dato, cambias los permisos, exportas un resumen en PDF para tu psicóloga o psicólogo, o eliminas todos tus datos.
-8. En **Accesibilidad** activas movimiento reducido, apagas cada capa del clima, y eliges el modo predecible o el neutral, la descripción hablada del paisaje, la vibración, las pistas y las órdenes de voz.
+8. **Necesito un respiro** (en el inicio, gratis y a un toque; también se ofrece tras un día de lluvia o tormenta): herramientas de autocuidado de 1 a 3 minutos, no terapia. Respirar con la lluvia (respiración lenta o suspiro cíclico), 5-4-3-2-1, partir la tarea y «¿qué le dirías a una amiga?». Guarda solo el clima de antes y de después, y en el historial «Lo que te ayudó» resume cada técnica. Si el relato tiene una trampa de pensamiento, la app la pregunta («¿Puede ser que…?»), nunca la afirma; si hay riesgo, solo aparece la pantalla de crisis. Capturas en [`docs/capturas/refugio/`](docs/capturas/refugio/).
+9. En **Accesibilidad** activas movimiento reducido, apagas cada capa del clima, y eliges el modo predecible o el neutral, la descripción hablada del paisaje, la vibración, las pistas y las órdenes de voz.
 
 ## Requerimientos del proyecto y dónde están
 
@@ -42,7 +43,7 @@ Proyecto del curso **CC451 Interacción Humano-Computador**, Universidad Naciona
 | Privacidad y datos | Permisos, qué datos usa la personalización, exportar PDF y eliminar todo (`src/pantallas/Privacidad.jsx`, `Datos.jsx`) | Hecho |
 | Accesibilidad | Movimiento reducido, capas, modos predecible y neutral, voz, vibración (`src/pantallas/Accesibilidad.jsx`) | Hecho |
 
-La matriz de trazabilidad completa (44 RF, 32 RNF, 32 historias de usuario) está en
+La matriz de trazabilidad completa (45 RF, 32 RNF, 33 historias de usuario) está en
 [`docs/matriz-trazabilidad.md`](docs/matriz-trazabilidad.md).
 
 ## Instalación
@@ -123,7 +124,7 @@ Comprobado en https://clima-interior.vercel.app: el service worker toma el contr
 
 ## Reporte de trazabilidad
 
-[`docs/reporte-trazabilidad.md`](docs/reporte-trazabilidad.md) (también en [PDF](docs/reporte-trazabilidad.pdf)) une cada una de las 32 historias de usuario con los requerimientos que cubre, el código que los implementa (enlaces a la línea), las pruebas y una captura. Hoy: 35 de 76 requerimientos implementados, 18 parciales y 23 pendientes; el reporte explica cada hueco.
+[`docs/reporte-trazabilidad.md`](docs/reporte-trazabilidad.md) (también en [PDF](docs/reporte-trazabilidad.pdf)) une cada una de las 33 historias de usuario con los requerimientos que cubre, el código que los implementa (enlaces a la línea), las pruebas y una captura. Hoy: 35 de 76 requerimientos implementados, 18 parciales y 23 pendientes; el reporte explica cada hueco.
 
 ```bash
 npm run capturas   # regenera docs/capturas recorriendo la app en un navegador real (Chrome o Chromium)
