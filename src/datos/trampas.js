@@ -100,7 +100,7 @@ const PATRONES = [
     /todos (me )?(miran|juzgan|se van a reir)/, /se (van a dar|dan|daran) cuenta de que no se/,
   ]],
   ['generalizar', [
-    /todo me sale mal/, /nada me sale (bien)?/, /siempre (me va mal|me sale mal|fallo|me equivoco|arruino|la malogro|me pasa lo mismo)/,
+    /todo me sale mal/, /nada me sale( bien)?\b/, /siempre (me va mal|me sale mal|fallo|me equivoco|arruino|la malogro|me pasa lo mismo)/,
     /nunca (me sale|hago nada bien|me va bien|entiendo nada|aprendo)/, /(lo intento|intento) y (lo intento y )?(sigo|siempre) (fallando|fallo)/,
     /(cada vez|siempre) que (doy|tengo) (un )?examen/,
   ]],
