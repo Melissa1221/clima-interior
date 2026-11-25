@@ -4,14 +4,15 @@
 import { useEffect, useRef, useState } from 'react'
 import Paisaje from '../componentes/Paisaje.jsx'
 import Icono from '../componentes/Icono.jsx'
-import { Boton } from '../componentes/Ui.jsx'
+import { Boton, Campo } from '../componentes/Ui.jsx'
 import { CLIMAS, climaEfectivo } from '../datos/climas.js'
 import { RITMOS, TECNICAS, duracionRitmo, fraseDeCambio, ordenarTecnicas } from '../datos/refugio.js'
 import { crearGrabacion, decir } from '../voz/stt.js'
 import { vibrar } from '../datos/accesibilidad.js'
 import { hayRiesgo } from '../datos/riesgo.js'
+import { agregarPaso, alternarPaso, borrarTarea, cambiarQue, leerTarea, quitarPaso } from '../datos/tarea.js'
 
-const DISPONIBLES = new Set(['respirar', 'tierra'])
+const DISPONIBLES = new Set(['respirar', 'tierra', 'tarea'])
 const fechaLocal = (d) => d.toLocaleDateString('en-CA')
 const climaDe = (id) => CLIMAS.find((c) => c.id === id)
 
@@ -88,6 +89,62 @@ function Tierra({ voz, onRiesgo, onTerminar }) {
       )}
       {dictado.escuchando && <Boton tipo="secundario" onClick={dictado.parar}>Ya lo dije</Boton>}
       <p className="pequeno">{TECNICAS.tierra.evidencia} No se guarda lo que digas.</p>
+    </section>
+  )
+}
+
+// Partir la tarea: lo que más dicen los estudiantes que les sirve («hacer una lista y tacharla», 01 §3).
+// El primer paso se plantea de unos 15 minutos. La lista queda en el teléfono hasta que la persona la borre.
+function Tarea({ voz, onRiesgo, onTerminar }) {
+  const [tarea, setTarea] = useState(leerTarea)
+  const [nuevo, setNuevo] = useState('')
+  const dictado = useDictado({ voz, onRiesgo })
+  const revisar = (t) => { if (hayRiesgo(t)) { onRiesgo(); return false } return true }
+  function agregar(texto = nuevo) {
+    if (!texto.trim() || !revisar(texto)) return
+    setTarea((t) => agregarPaso(t, texto))
+    setNuevo('')
+  }
+  const hechos = tarea.pasos.filter((p) => p.hecho).length
+  return (
+    <section className="hoja" aria-labelledby="tarea-titulo">
+      <h1 id="tarea-titulo" className="hoja__titulo-grande">Partir la tarea</h1>
+      <Campo id="tarea-que" etiqueta="¿Qué tienes que hacer?" value={tarea.que} placeholder="Estudiar para el parcial de IA" maxLength={120}
+        onChange={(e) => setTarea((t) => cambiarQue(t, e.target.value))} onBlur={(e) => revisar(e.target.value)} />
+      {tarea.pasos.length > 0 && (
+        <>
+          <p className="pequeno" role="status">{hechos} de {tarea.pasos.length} pasos hechos</p>
+          <ul className="pasos" aria-label="Pasos pequeños">
+            {tarea.pasos.map((p, i) => (
+              <li key={`${i}-${p.texto}`} className={p.hecho ? 'paso paso--hecho' : 'paso'}>
+                <label>
+                  <input type="checkbox" checked={p.hecho} onChange={() => setTarea((t) => alternarPaso(t, i))} />
+                  <span>{p.texto}{i === 0 && <small>Primer paso · unos 15 min</small>}</span>
+                </label>
+                <button type="button" className="btn-icono" aria-label={`Quitar «${p.texto}»`} onClick={() => setTarea((t) => quitarPaso(t, i))}>
+                  <Icono nombre="borrar" tam={20} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      <form className="agregar" onSubmit={(e) => { e.preventDefault(); agregar() }}>
+        <Campo id="tarea-paso" etiqueta={tarea.pasos.length ? 'Otro paso pequeño' : 'Un primer paso de unos 15 minutos'} value={nuevo}
+          placeholder={tarea.pasos.length ? 'Hacer 2 ejercicios' : 'Leer la primera página'} maxLength={140} onChange={(e) => setNuevo(e.target.value)} />
+        <Boton type="submit" disabled={!nuevo.trim()}>Agregar</Boton>
+      </form>
+      {voz.disponible && (dictado.escuchando
+        ? <Boton tipo="secundario" onClick={dictado.parar}>Ya lo dije</Boton>
+        : <Boton tipo="secundario" icono="mic" onClick={() => dictado.empezar((t) => agregar(t))}>Dictar un paso</Boton>)}
+      {dictado.escuchando && <p className="escucha" aria-live="polite">{dictado.oido ? `«${dictado.oido}»` : 'Te escucho…'}</p>}
+      <Boton onClick={onTerminar}>Listo por ahora</Boton>
+      {(tarea.pasos.length > 0 || tarea.que) && (
+        <button type="button" className="enlace" onClick={() => { if (window.confirm('¿Borrar la lista? No se puede deshacer.')) setTarea(borrarTarea()) }}>
+          Borrar la lista
+        </button>
+      )}
+      <p className="pequeno">La lista se queda en este teléfono hasta que la borres.</p>
     </section>
   )
 }
@@ -237,6 +294,8 @@ export default function Refugio({ preferencias, voz = { disponible: false }, fav
       )}
 
       {paso === 'tierra' && <Tierra voz={voz} onRiesgo={onRiesgo} onTerminar={() => ir('despues')} />}
+
+      {paso === 'tarea' && <Tarea voz={voz} onRiesgo={onRiesgo} onTerminar={() => ir('despues')} />}
 
       {paso === 'despues' && (
         <section className="hoja" aria-labelledby="refugio-despues">
