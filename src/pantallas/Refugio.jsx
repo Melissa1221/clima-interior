@@ -118,7 +118,7 @@ function Tarea({ voz, onRiesgo, onTerminar }) {
               <li key={`${i}-${p.texto}`} className={p.hecho ? 'paso paso--hecho' : 'paso'}>
                 <label>
                   <input type="checkbox" checked={p.hecho} onChange={() => setTarea((t) => alternarPaso(t, i))} />
-                  <span>{p.texto}{i === 0 && <small>Primer paso · unos 15 min</small>}</span>
+                  <span className="paso__textos"><span className="paso__texto">{p.texto}</span>{i === 0 && <small>Primer paso · unos 15 min</small>}</span>
                 </label>
                 <button type="button" className="btn-icono" aria-label={`Quitar «${p.texto}»`} onClick={() => setTarea((t) => quitarPaso(t, i))}>
                   <Icono nombre="borrar" tam={20} />
@@ -130,7 +130,7 @@ function Tarea({ voz, onRiesgo, onTerminar }) {
       )}
       <form className="agregar" onSubmit={(e) => { e.preventDefault(); agregar() }}>
         <Campo id="tarea-paso" etiqueta={tarea.pasos.length ? 'Otro paso pequeño' : 'Un primer paso de unos 15 minutos'} value={nuevo}
-          placeholder={tarea.pasos.length ? 'Hacer 2 ejercicios' : 'Leer la primera página'} maxLength={140} onChange={(e) => setNuevo(e.target.value)} />
+          placeholder={tarea.pasos.length ? 'Algo chiquito' : 'Leer la primera página'} maxLength={140} onChange={(e) => setNuevo(e.target.value)} />
         <Boton type="submit" disabled={!nuevo.trim()}>Agregar</Boton>
       </form>
       {voz.disponible && (dictado.escuchando
@@ -239,8 +239,8 @@ function Respirar({ preferencias, onTerminar }) {
             <p className="respiro__guia" aria-live="polite">{guia}</p>
             <div className="progreso">
               <small id="respiro-avance">Respiración {paso.ciclo + 1} de {r.ciclos}</small>
-              <div className="progreso__barra" role="progressbar" aria-labelledby="respiro-avance" aria-valuemin={0} aria-valuemax={r.ciclos} aria-valuenow={paso.ciclo}>
-                <div className="progreso__relleno" style={{ width: `${(paso.ciclo / r.ciclos) * 100}%` }} />
+              <div className="progreso__barra" role="progressbar" aria-labelledby="respiro-avance" aria-valuemin={1} aria-valuemax={r.ciclos} aria-valuenow={paso.ciclo + 1}>
+                <div className="progreso__relleno" style={{ width: `${((paso.ciclo + 1) / r.ciclos) * 100}%` }} />
               </div>
             </div>
             <Boton tipo="secundario" onClick={onTerminar}>Terminar</Boton>
