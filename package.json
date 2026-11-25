@@ -13,6 +13,7 @@
     "test": "vitest run",
     "reporte": "python3 scripts/generar_reporte.py --pdf",
     "capturas": "node scripts/capturas.mjs",
+    "capturas:refugio": "node scripts/capturas-refugio.mjs",
     "video:grabar": "node scripts/video/grabar.mjs",
     "video:montar": "node scripts/video/montar.mjs",
     "salas": "node server/salas.mjs",
