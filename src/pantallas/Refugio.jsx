@@ -6,7 +6,7 @@ import Paisaje from '../componentes/Paisaje.jsx'
 import Icono from '../componentes/Icono.jsx'
 import { Boton, Campo } from '../componentes/Ui.jsx'
 import { CLIMAS, climaEfectivo } from '../datos/climas.js'
-import { RITMOS, TECNICAS, duracionRitmo, fraseDeCambio, ordenarTecnicas } from '../datos/refugio.js'
+import { RITMOS, TECNICAS, duracionRitmo, fraseDeCambio, fraseResumen, ordenarTecnicas, resumenRefugios } from '../datos/refugio.js'
 import { crearGrabacion, decir } from '../voz/stt.js'
 import { vibrar } from '../datos/accesibilidad.js'
 import { hayRiesgo } from '../datos/riesgo.js'
@@ -353,5 +353,33 @@ export default function Refugio({ preferencias, voz = { disponible: false }, fav
         </section>
       )}
     </Paisaje>
+  )
+}
+
+// Seguimiento en el historial: cuántos respiros y cómo suele quedar el cielo con cada técnica.
+// En climas y palabras, nunca en puntajes; sin rachas ni metas (RNF-32).
+export function LoQueTeAyudo({ refugios }) {
+  const resumen = resumenRefugios(refugios)
+  if (!resumen.length) return null
+  const n = refugios.length
+  return (
+    <section className="ayudo" aria-labelledby="ayudo-titulo">
+      <h3 id="ayudo-titulo">Lo que te ayudó</h3>
+      <p className="pequeno">Te diste {n === 1 ? '1 respiro' : `${n} respiros`}. Así suele quedar tu cielo con cada técnica:</p>
+      <ul>
+        {resumen.map((t) => {
+          const a = climaDe(t.antes)
+          const d = climaDe(t.despues)
+          return (
+            <li key={t.tecnica}>
+              <strong>{TECNICAS[t.tecnica].titulo}</strong>
+              <span className="ayudo__climas" aria-hidden="true">{a.icono} {a.etiqueta} → {d.icono} {d.etiqueta}</span>
+              <span className="sr">En general, de {a.etiqueta.toLowerCase()} a {d.etiqueta.toLowerCase()}.</span>
+              <small className="pequeno">{fraseResumen(t)}</small>
+            </li>
+          )
+        })}
+      </ul>
+    </section>
   )
 }

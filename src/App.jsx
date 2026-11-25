@@ -20,7 +20,7 @@ import { AjustesIniciales, Bienvenida, Edad, Limites, Permisos } from './pantall
 import { AntesDeGrabar, PrivacidadYDatos, SabeDeMi } from './pantallas/Privacidad.jsx'
 import { EliminarDatos, ExportarResumen } from './pantallas/Datos.jsx'
 import Sala from './pantallas/Sala.jsx'
-import Refugio from './pantallas/Refugio.jsx'
+import Refugio, { LoQueTeAyudo } from './pantallas/Refugio.jsx'
 
 const SEG_SUGERIR_CIERRE = 60
 
@@ -595,6 +595,7 @@ export default function App() {
             ))}
           </ol>
           <p className="pequeno">Los días sin registro no aparecen como fallo: el cielo sigue despejado.</p>
+          <LoQueTeAyudo refugios={perfil.refugios} />
           {perfil.registros.length > 0 && (
             <button className="enlace" onClick={() => abrirHistorial(!demo)}>{demo ? 'Ver mis registros' : 'Ver el ejemplo de 30 días'}</button>
           )}
