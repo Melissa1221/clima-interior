@@ -12,7 +12,6 @@ import { vibrar } from '../datos/accesibilidad.js'
 import { hayRiesgo } from '../datos/riesgo.js'
 import { agregarPaso, alternarPaso, borrarTarea, cambiarQue, leerTarea, quitarPaso } from '../datos/tarea.js'
 
-const DISPONIBLES = new Set(['respirar', 'tierra', 'tarea'])
 const fechaLocal = (d) => d.toLocaleDateString('en-CA')
 const climaDe = (id) => CLIMAS.find((c) => c.id === id)
 
@@ -149,6 +148,42 @@ function Tarea({ voz, onRiesgo, onTerminar }) {
   )
 }
 
+// ¿Qué le dirías a una amiga? (autocompasión). Si viene de una trampa, usa la frase de la persona.
+// Lo escrito no se guarda: solo sirve para mirarlo y leérselo a una misma o a uno mismo.
+function Amiga({ frase, onRiesgo, onTerminar }) {
+  const [texto, setTexto] = useState('')
+  const [leer, setLeer] = useState(false)
+  function seguir() {
+    if (hayRiesgo(texto)) return onRiesgo()
+    if (!leer) return setLeer(true)
+    onTerminar()
+  }
+  return (
+    <section className="hoja" aria-labelledby="amiga-titulo">
+      <h1 id="amiga-titulo" className="hoja__titulo-grande">{TECNICAS.amiga.titulo}</h1>
+      {!leer ? (
+        <>
+          <p className="trampa__cita">{frase
+            ? <>Imagina que una amiga o un amigo te dice: <strong>«{frase}»</strong>.</>
+            : 'Imagina que una amiga o un amigo está pasando por lo mismo que tú.'}</p>
+          <p className="pequeno">¿Qué le dirías? ¿Con qué tono? Seguro no le hablarías tan duro.</p>
+          <label htmlFor="amiga-texto" className="hoja__titulo">Lo que le dirías (no se guarda)</label>
+          <textarea id="amiga-texto" rows={4} value={texto} onChange={(e) => setTexto(e.target.value)}
+            placeholder="Tranquila, tranquilo: estudiaste, y una nota no dice quién eres…" />
+          <Boton onClick={seguir}>Seguir</Boton>
+        </>
+      ) : (
+        <>
+          <p className="trampa__pregunta" role="status">{texto.trim() ? `«${texto.trim()}»` : 'Piensa en esas palabras amables.'}</p>
+          <p>Ahora prueba decírtelo a ti, con el mismo cariño.</p>
+          <p className="pequeno">{TECNICAS.amiga.evidencia}</p>
+          <Boton onClick={seguir}>Listo</Boton>
+        </>
+      )}
+    </section>
+  )
+}
+
 // Respirar con la lluvia: respiración lenta (4 s / 6 s, ~6 por minuto) o suspiro cíclico.
 // La nube crece al inhalar y se encoge al exhalar; el cielo se aclara y se oscurece con ella.
 // Con movimiento reducido no se anima nada: queda el texto, y una vibración corta en cada cambio si está activa.
@@ -279,7 +314,7 @@ export default function Refugio({ preferencias, voz = { disponible: false }, fav
           <h1 id="refugio-elegir" className="hoja__titulo-grande">¿Qué te vendría bien?</h1>
           <p className="pequeno">Cada una dura poco y puedes dejarla cuando quieras.</p>
           <div className="tecnicas">
-            {ordenarTecnicas(favorita).filter((id) => DISPONIBLES.has(id)).map((id) => (
+            {ordenarTecnicas(favorita).map((id) => (
               <button key={id} type="button" className="enlace-fila tecnica" onClick={() => elegirTecnica(id)}>
                 <span className="enlace-fila__textos">
                   <strong>{TECNICAS[id].titulo}</strong>
@@ -296,6 +331,8 @@ export default function Refugio({ preferencias, voz = { disponible: false }, fav
       {paso === 'tierra' && <Tierra voz={voz} onRiesgo={onRiesgo} onTerminar={() => ir('despues')} />}
 
       {paso === 'tarea' && <Tarea voz={voz} onRiesgo={onRiesgo} onTerminar={() => ir('despues')} />}
+
+      {paso === 'amiga' && <Amiga frase={inicial?.frase} onRiesgo={onRiesgo} onTerminar={() => ir('despues')} />}
 
       {paso === 'despues' && (
         <section className="hoja" aria-labelledby="refugio-despues">
