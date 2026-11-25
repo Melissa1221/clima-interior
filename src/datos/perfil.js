@@ -1,6 +1,9 @@
 // Perfil persistente que se actualiza con el uso (RF-21, RF-22, RF-23). Vive en el dispositivo (localStorage).
 // Guarda preferencias, permisos, ritmo, errores y emociones declaradas e inferidas, y anota de dónde
 // salió cada cambio que la app hizo por su cuenta.
+import { mejorTecnica, TECNICAS } from './refugio.js'
+import { TRAMPAS } from './trampas.js'
+
 const CLAVE = 'clima-interior:perfil'
 
 export const PREFERENCIAS = {
@@ -18,7 +21,7 @@ export const PREFERENCIAS = {
 export const PRIVACIDAD = { grabarVoz: true, transcribirEnInternet: false, iaEnInternet: false, climaCompartido: false }
 
 // Qué datos usa la personalización (S40). Apagar una categoría también borra lo aprendido de ella.
-export const PERSONALIZACION = { paisaje: true, ritmo: true, elegidas: true, propuestas: false, tono: true, entrada: true }
+export const PERSONALIZACION = { paisaje: true, ritmo: true, elegidas: true, propuestas: false, tono: true, entrada: true, refugio: true, trampas: true }
 
 // Nombres de las categorías que la persona puede olvidar en "Lo que sabe de ti"
 export const CATEGORIAS = {
@@ -27,21 +30,27 @@ export const CATEGORIAS = {
   propuestas: 'Emociones que propuso la IA',
   tono: 'Cómo te habla el asistente',
   entrada: 'Si prefieres hablar o escribir',
+  refugio: 'Técnicas que te ayudan',
+  trampas: 'Trampas que no te suenan',
 }
 
 const FALLOS_MIC_PARA_TEXTO = 2
 const PEDIDOS_PARA_CORTO = 3
+const DESCARTES_PARA_SILENCIAR = 2
 
 const INICIAL = {
   registros: [],
+  // Cada uso del Refugio: { fecha, tecnica, antes, despues, segundos }. Sin texto de lo que se dijo.
+  refugios: [],
+  refugioSaltado: null, // fecha en que dijo «Ahora no» a la oferta: ese día no se vuelve a ofrecer (HU-30 Esc. 2)
   preferencias: PREFERENCIAS,
   privacidad: PRIVACIDAD,
   personalizacion: PERSONALIZACION,
   ritmo: { horaHabitual: null, segundosCheckin: null },
   primerUso: { completo: false, edad: null },
   // Lo que la app aprende del uso y lo que decidió por su cuenta a partir de eso
-  aprendizaje: { emociones: {}, propuestasIA: 0, aceptadasIA: 0, fallosMic: 0, pedidosCorto: 0 },
-  aprendido: { frasesCortas: false, entrada: 'voz' },
+  aprendizaje: { emociones: {}, propuestasIA: 0, aceptadasIA: 0, fallosMic: 0, pedidosCorto: 0, trampas: {} },
+  aprendido: { frasesCortas: false, entrada: 'voz', tecnicaFavorita: null, trampasSilenciadas: [] },
   cambios: [],
 }
 
@@ -54,6 +63,9 @@ function combinar(base, guardado) {
   for (const clave of GRUPOS) salida[clave] = { ...base[clave], ...(g[clave] ?? {}) }
   salida.preferencias.capas = { ...base.preferencias.capas, ...(g.preferencias?.capas ?? {}) }
   salida.aprendizaje.emociones = { ...(g.aprendizaje?.emociones ?? {}) }
+  salida.aprendizaje.trampas = { ...(g.aprendizaje?.trampas ?? {}) }
+  if (!Array.isArray(salida.aprendido.trampasSilenciadas)) salida.aprendido.trampasSilenciadas = []
+  if (!Array.isArray(salida.refugios)) salida.refugios = []
   if (!Array.isArray(salida.registros)) salida.registros = []
   if (!Array.isArray(salida.cambios)) salida.cambios = []
   return salida
@@ -172,6 +184,14 @@ export function restablecer(perfil, categoria) {
     p.aprendizaje.pedidosCorto = 0
     p.aprendido.frasesCortas = false
   }
+  if (categoria === 'refugio') {
+    p.refugios = []
+    p.aprendido.tecnicaFavorita = null
+  }
+  if (categoria === 'trampas') {
+    p.aprendizaje.trampas = {}
+    p.aprendido.trampasSilenciadas = []
+  }
   p.cambios = anotar(perfil, `Se borró: ${CATEGORIAS[categoria] ?? categoria}`, 'Lo pediste tú')
   return persistir(p)
 }
@@ -223,6 +243,44 @@ export function notaDeRitmo(perfil, ahora = new Date()) {
     ? 'Llegas a tu hora de siempre.'
     : null
 }
+
+// Refugio (RF-42): guarda antes/después y, si la categoría está activa, aprende qué técnica despeja más tu cielo.
+// No hay rachas ni metas: solo se ofrece primero lo que te sirvió, y se anota por qué (RF-23, RNF-32).
+export function guardarRefugio(perfil, refugio) {
+  const refugios = [...perfil.refugios, refugio]
+  let { aprendido, cambios } = perfil
+  if (perfil.personalizacion.refugio) {
+    const mejor = mejorTecnica(refugios)
+    if (mejor && mejor.tecnica !== aprendido.tecnicaFavorita) {
+      aprendido = { ...aprendido, tecnicaFavorita: mejor.tecnica }
+      cambios = anotar(perfil, `Te ofrecemos primero «${TECNICAS[mejor.tecnica].titulo}»`,
+        `Fue la que más despejó tu cielo en ${mejor.veces} refugios`)
+    }
+  }
+  return persistir({ ...perfil, refugios, aprendido, cambios })
+}
+
+export const tecnicaFavorita = (perfil) => (perfil.personalizacion.refugio ? perfil.aprendido.tecnicaFavorita : null)
+
+// «Ahora no» a la oferta del Refugio: ese día no se vuelve a ofrecer
+export const saltarOfertaRefugio = (perfil, fecha) => persistir({ ...perfil, refugioSaltado: fecha })
+
+// La persona responde a la tarjeta de trampa. Si dice «No es así» varias veces a un mismo tipo, la app deja de
+// preguntarlo (y lo anota). Con la categoría apagada no se guarda nada.
+export function registrarTrampa(perfil, tipo, respuesta) {
+  if (!perfil.personalizacion.trampas || !TRAMPAS[tipo]) return perfil
+  const previo = perfil.aprendizaje.trampas[tipo] ?? { si: 0, no: 0 }
+  const cuenta = { ...previo, [respuesta === 'si' ? 'si' : 'no']: previo[respuesta === 'si' ? 'si' : 'no'] + 1 }
+  const aprendizaje = { ...perfil.aprendizaje, trampas: { ...perfil.aprendizaje.trampas, [tipo]: cuenta } }
+  let { aprendido, cambios } = perfil
+  if (cuenta.no >= DESCARTES_PARA_SILENCIAR && cuenta.no > cuenta.si && !aprendido.trampasSilenciadas.includes(tipo)) {
+    aprendido = { ...aprendido, trampasSilenciadas: [...aprendido.trampasSilenciadas, tipo] }
+    cambios = anotar(perfil, `Ya no te preguntamos por «${TRAMPAS[tipo].nombre.toLowerCase()}»`, `Dijiste «No es así» ${cuenta.no} veces`)
+  }
+  return persistir({ ...perfil, aprendizaje, aprendido, cambios })
+}
+
+export const trampasSilenciadas = (perfil) => (perfil.personalizacion.trampas ? perfil.aprendido.trampasSilenciadas : [])
 
 // Borra todo lo que la app guardó en el dispositivo: perfil, caché y cola de sincronización (S45, RF-29)
 export async function borrarTodo() {
