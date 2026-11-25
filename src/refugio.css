@@ -1,0 +1,60 @@
+/* Refugio (RF-42): respirar con la lluvia, 5-4-3-2-1, partir la tarea, ¿qué le dirías a una amiga? y trampas */
+.entrada-refugio { align-self: flex-start; width: auto; }
+.hoja__titulo-grande { font-size: 24px; line-height: 1.22; }
+.hoja .btn--fantasma { min-height: 48px; height: 48px; }
+
+/* Respirar: la nube crece al inhalar y se encoge al exhalar; el cielo la acompaña */
+.respirar { display: flex; flex-direction: column; gap: 14px; flex: 1; justify-content: flex-end; }
+.respiro { margin-bottom: auto; display: grid; place-items: center; min-height: 230px; }
+.respiro__nube { width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #fff, #dbe6f5 70%);
+  box-shadow: 0 0 0 10px rgba(255, 255, 255, .25), 0 10px 40px rgba(20, 27, 45, .25); transition-property: transform;
+  transition-timing-function: ease-in-out; }
+.paisaje:has(.respirar) .cielo { transition: opacity 3s ease-in-out; }
+.paisaje:has(.respirar[data-fase='inhala']) .cielo { opacity: .55; }
+.respiro__guia { margin: 0; font-family: var(--fuente-titulo); font-size: 30px; line-height: 1.2; color: var(--texto-principal); min-height: 36px; }
+
+/* Técnicas para elegir */
+.tecnicas { display: grid; gap: 8px; }
+.tecnica { background: var(--superficie-base); }
+.tecnica .icono { color: var(--marca-primario); }
+.tecnica__tuya { color: var(--exito) !important; font-weight: 700; }
+
+/* Antes → después, con dos climas pequeños */
+.antes-despues { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 8px 0; }
+.antes-despues__clima { display: grid; justify-items: center; gap: 2px; min-width: 96px; padding: 10px 12px; border-radius: 16px; background: var(--superficie-base); }
+.antes-despues__clima span { font-size: 32px; line-height: 1.1; }
+.antes-despues__clima small { font-size: 13px; color: var(--texto-secundario); }
+.antes-despues__flecha { font-size: 24px; color: var(--texto-secundario); }
+
+/* 5-4-3-2-1 */
+.tierra__numero { font-family: var(--fuente-titulo); font-size: 56px; line-height: 1; color: var(--marca-primario); margin: 0; }
+.escucha { margin: 0; background: var(--superficie-suave); border-radius: 12px; padding: 10px 12px; font-size: 15px; }
+
+/* Partir la tarea */
+.pasos { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.paso { display: flex; align-items: center; gap: 4px; background: var(--superficie-base); border-radius: 12px; padding-right: 4px; }
+.paso label { flex: 1; display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 6px 12px; cursor: pointer; }
+.paso input { width: 24px; height: 24px; flex: none; accent-color: var(--marca-primario); }
+.paso--hecho label span { text-decoration: line-through; color: var(--texto-secundario); }
+.paso small { display: block; font-size: 12px; color: var(--texto-secundario); text-decoration: none; }
+.paso .btn-icono { width: 44px; height: 44px; min-height: 44px; border: 0; background: transparent; }
+.agregar { display: flex; gap: 8px; align-items: flex-end; }
+.agregar .campo { flex: 1; min-width: 0; }
+.agregar .btn { width: auto; padding: 0 16px; }
+.hoja .campo input, .hoja textarea { width: 100%; }
+
+/* Tarjeta de trampa de pensamiento: valida primero, después pregunta */
+.trampa__cita { margin: 0; font-size: 17px; }
+.trampa__hipotesis { margin: 0; font-weight: 700; font-size: 17px; line-height: 1.45; }
+.trampa__pregunta { margin: 0; background: var(--info-suave); border-left: 6px solid var(--marca-primario); border-radius: 12px; padding: 12px 14px; font-size: 17px; }
+
+/* Lo que te ayudó (historial) */
+.ayudo { display: grid; gap: 8px; margin-top: 6px; }
+.ayudo h3 { margin: 0; font-family: var(--fuente-titulo); font-size: 20px; }
+.ayudo ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.ayudo li { display: grid; gap: 2px; background: var(--superficie-base); border-radius: 12px; padding: 10px 12px; }
+.ayudo__climas { font-size: 15px; }
+
+/* Oferta tras un check-in pesado: se ofrece, nunca se impone */
+.oferta-refugio { display: grid; gap: 8px; background: var(--info-suave); border-radius: 16px; padding: 14px; }
+.oferta-refugio strong { font-size: 17px; }

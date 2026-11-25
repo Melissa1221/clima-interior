@@ -6,5 +6,6 @@ import '@fontsource-variable/fraunces/full.css'
 import './estilos.css'
 import './componentes.css'
 import './microinteracciones.css'
+import './refugio.css'
 
 createRoot(document.getElementById('root')).render(<StrictMode><App /></StrictMode>)
