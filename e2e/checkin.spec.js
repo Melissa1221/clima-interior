@@ -170,3 +170,14 @@ test('emociones: hasta 4 nubes, «Poner mi propia palabra» y «Seguir» (M10)',
   await expect(page.getByRole('heading', { name: 'Tu día quedó guardado' })).toBeVisible()
   await expect(page.locator('.guardado__resumen')).toContainText('nostalgia')
 })
+
+test('sin dictado en el navegador (Firefox) no aparece el micrófono y «Escribir mi día» va primero (M13)', async ({ page }) => {
+  await page.addInitScript(() => { delete window.SpeechRecognition; delete window.webkitSpeechRecognition })
+  await page.goto('/')
+  await page.getByRole('radio', { name: /Nublado/ }).click()
+  await expect(page.getByRole('button', { name: 'Escribir mi día' })).toBeVisible()
+  await expect(page.getByRole('button', { name: /Contar mi día por voz|Hablar/ })).toHaveCount(0)
+  await page.getByRole('button', { name: 'Escribir mi día' }).click()
+  await expect(page.getByText('¿Cómo fue tu día?')).toBeVisible()
+  await expect(page.getByRole('button', { name: /hablando/ })).toHaveCount(0)
+})

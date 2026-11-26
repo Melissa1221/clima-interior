@@ -35,7 +35,7 @@ const ESCALA_TEXTO = { normal: 1, grande: 0.88, 'mas-grande': 0.76 }
 const GARUA_X = 6
 const GARUA_Y = 8
 
-export default function Inicio({ cabecera, noche, capas, clima, climaVista, registros, notaRitmo, porTexto, predecible, tamanoTexto = 'normal',
+export default function Inicio({ cabecera, noche, capas, clima, climaVista, registros, notaRitmo, porTexto, predecible, tamanoTexto = 'normal', sinVoz = false,
   onElegir, onGuardar, onContar, onEscribir, onPredecible, onRespiro }) {
   const ahora = new Date()
   const ultimo = registros.at(-1)
@@ -89,7 +89,7 @@ export default function Inicio({ cabecera, noche, capas, clima, climaVista, regi
           {!clima && primeraVez && <p className="cap"><Icono nombre="info" tam={16} />Elegir tu cielo ya basta. Contarlo es opcional.</p>}
           {!clima && ultimo && <p className="cap"><Icono nombre={ultimo.clima} tam={16} />Último registro: {etiquetaDe(ultimo.clima)}, {cuando(ultimo.fecha)}</p>}
           {notaRitmo && <p className="cap">{notaRitmo}</p>}
-          {porTexto && <p className="cap"><Icono nombre="info" tam={16} />Como el micrófono falló, empezamos escribiendo. Puedes hablar cuando quieras.</p>}
+          {porTexto && !sinVoz && <p className="cap"><Icono nombre="info" tam={16} />Como el micrófono falló, empezamos escribiendo. Puedes hablar cuando quieras.</p>}
         </div>
         {predecible ? (
           <Boton onClick={onPredecible} disabled={!clima}>Continuar</Boton>
@@ -97,10 +97,11 @@ export default function Inicio({ cabecera, noche, capas, clima, climaVista, regi
           <div className="pila">
             <Boton icono="check" disabled={!clima} onClick={onGuardar}>Guardar así</Boton>
             <div className="fila-ctas">
-              {porTexto ? (
+              {porTexto || sinVoz ? (
                 <>
                   <Boton tipo="linea" icono="pen" disabled={!clima} onClick={onEscribir}>Escribir mi día</Boton>
-                  <Boton tipo="texto" icono="mic" disabled={!clima} onClick={onContar}>Hablar</Boton>
+                  {/* M13: sin dictado en el navegador (Firefox) no se ofrece el micrófono */}
+                  {!sinVoz && <Boton tipo="texto" icono="mic" disabled={!clima} onClick={onContar}>Hablar</Boton>}
                 </>
               ) : (
                 <>

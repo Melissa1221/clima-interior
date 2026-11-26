@@ -296,8 +296,8 @@ export function PredecibleComo({ cabecera, onHablar, onEscribir, onGuardar }) {
         <h1 id="como-titulo" className="pregunta">¿Cómo quieres contarlo?</h1>
         <p className="cuerpo">Elige una opción. Después te haremos la siguiente pregunta.</p>
         <div className="pila">
-          <Boton icono="mic" onClick={onHablar}>Hablar</Boton>
-          <Boton tipo="linea" icono="pen" onClick={onEscribir}>Escribir</Boton>
+          {onHablar && <Boton icono="mic" onClick={onHablar}>Hablar</Boton>}
+          <Boton tipo={onHablar ? 'linea' : 'solido'} icono="pen" onClick={onEscribir}>Escribir</Boton>
           <Boton tipo="texto" onClick={onGuardar}>Guardar solo el clima</Boton>
         </div>
       </section>

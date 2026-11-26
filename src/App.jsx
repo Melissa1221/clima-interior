@@ -447,7 +447,7 @@ export default function App() {
 
         {pantalla === 'inicio' && (
           <Inicio cabecera={cab} noche={noche} capas={capas} clima={clima} climaVista={climaVista} registros={perfil.registros}
-            notaRitmo={notaDeRitmo(perfil)} porTexto={porTexto} predecible={predecible} tamanoTexto={preferencias.tamanoTexto}
+            notaRitmo={notaDeRitmo(perfil)} porTexto={porTexto} predecible={predecible} tamanoTexto={preferencias.tamanoTexto} sinVoz={!sttDisponible()}
             onElegir={elegirClima} onGuardar={() => guardar()} onContar={contar} onEscribir={escribir}
             onPredecible={() => ir('predecible-como')} onRespiro={() => abrirRefugio()} />
         )}
@@ -462,7 +462,7 @@ export default function App() {
             duracion={segundos} estadoVoz={estadoVoz()} motivoVoz={deVoz ? MOTIVOS_DICTADO[estadoVoz()] : null} errorMic={errorMic}
             puedeHablar={estadoVoz() !== 'sin-navegador' && !errorMic} onListo={() => listo()} onHablar={contar} />
         )}
-        {pantalla === 'predecible-como' && <PredecibleComo cabecera={cab} onHablar={contar} onEscribir={escribir} onGuardar={() => guardar()} />}
+        {pantalla === 'predecible-como' && <PredecibleComo cabecera={cab} onHablar={sttDisponible() ? contar : undefined} onEscribir={escribir} onGuardar={() => guardar()} />}
         {pantalla === 'pensando' && <Pensando cabecera={cab} capas={capas} clima={climaVista} />}
         {pantalla === 'emociones' && propuesta && (
           <Emociones cabecera={cab} capas={capas} clima={climaVista} neutral={climaVista !== clima} predecible={predecible} propuesta={propuesta}
@@ -499,7 +499,7 @@ export default function App() {
             onDia={(f) => { setDetalle(f); ir('detalle') }} onAlternarDemo={() => abrirHistorial(!demo)} />
         )}
         {pantalla === 'semana' && !demo && perfil.registros.length === 0 && (
-          <HistorialVacio cabecera={cab} onContar={reiniciar} onDemo={() => abrirHistorial(true)} />
+          <HistorialVacio cabecera={cab} sinVoz={!sttDisponible()} onContar={reiniciar} onDemo={() => abrirHistorial(true)} />
         )}
         {pantalla === 'detalle' && registrosDetalle.length > 0 && (
           <DetalleDia cabecera={cabecera({ titulo: registroDetalleTitulo(registrosDetalle[0]) })} capas={capas} registros={registrosDetalle}

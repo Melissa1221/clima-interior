@@ -153,7 +153,7 @@ export function DetalleDia({ cabecera, capas, registros, refugios = [], neutral 
 }
 
 // 14 · Historial vacío: sin culpa, con la demo a un toque
-export function HistorialVacio({ cabecera, onContar, onDemo }) {
+export function HistorialVacio({ cabecera, onContar, onDemo, sinVoz = false }) {
   return (
     <div className="plana plana--cielo">
       {cabecera}
@@ -163,7 +163,7 @@ export function HistorialVacio({ cabecera, onContar, onDemo }) {
         <h1 id="vacio-titulo" className="display-m">Todavía no hay días</h1>
         <p className="cuerpo">Cuando cuentes tu primer día, aquí aparecerá su cielo. Sin apuro.</p>
         <div className="pila pila--centro">
-          <Boton icono="mic" onClick={onContar}>Contar mi día</Boton>
+          <Boton icono={sinVoz ? 'pen' : 'mic'} onClick={onContar}>Contar mi día</Boton>
           <Boton tipo="texto" onClick={onDemo}>Mirar 30 días de ejemplo</Boton>
         </div>
       </section>
