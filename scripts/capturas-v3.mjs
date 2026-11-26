@@ -13,7 +13,7 @@ mkdirSync(SALIDA, { recursive: true })
 const hoy = new Date()
 const dia = (n) => { const d = new Date(hoy); d.setDate(d.getDate() - n); return d.toLocaleDateString('en-CA') }
 const REGISTROS = [
-  [9, 'nublado', ['cansancio'], 'Día largo de clases.'], [7, 'lluvia', ['tristeza'], 'Llovió todo el día y me sentí sola.'],
+  [9, 'nublado', ['cansancio'], 'Día largo de clases.'], [7, 'lluvia', ['tristeza'], 'Llovió todo el día y no tuve ganas de nada.'],
   [5, 'soleado', ['alegría'], 'Salí con mis amigas al malecón.'], [4, 'niebla', ['confusión'], 'No entendí nada en la clase de IA.'],
   [2, 'tormenta', ['ansiedad'], 'Mañana es el parcial y no me da la cabeza.'], [1, 'lluvia', ['preocupación'], 'Mucho que entregar esta semana.'],
 ].map(([n, clima, emo, t]) => ({ fecha: dia(n), hora: '21:30', clima, emocion_declarada: emo, emocion_inferida: null, transcripcion: t }))
@@ -109,7 +109,7 @@ try {
   await p.getByLabel('¿Qué tienes que hacer?').fill('Estudiar para el parcial de IA')
   for (const paso of ['Leer la primera página', 'Hacer el resumen del tema 3']) { await p.locator('#tarea-paso').fill(paso); await boton(p, 'Agregar') }
   await p.getByRole('checkbox').first().check(); await foto(p, '20-partir-tarea')
-  await boton(p, 'Elegir otra técnica'); await boton(p, /amiga/); await foto(p, '21-amiga')
+  await boton(p, 'Elegir otra técnica'); await boton(p, /alguien que quieres/); await foto(p, '21-amiga')
   await p.context().close()
 
   // Crisis (botón y detector)

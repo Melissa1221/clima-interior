@@ -90,7 +90,7 @@ function Respirar({ cabecera, preferencias, capas, onTerminar, onOtra, onMasAyud
         {cuenta > 0 ? (
           <div className="respiro__textos">
             <p className="etiqueta">Respirar con la lluvia</p>
-            <h1 className="display-xl respiro__ponte">Ponte cómoda.</h1>
+            <h1 className="display-xl respiro__ponte">Acomódate.</h1>
             <p className="cuerpo-l" aria-live="polite">{cambiando ? 'Elige tu ritmo' : `Empezamos en ${cuenta}…`}</p>
           </div>
         ) : terminado ? (
@@ -285,7 +285,7 @@ function Tarea({ cabecera, capas, voz, onRiesgo, onTerminar }) {
   )
 }
 
-// B05 · ¿Qué le dirías a una amiga? (autocompasión). Si viene de una trampa, usa la frase de la persona. No se guarda.
+// B05 · ¿Qué le dirías a alguien que quieres? (autocompasión). Si viene de una trampa, usa la frase de la persona. No se guarda.
 function Amiga({ cabecera, capas, frase, onRiesgo, onTerminar }) {
   const [texto, setTexto] = useState('')
   const [leer, setLeer] = useState(false)
@@ -301,7 +301,7 @@ function Amiga({ cabecera, capas, frase, onRiesgo, onTerminar }) {
         <h1 id="amiga-titulo" className="sr">{TECNICAS.amiga.titulo}</h1>
         {!leer ? (
           <>
-            <p className="meta">{frase ? 'Imagina que una amiga te dice' : 'Imagina que una amiga está pasando por lo mismo que tú.'}</p>
+            <p className="meta">{frase ? 'Imagina que alguien que quieres te dice' : 'Imagina que alguien que quieres está pasando por lo mismo que tú.'}</p>
             {frase && <blockquote className="cita">«{frase}»</blockquote>}
             <p className="cuerpo">¿Qué le dirías? Seguro no le hablarías tan duro.</p>
             <hr className="hr" />
@@ -386,7 +386,7 @@ function Resumen({ cabecera, capas, antes, despues, guardado, guardable, onVolve
   )
 }
 
-const TITULOS = { cuenta: null, respirar: null, elegir: 'Un respiro', tierra: 'Volver al presente', tarea: 'Partir la tarea', amiga: '¿Qué le dirías a una amiga?', despues: null, resumen: 'Tu respiro' }
+const TITULOS = { cuenta: null, respirar: null, elegir: 'Un respiro', tierra: 'Volver al presente', tarea: 'Partir la tarea', amiga: '¿Qué le dirías a alguien que quieres?', despues: null, resumen: 'Tu respiro' }
 
 // cabecera(opciones) arma la cabecera de la app (cerrar/volver + ayuda contextual + «Ayuda ya»)
 export default function Refugio({ cabecera, preferencias, voz = { disponible: false }, favorita, inicial, guardable = true,

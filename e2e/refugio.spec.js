@@ -33,7 +33,7 @@ test('a un toque desde el inicio: cuenta de 3 s, respirar con la lluvia y, al fi
   // gratis, sin elegir el clima del día ni responder nada antes
   await expect(page.getByRole('button', { name: 'Necesito un respiro' })).toBeEnabled()
   await page.getByRole('button', { name: 'Necesito un respiro' }).click()
-  await expect(page.getByRole('heading', { name: 'Ponte cómoda.' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Acomódate.' })).toBeVisible()
   await expect(page.getByText('Lenta · 6 respiraciones · 1 min')).toBeVisible()
   const guia = page.locator('.respiro__guia')
   await expect(guia).toHaveText('Inhala…', { timeout: 5000 })
@@ -191,13 +191,13 @@ test('trampa: valida, cita la frase y pregunta; «No es así» la descarta y se 
   expect((await leerPerfil(page)).aprendizaje.trampas).toEqual({ adivinar_futuro: { si: 0, no: 1 } })
 })
 
-test('trampa: «Sí, puede ser» lleva a una pregunta y a «¿Qué le dirías a una amiga?» con su frase', async ({ page }) => {
+test('trampa: «Sí, puede ser» lleva a una pregunta y a «¿Qué le dirías a alguien que quieres?» con su frase', async ({ page }) => {
   await checkinConTexto(page, 'soy un fracaso, me fue fatal en la exposición')
   await page.getByRole('button', { name: 'No sé, guardar igual' }).click()
   await page.getByRole('button', { name: 'Sí, puede ser' }).click()
   await expect(page.getByText('No se trata de pensar bonito', { exact: false })).toBeVisible()
   await expect(page.getByText('¿Lo que pasó habla de ese momento, o de quién eres en todo?')).toBeVisible()
-  await page.getByRole('button', { name: '¿Qué le dirías a una amiga?' }).click()
+  await page.getByRole('button', { name: '¿Qué le dirías a alguien que quieres?' }).click()
   await expect(page.getByText('«soy un fracaso»')).toBeVisible()
   await page.getByLabel(/Lo que le dirías/).fill('Una expo no dice quién eres, te esforzaste')
   await page.getByRole('button', { name: 'Seguir' }).click()

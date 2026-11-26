@@ -24,7 +24,7 @@ PALABRAS = ["trabajo", "tráfico", "sueño", "música", "familia", "parque", "ll
             "siesta", "cocinar", "llamada", "caminar", "clase", "café", "serie", "hermana", "deadline"]
 FRASES = {
     "positivo": ["Hoy salí a caminar y me despejé bastante.", "Hablé con mi hermana y me reí un buen rato.",
-                 "Terminé lo que tenía pendiente y me sentí ligera."],
+                 "Terminé lo que tenía pendiente y sentí un gran alivio."],
     "negativo": ["Dormí poco y el tráfico me quitó energía.", "Tuve un examen y no me fue como esperaba.",
                  "Todo el día con la cabeza en el deadline."],
 }

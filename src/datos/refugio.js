@@ -11,7 +11,7 @@ export const TECNICAS = {
   // Dividir la tarea: lo que más mencionan los propios estudiantes (01 §3); evidencia moderada contra la procrastinación.
   tarea: { titulo: 'Partir la tarea', duracion: '2 min', evidencia: 'Lo que más dicen los estudiantes que les sirve.' },
   // Autocompasión: metaanálisis de 27 RCT (Ferrari 2019), sobre programas completos, no el ejercicio suelto.
-  amiga: { titulo: '¿Qué le dirías a una amiga?', duracion: '2 min', evidencia: 'Autocompasión: con respaldo moderado.' },
+  amiga: { titulo: '¿Qué le dirías a alguien que quieres?', duracion: '2 min', evidencia: 'Autocompasión: con respaldo moderado.' },
 }
 export const ORDEN_TECNICAS = ['respirar', 'tierra', 'tarea', 'amiga']
 

@@ -1,5 +1,5 @@
 // Clima compartido (RF-26 a RF-29, HU-12, HU-13): ves cómo está tu grupo sin nombres ni textos.
-// Pantallas v3 refinada grupo B: B07 inicio de salas, B08 sala activa (cada persona es una amiga de Garúa)
+// Pantallas v3 refinada grupo B: B07 inicio de salas, B08 sala activa (cada persona es una nubecita junto a Garúa)
 // y B09 gestión (quien creó la sala saca a alguien o la cierra).
 import { useEffect, useRef, useState } from 'react'
 import Icono from '../componentes/Icono.jsx'

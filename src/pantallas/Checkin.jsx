@@ -228,7 +228,7 @@ export function Trampa({ cabecera, capas, clima, trampa, respondioSi, onSi, onNo
             <p className="meta">No hace falta responder aquí. Puedes pensarlo un momento.</p>
             <div className="pila">
               <Boton onClick={onSeguir}>Seguir</Boton>
-              <Boton tipo="linea" icono="amiga" onClick={onAmiga}>¿Qué le dirías a una amiga?</Boton>
+              <Boton tipo="linea" icono="amiga" onClick={onAmiga}>¿Qué le dirías a alguien que quieres?</Boton>
             </div>
           </>
         )}
