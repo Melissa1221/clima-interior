@@ -237,7 +237,7 @@ export function Trampa({ cabecera, capas, clima, trampa, respondioSi, onSi, onNo
   const t = TRAMPAS[trampa.tipo]
   return (
     <Escena clima={clima} hy={620} suelo={760} flores="simples" brillo={[80, 140]} mar={false} capas={capas} cabecera={cabecera} className="escena--trampa">
-      <Garua estado="curiosa" tam={104} className="trampa__garua" />
+      <Garua estado="curiosa" tam={92} className="trampa__garua" />
       <article className="tarjeta trampa" aria-labelledby="trampa-titulo">
         <p className="trampa__chip">Posible trampa · {t.nombre.toLowerCase()}</p>
         <p className="meta trampa__k">Me dijiste</p>
@@ -254,7 +254,7 @@ export function Trampa({ cabecera, capas, clima, trampa, respondioSi, onSi, onNo
         ) : (
           <>
             <p className="cuerpo trampa__valida">No se trata de pensar bonito, sino de ver si hay algo más probable.</p>
-            <h1 id="trampa-titulo" className="pregunta trampa__pregunta" role="status">{t.pregunta}</h1>
+            <h1 id="trampa-titulo" className="pregunta trampa__pregunta">{t.pregunta}</h1>
             <p className="meta">No hace falta responder aquí. Puedes pensarlo un momento.</p>
             <div className="pila">
               <Boton onClick={onSeguir}>Seguir</Boton>
@@ -262,6 +262,8 @@ export function Trampa({ cabecera, capas, clima, trampa, respondioSi, onSi, onNo
             </div>
           </>
         )}
+        {/* B10: el anuncio va en una región propia que siempre existe, no en el h1 */}
+        <p className="sr" role="status">{respondioSi ? t.pregunta : ''}</p>
         <p className="cap cap--centro trampa__nota"><Icono nombre="info" tam={16} />Sugerencia automática · no es un diagnóstico</p>
       </article>
     </Escena>
