@@ -397,13 +397,20 @@ export default function Refugio({ cabecera, preferencias, voz = { disponible: fa
   const [tecnica, setTecnica] = useState(inicial?.tecnica ?? 'respirar')
   const [guardado, setGuardado] = useState(false)
   const inicio = useRef(Date.now())
+  const pregunto = useRef(false) // M4: «¿Cómo quedaste?» se pregunta una sola vez por visita al Refugio
 
   useEffect(() => { onPaso?.(paso) }, [paso]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const ir = (p) => { setPaso(p); window.scrollTo?.(0, 0) }
   const elegirTecnica = (id) => { setTecnica(id); ir(id) }
+  // Al terminar una técnica: la primera vez, «¿Cómo quedaste?»; si ya se preguntó, directo al resumen
+  function terminar() {
+    if (pregunto.current) return listo()
+    pregunto.current = true
+    ir('despues')
+  }
   function listo() {
-    if (antes && despues && guardable) {
+    if (antes && despues && guardable && !guardado) {
       onGuardar({ fecha: fechaLocal(new Date()), tecnica, antes, despues, segundos: Math.round((Date.now() - inicio.current) / 1000) })
       setGuardado(true)
     }
@@ -420,12 +427,12 @@ export default function Refugio({ cabecera, preferencias, voz = { disponible: fa
   })
 
   if (paso === 'respirar') {
-    return <Respirar cabecera={cab} preferencias={preferencias} capas={capas} onTerminar={() => ir('despues')} onOtra={() => ir('elegir')} onMasAyuda={onMasAyuda} />
+    return <Respirar cabecera={cab} preferencias={preferencias} capas={capas} onTerminar={terminar} onOtra={() => ir('elegir')} onMasAyuda={onMasAyuda} />
   }
   if (paso === 'elegir') return <Elegir cabecera={cab} capas={capas} favorita={favorita} onElegir={elegirTecnica} onMasAyuda={onMasAyuda} />
-  if (paso === 'tierra') return <Tierra cabecera={cab} capas={capas} voz={voz} onRiesgo={onRiesgo} onTerminar={() => ir('despues')} />
-  if (paso === 'tarea') return <Tarea cabecera={cab} capas={capas} voz={voz} onRiesgo={onRiesgo} onTerminar={() => ir('despues')} />
-  if (paso === 'amiga') return <Amiga cabecera={cab} capas={capas} frase={inicial?.frase} onRiesgo={onRiesgo} onTerminar={() => ir('despues')} />
+  if (paso === 'tierra') return <Tierra cabecera={cab} capas={capas} voz={voz} onRiesgo={onRiesgo} onTerminar={terminar} />
+  if (paso === 'tarea') return <Tarea cabecera={cab} capas={capas} voz={voz} onRiesgo={onRiesgo} onTerminar={terminar} />
+  if (paso === 'amiga') return <Amiga cabecera={cab} capas={capas} frase={inicial?.frase} onRiesgo={onRiesgo} onTerminar={terminar} />
   if (paso === 'despues') {
     return <Despues cabecera={cab} capas={capas} antes={antes} despues={despues} setAntes={setAntes} setDespues={setDespues}
       onListo={listo} onOtra={() => ir('elegir')} onSaltar={() => ir('resumen')} />

@@ -267,3 +267,19 @@ test('partir la tarea: el campo del paso va a todo el ancho y los botones en su 
   const lineas = await page.locator('label[for="tarea-paso"]').evaluate((el) => Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight || 20)))
   expect(lineas).toBeLessThanOrEqual(2)
 })
+
+test('«¿Cómo quedaste?» se pregunta una sola vez por visita al Refugio (M4)', async ({ page }) => {
+  await page.getByRole('button', { name: 'Necesito un respiro' }).click()
+  await page.getByRole('button', { name: 'Terminar' }).click({ timeout: 6000 })
+  await expect(page.getByRole('heading', { name: '¿Cómo quedaste?' })).toBeVisible()
+  await page.getByRole('radiogroup', { name: 'Cómo estabas antes' }).getByRole('radio', { name: /Lluvia/ }).click()
+  await page.getByRole('radiogroup', { name: 'Cómo estás ahora' }).getByRole('radio', { name: /Nublado/ }).click()
+  await page.getByRole('button', { name: 'Otra técnica' }).click()
+  await page.getByRole('button', { name: /qué le dirías/i }).click()
+  await page.getByRole('button', { name: 'Seguir' }).click()
+  await page.getByRole('button', { name: 'Listo' }).click()
+  // no vuelve a preguntar: va directo al resumen y guarda lo que ya había respondido, una vez
+  await expect(page.getByRole('heading', { name: '¿Cómo quedaste?' })).toHaveCount(0)
+  await expect(page.getByText('Tu cielo se despejó un poco')).toBeVisible()
+  expect((await leerPerfil(page)).refugios).toHaveLength(1)
+})
