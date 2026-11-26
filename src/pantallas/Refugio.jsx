@@ -120,7 +120,7 @@ function Tarea({ voz, onRiesgo, onTerminar }) {
                   <input type="checkbox" checked={p.hecho} onChange={() => setTarea((t) => alternarPaso(t, i))} />
                   <span className="paso__textos"><span className="paso__texto">{p.texto}</span>{i === 0 && <small>Primer paso · unos 15 min</small>}</span>
                 </label>
-                <button type="button" className="btn-icono" aria-label={`Quitar «${p.texto}»`} onClick={() => setTarea((t) => quitarPaso(t, i))}>
+                <button type="button" className="ib ib--plano" aria-label={`Quitar «${p.texto}»`} onClick={() => setTarea((t) => quitarPaso(t, i))}>
                   <Icono nombre="borrar" tam={20} />
                 </button>
               </li>
