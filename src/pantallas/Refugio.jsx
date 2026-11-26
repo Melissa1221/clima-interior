@@ -1,32 +1,24 @@
-// Refugio (RF-42, HU-30): herramientas de autocuidado de 1 a 3 minutos para un momento de estrés.
-// No es terapia. Flujo: cómo estás ahora (antes) → una técnica → cómo quedaste (después) → antes y después.
-// Una pregunta por pantalla, así que también sirve tal cual en el modo predecible.
+// Refugio (RF-42, HU-30): herramientas de autocuidado de 1 a 3 minutos para un momento de estrés. No es terapia.
+// Journey nuevo (R1): «Necesito un respiro» empieza a respirar tras una cuenta de 3 s, sin preguntas antes.
+// Cómo estabas y cómo quedaste se pregunta al final y es opcional; sin primer uso completo no se guarda nada.
+// Pantallas: journey-nuevo 04a, 04b, 05 y v3 refinada grupo B (B02 a B06).
 import { useEffect, useRef, useState } from 'react'
-import Paisaje from '../componentes/Paisaje.jsx'
 import Icono from '../componentes/Icono.jsx'
-import { Boton, Campo } from '../componentes/Ui.jsx'
+import { Boton, Campo, ElegirClima, Enlace, Progreso } from '../componentes/Ui.jsx'
+import { Escena, Suelo } from '../componentes/Escena.jsx'
+import { Mundo } from '../mundo/Mundo.jsx'
+import Garua from '../mundo/Garua.jsx'
 import { CLIMAS, climaEfectivo } from '../datos/climas.js'
-import { RITMOS, TECNICAS, duracionRitmo, fraseDeCambio, fraseResumen, ordenarTecnicas, resumenRefugios } from '../datos/refugio.js'
+import { RITMOS, TECNICAS, duracionRitmo, fraseDeCambio, ordenarTecnicas } from '../datos/refugio.js'
 import { crearGrabacion, decir } from '../voz/stt.js'
 import { vibrar } from '../datos/accesibilidad.js'
 import { hayRiesgo } from '../datos/riesgo.js'
 import { agregarPaso, alternarPaso, borrarTarea, cambiarQue, leerTarea, quitarPaso } from '../datos/tarea.js'
 
 const fechaLocal = (d) => d.toLocaleDateString('en-CA')
-const climaDe = (id) => CLIMAS.find((c) => c.id === id)
-
-// Los cinco climas como opciones excluyentes (el mismo control del check-in)
-function ElegirClima({ valor, onElegir, etiqueta }) {
-  return (
-    <div className="climas" role="radiogroup" aria-label={etiqueta}>
-      {CLIMAS.map((c) => (
-        <button key={c.id} role="radio" aria-checked={valor === c.id} className={valor === c.id ? 'clima activo' : 'clima'} onClick={() => onElegir(c.id)}>
-          <span aria-hidden="true">{c.icono}</span>{c.etiqueta}
-        </button>
-      ))}
-    </div>
-  )
-}
+const etiquetaDe = (id) => CLIMAS.find((c) => c.id === id)?.etiqueta ?? ''
+const ICONO_TECNICA = { respirar: 'respiro', tierra: 'eye', tarea: 'tasks', amiga: 'amiga' }
+const CUENTA = 3
 
 // Dictado corto dentro del Refugio (reusa la Web Speech API del check-in). Nada de lo dicho se guarda.
 function useDictado({ voz, onRiesgo }) {
@@ -50,8 +42,145 @@ function useDictado({ voz, onRiesgo }) {
   return { escuchando, oido, empezar, parar, cancelar }
 }
 
-// 5-4-3-2-1 (grounding). Práctica clínica muy usada, SIN ensayos controlados (validación 03 §1): se dice así en la
-// pantalla. La persona responde en voz alta, en su mente o solo toca «Listo». No se guarda nada salvo que terminó.
+// Respirar con la lluvia: cuenta de 3 s y luego respiración lenta (4 s / 6 s) o suspiro cíclico.
+// Garúa crece al inhalar y se encoge al exhalar. Con movimiento reducido nada se anima: queda el texto
+// y, si está activa, una vibración corta en cada cambio.
+function Respirar({ cabecera, preferencias, capas, onTerminar, onOtra, onMasAyuda }) {
+  const [ritmo, setRitmo] = useState('lenta')
+  const [cuenta, setCuenta] = useState(CUENTA)
+  const [cambiando, setCambiando] = useState(false)
+  const [paso, setPaso] = useState({ ciclo: 0, fase: 0 })
+  const [terminado, setTerminado] = useState(false)
+  const reducido = preferencias.movimientoReducido
+  const r = RITMOS[ritmo]
+  const corriendo = cuenta === 0 && !terminado
+
+  // La cuenta se detiene mientras se elige otro ritmo
+  useEffect(() => {
+    if (cuenta === 0 || cambiando) return
+    const t = setTimeout(() => setCuenta((c) => c - 1), 1000)
+    return () => clearTimeout(t)
+  }, [cuenta, cambiando])
+
+  useEffect(() => {
+    if (!corriendo) return
+    const [texto, seg] = r.fases[paso.fase]
+    if (preferencias.describirEnVoz) decir(texto.replace('…', ''))
+    if (reducido) vibrar(preferencias, 40)
+    const t = setTimeout(() => {
+      const siguienteFase = (paso.fase + 1) % r.fases.length
+      const ciclo = paso.ciclo + (siguienteFase === 0 ? 1 : 0)
+      if (ciclo >= r.ciclos) { setTerminado(true); return }
+      setPaso({ ciclo, fase: siguienteFase })
+    }, seg * 1000)
+    return () => clearTimeout(t)
+  }, [corriendo, paso]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const [guia, seg] = r.fases[paso.fase]
+  const inhala = corriendo && !guia.startsWith('Exhala')
+  const escala = !corriendo || reducido ? 0.86 : inhala ? (paso.fase === 0 ? 1.08 : 1.14) : 0.78
+  const minutos = Math.max(1, Math.round(duracionRitmo(ritmo) / 60))
+  const resumen = `${r.nombre} · ${r.ciclos} respiraciones · ${minutos} min`
+  const elegirRitmo = (id) => { setRitmo(id); setCambiando(false); setCuenta(CUENTA); setPaso({ ciclo: 0, fase: 0 }) }
+
+  return (
+    <Escena clima="lluvia" hy={660} suelo={812} flores="journey" brillo={[188, 400]} mar={false} capas={capas} cabecera={cabecera}
+      className="escena--respiro" alto="100dvh">
+      <div className="respiro" data-fase={corriendo ? (inhala ? 'inhala' : 'exhala') : 'quieto'}>
+        {cuenta > 0 ? (
+          <div className="respiro__textos">
+            <p className="etiqueta">Respirar con la lluvia</p>
+            <h1 className="display-xl respiro__ponte">Ponte cómoda.</h1>
+            <p className="cuerpo-l" aria-live="polite">{cambiando ? 'Elige tu ritmo' : `Empezamos en ${cuenta}…`}</p>
+          </div>
+        ) : terminado ? (
+          <div className="respiro__textos">
+            <h1 className="display-l" role="status">Listo.</h1>
+            <p className="cuerpo-l">Respira normal un momento.</p>
+          </div>
+        ) : (
+          <div className="respiro__textos">
+            <p className="sr">Respirar con la lluvia</p>
+            <h1 className="display-xl respiro__guia" aria-live="polite">{guia}</h1>
+            <p className="cuerpo-l">{inhala ? 'por la nariz' : 'por la boca, lento'} · {seg} segundos</p>
+          </div>
+        )}
+        <div className="respiro__garua">
+          {cuenta > 0 && (
+            <svg className="respiro__aro" viewBox="0 0 100 100" aria-hidden="true">
+              <circle cx="50" cy="50" r="48" className="respiro__aro-fondo" />
+              <circle cx="50" cy="50" r="48" className="respiro__aro-avance" pathLength="1"
+                style={{ strokeDashoffset: 1 - (CUENTA - cuenta + 1) / CUENTA }} />
+            </svg>
+          )}
+          <div className="respiro__nube" style={{ transform: `scale(${escala})`, transitionDuration: reducido ? '0ms' : `${corriendo ? seg : 0.6}s` }}>
+            <Garua estado={corriendo && !inhala ? 'exhala' : 'inhala'} tam={300} animacion="ninguna" />
+          </div>
+        </div>
+        <div className="respiro__pie">
+          {cuenta > 0 && !cambiando && (
+            <>
+              <p className="cuerpo">{resumen}</p>
+              <div className="fila-enlaces">
+                <Enlace icono="sliders" onClick={() => setCambiando(true)}>Cambiar ritmo</Enlace>
+                <Enlace onClick={onOtra}>Elegir otra cosa</Enlace>
+              </div>
+            </>
+          )}
+          {cambiando && (
+            <div className="segmento segmento--ancho" role="radiogroup" aria-label="Tipo de respiración">
+              {Object.entries(RITMOS).map(([id, { nombre }]) => (
+                <button key={id} type="button" role="radio" aria-checked={ritmo === id} onClick={() => elegirRitmo(id)}>{nombre}</button>
+              ))}
+            </div>
+          )}
+          {corriendo && (
+            <>
+              <Progreso paso={paso.ciclo + 1} total={r.ciclos} etiqueta={`Respiración ${paso.ciclo + 1} de ${r.ciclos}`} />
+              <p className="cuerpo">Respiración {paso.ciclo + 1} de {r.ciclos} · {minutos} min</p>
+              <Boton tipo="linea" onClick={onTerminar}>Terminar</Boton>
+            </>
+          )}
+          {terminado && <Boton onClick={onTerminar}>Seguir</Boton>}
+          <Enlace onClick={onMasAyuda}>Necesito más ayuda</Enlace>
+        </div>
+      </div>
+    </Escena>
+  )
+}
+
+// B02 · ¿Qué te vendría bien? La favorita solo cambia el orden de la lista
+function Elegir({ cabecera, capas, favorita, onElegir, onMasAyuda }) {
+  return (
+    <>
+      <Escena clima="nublado" hy={150} suelo={230} flores="simples" brillo={[300, 80]} mar={false} capas={capas} cabecera={cabecera} alto={230}
+        garua={{ estado: 'curiosa', tam: 92, izq: 22, x: 'auto', y: 26 }}>
+        <h1 className="burbuja burbuja--derecha display-s">¿Qué te vendría bien?</h1>
+      </Escena>
+      <Suelo matas={false}>
+        <p className="meta">Cada una dura poco y puedes dejarla cuando quieras.</p>
+        <ul className="lista tecnicas">
+          {ordenarTecnicas(favorita).map((id) => (
+            <li key={id}>
+              <button type="button" className="fila tecnica" onClick={() => onElegir(id)}>
+                <span className="fila__icono"><Icono nombre={ICONO_TECNICA[id]} tam={22} /></span>
+                <span className="fila__textos">
+                  <span className="fila__titulo">{TECNICAS[id].titulo}</span>
+                  <small className="fila__desc">{TECNICAS[id].duracion} · {TECNICAS[id].evidencia}</small>
+                  {id === favorita && <small className="tecnica__tuya"><Icono nombre="check" tam={14} />Te ayudó antes</small>}
+                </span>
+                <span className="fila__chev"><Icono nombre="chev" tam={20} /></span>
+              </button>
+            </li>
+          ))}
+        </ul>
+        <Enlace onClick={onMasAyuda} className="centrado">Necesito más ayuda</Enlace>
+      </Suelo>
+    </>
+  )
+}
+
+// B03 · 5-4-3-2-1 (grounding). Práctica clínica muy usada, SIN ensayos controlados (validación 03 §1): se dice así.
 const SENTIDOS = [
   [5, 'cosas que ves', 'Mira a tu alrededor sin apuro: colores, formas, la luz.'],
   [4, 'cosas que oyes', 'Sonidos cerca y lejos, aunque sean pequeños.'],
@@ -60,7 +189,7 @@ const SENTIDOS = [
   [1, 'cosa que saboreas', 'O un sabor que te guste recordar.'],
 ]
 
-function Tierra({ voz, onRiesgo, onTerminar }) {
+function Tierra({ cabecera, capas, voz, onRiesgo, onTerminar }) {
   const [i, setI] = useState(0)
   const dictado = useDictado({ voz, onRiesgo })
   const [n, que, pista] = SENTIDOS[i]
@@ -70,31 +199,35 @@ function Tierra({ voz, onRiesgo, onTerminar }) {
     else setI(i + 1)
   }
   return (
-    <section className="hoja" aria-labelledby="tierra-titulo">
-      <div className="progreso">
-        <small id="tierra-avance">Paso {i + 1} de {SENTIDOS.length}</small>
-        <div className="progreso__barra" role="progressbar" aria-labelledby="tierra-avance" aria-valuemin={1} aria-valuemax={SENTIDOS.length} aria-valuenow={i + 1}>
-          <div className="progreso__relleno" style={{ width: `${((i + 1) / SENTIDOS.length) * 100}%` }} />
+    <>
+      <Escena clima="niebla" hy={330} suelo={400} flores="ninguna" brillo={[188, 160]} mar={false} capas={capas} cabecera={cabecera} alto={340}>
+        <div className="tierra__arriba">
+          <Progreso paso={i + 1} total={SENTIDOS.length} etiqueta={`Paso ${i + 1} de ${SENTIDOS.length}`} />
+          <p className="meta" aria-hidden="true">Paso {i + 1} de {SENTIDOS.length}</p>
+          <div className="tierra__garua">
+            <span className="anillos anillos--quietos" aria-hidden="true"><i className="anillo anillo--2" /><i className="anillo anillo--1" /></span>
+            <Garua estado="quieta" tam={120} animacion="ninguna" />
+          </div>
         </div>
-      </div>
-      <p className="tierra__numero" aria-hidden="true">{n}</p>
-      <h1 id="tierra-titulo" className="hoja__titulo-grande" aria-live="polite">{n} {que}</h1>
-      <p className="pequeno">{pista} Puedes decirlas en voz alta o solo pensarlas.</p>
-      {dictado.escuchando && <p className="pildora" aria-live="polite"><span className="punto" /> Te escucho…</p>}
-      {dictado.oido && <p className="escucha">«{dictado.oido}»</p>}
-      <Boton onClick={siguiente}>{i + 1 >= SENTIDOS.length ? 'Terminar' : 'Listo'}</Boton>
-      {voz.disponible && !dictado.escuchando && (
-        <Boton tipo="secundario" icono="mic" onClick={() => dictado.empezar()}>Decirlo en voz alta</Boton>
-      )}
-      {dictado.escuchando && <Boton tipo="secundario" onClick={dictado.parar}>Ya lo dije</Boton>}
-      <p className="pequeno">{TECNICAS.tierra.evidencia} No se guarda lo que digas.</p>
-    </section>
+      </Escena>
+      <Suelo matas={false}>
+        <h1 className="display-m" aria-live="polite"><span className="sr">Paso {i + 1} de {SENTIDOS.length}: </span>{n} {que}</h1>
+        <p className="cuerpo">{pista} Dilos en voz alta o solo piénsalos.</p>
+        {dictado.escuchando && <p className="cap" aria-live="polite"><span className="rec" aria-hidden="true" />Te escucho…</p>}
+        {dictado.oido && <p className="cap">«{dictado.oido}»</p>}
+        <div className="pila">
+          <Boton onClick={siguiente}>{i + 1 >= SENTIDOS.length ? 'Terminar' : 'Listo'}</Boton>
+          {voz.disponible && !dictado.escuchando && <Boton tipo="linea" icono="mic" onClick={() => dictado.empezar()}>Decirlo en voz alta</Boton>}
+          {dictado.escuchando && <Boton tipo="linea" onClick={dictado.parar}>Ya lo dije</Boton>}
+        </div>
+        <p className="cap"><Icono nombre="info" tam={16} />{TECNICAS.tierra.evidencia} No se guarda lo que digas.</p>
+      </Suelo>
+    </>
   )
 }
 
-// Partir la tarea: lo que más dicen los estudiantes que les sirve («hacer una lista y tacharla», 01 §3).
-// El primer paso se plantea de unos 15 minutos. La lista queda en el teléfono hasta que la persona la borre.
-function Tarea({ voz, onRiesgo, onTerminar }) {
+// B04 · Partir la tarea: lo que más dicen los estudiantes que les sirve (01 §3). La lista queda en el teléfono.
+function Tarea({ cabecera, capas, voz, onRiesgo, onTerminar }) {
   const [tarea, setTarea] = useState(leerTarea)
   const [nuevo, setNuevo] = useState('')
   const dictado = useDictado({ voz, onRiesgo })
@@ -106,51 +239,52 @@ function Tarea({ voz, onRiesgo, onTerminar }) {
   }
   const hechos = tarea.pasos.filter((p) => p.hecho).length
   return (
-    <section className="hoja" aria-labelledby="tarea-titulo">
-      <h1 id="tarea-titulo" className="hoja__titulo-grande">Partir la tarea</h1>
-      <Campo id="tarea-que" etiqueta="¿Qué tienes que hacer?" value={tarea.que} placeholder="Estudiar para el parcial de IA" maxLength={120}
-        onChange={(e) => setTarea((t) => cambiarQue(t, e.target.value))} onBlur={(e) => revisar(e.target.value)} />
-      {tarea.pasos.length > 0 && (
-        <>
-          <p className="pequeno" role="status">{hechos} de {tarea.pasos.length} pasos hechos</p>
-          <ul className="pasos" aria-label="Pasos pequeños">
-            {tarea.pasos.map((p, i) => (
-              <li key={`${i}-${p.texto}`} className={p.hecho ? 'paso paso--hecho' : 'paso'}>
-                <label>
-                  <input type="checkbox" checked={p.hecho} onChange={() => setTarea((t) => alternarPaso(t, i))} />
-                  <span className="paso__textos"><span className="paso__texto">{p.texto}</span>{i === 0 && <small>Primer paso · unos 15 min</small>}</span>
-                </label>
-                <button type="button" className="ib ib--plano" aria-label={`Quitar «${p.texto}»`} onClick={() => setTarea((t) => quitarPaso(t, i))}>
-                  <Icono nombre="borrar" tam={20} />
-                </button>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-      <form className="agregar" onSubmit={(e) => { e.preventDefault(); agregar() }}>
-        <Campo id="tarea-paso" etiqueta={tarea.pasos.length ? 'Otro paso pequeño' : 'Un primer paso de unos 15 minutos'} value={nuevo}
-          placeholder={tarea.pasos.length ? 'Algo chiquito' : 'Leer la primera página'} maxLength={140} onChange={(e) => setNuevo(e.target.value)} />
-        <Boton type="submit" disabled={!nuevo.trim()}>Agregar</Boton>
-      </form>
-      {voz.disponible && (dictado.escuchando
-        ? <Boton tipo="secundario" onClick={dictado.parar}>Ya lo dije</Boton>
-        : <Boton tipo="secundario" icono="mic" onClick={() => dictado.empezar((t) => agregar(t))}>Dictar un paso</Boton>)}
-      {dictado.escuchando && <p className="escucha" aria-live="polite">{dictado.oido ? `«${dictado.oido}»` : 'Te escucho…'}</p>}
-      <Boton onClick={onTerminar}>Listo por ahora</Boton>
-      {(tarea.pasos.length > 0 || tarea.que) && (
-        <button type="button" className="enlace" onClick={() => { if (window.confirm('¿Borrar la lista? No se puede deshacer.')) setTarea(borrarTarea()) }}>
-          Borrar la lista
-        </button>
-      )}
-      <p className="pequeno">La lista se queda en este teléfono hasta que la borres.</p>
-    </section>
+    <>
+      <Escena clima="nublado" hy={90} suelo={150} flores="ninguna" brillo={[300, 40]} mar={false} capas={capas} cabecera={cabecera} alto={150}
+        garua={{ estado: 'pensando', tam: 70, x: 40, y: 12 }} />
+      <Suelo matas={false} className="suelo--form">
+        <h1 className="sr">Partir la tarea</h1>
+        <Campo id="tarea-que" etiqueta="¿Qué tienes que hacer?" value={tarea.que} placeholder="Estudiar para el parcial de IA" maxLength={120}
+          onChange={(e) => setTarea((t) => cambiarQue(t, e.target.value))} onBlur={(e) => revisar(e.target.value)} />
+        {tarea.pasos.length > 0 && (
+          <>
+            <div className="tarea__cabeza">
+              <p className="meta" role="status">{hechos} de {tarea.pasos.length} pasos hechos</p>
+              <Enlace onClick={() => { if (window.confirm('¿Borrar la lista? No se puede deshacer.')) setTarea(borrarTarea()) }}>Borrar la lista</Enlace>
+            </div>
+            <ul className="lista pasos" aria-label="Pasos pequeños">
+              {tarea.pasos.map((p, i) => (
+                <li key={`${i}-${p.texto}`} className={p.hecho ? 'paso paso--hecho' : 'paso'}>
+                  <label>
+                    <input type="checkbox" checked={p.hecho} onChange={() => setTarea((t) => alternarPaso(t, i))} />
+                    <span className="paso__textos"><span className="paso__texto">{p.texto}</span>{i === 0 && <small>Primer paso · unos 15 min</small>}</span>
+                  </label>
+                  <button type="button" className="ib ib--plano" aria-label={`Quitar «${p.texto}»`} onClick={() => setTarea((t) => quitarPaso(t, i))}>
+                    <Icono nombre="close" tam={20} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+        <form className="agregar" onSubmit={(e) => { e.preventDefault(); agregar() }}>
+          <Campo id="tarea-paso" etiqueta={tarea.pasos.length ? 'Otro paso pequeño' : 'Un primer paso de unos 15 minutos'} value={nuevo}
+            placeholder={tarea.pasos.length ? 'Algo chiquito' : 'Leer la primera página'} maxLength={140} onChange={(e) => setNuevo(e.target.value)} />
+          <Boton type="submit" tipo="linea" icono="plus" disabled={!nuevo.trim()}>Agregar</Boton>
+          {voz.disponible && (dictado.escuchando
+            ? <button type="button" className="ib" aria-label="Ya lo dije" onClick={dictado.parar}><Icono nombre="pause" tam={20} /></button>
+            : <button type="button" className="ib" aria-label="Dictar un paso" onClick={() => dictado.empezar((t) => agregar(t))}><Icono nombre="mic" tam={20} /></button>)}
+        </form>
+        {dictado.escuchando && <p className="cap" aria-live="polite">{dictado.oido ? `«${dictado.oido}»` : 'Te escucho…'}</p>}
+        <Boton onClick={onTerminar}>Listo por ahora</Boton>
+        <p className="cap cap--centro"><Icono nombre="lock" tam={16} />Se queda en tu teléfono hasta que la borres.</p>
+      </Suelo>
+    </>
   )
 }
 
-// ¿Qué le dirías a una amiga? (autocompasión). Si viene de una trampa, usa la frase de la persona.
-// Lo escrito no se guarda: solo sirve para mirarlo y leérselo a una misma o a uno mismo.
-function Amiga({ frase, onRiesgo, onTerminar }) {
+// B05 · ¿Qué le dirías a una amiga? (autocompasión). Si viene de una trampa, usa la frase de la persona. No se guarda.
+function Amiga({ cabecera, capas, frase, onRiesgo, onTerminar }) {
   const [texto, setTexto] = useState('')
   const [leer, setLeer] = useState(false)
   function seguir() {
@@ -159,227 +293,141 @@ function Amiga({ frase, onRiesgo, onTerminar }) {
     onTerminar()
   }
   return (
-    <section className="hoja" aria-labelledby="amiga-titulo">
-      <h1 id="amiga-titulo" className="hoja__titulo-grande">{TECNICAS.amiga.titulo}</h1>
-      {!leer ? (
-        <>
-          <p className="trampa__cita">{frase
-            ? <>Imagina que una amiga o un amigo te dice: <strong>«{frase}»</strong>.</>
-            : 'Imagina que una amiga o un amigo está pasando por lo mismo que tú.'}</p>
-          <p className="pequeno">¿Qué le dirías? ¿Con qué tono? Seguro no le hablarías tan duro.</p>
-          <label htmlFor="amiga-texto" className="hoja__titulo">Lo que le dirías (no se guarda)</label>
-          <textarea id="amiga-texto" rows={4} value={texto} onChange={(e) => setTexto(e.target.value)}
-            placeholder="Tranquila, tranquilo: estudiaste, y una nota no dice quién eres…" />
-          <Boton onClick={seguir}>Seguir</Boton>
-        </>
-      ) : (
-        <>
-          <p className="trampa__pregunta" role="status">{texto.trim() ? `«${texto.trim()}»` : 'Piensa en esas palabras amables.'}</p>
-          <p>Ahora prueba decírtelo a ti, con el mismo cariño.</p>
-          <p className="pequeno">{TECNICAS.amiga.evidencia}</p>
-          <Boton onClick={seguir}>Listo</Boton>
-        </>
-      )}
-    </section>
-  )
-}
-
-// Respirar con la lluvia: respiración lenta (4 s / 6 s, ~6 por minuto) o suspiro cíclico.
-// La nube crece al inhalar y se encoge al exhalar; el cielo se aclara y se oscurece con ella.
-// Con movimiento reducido no se anima nada: queda el texto, y una vibración corta en cada cambio si está activa.
-function Respirar({ preferencias, onTerminar }) {
-  const [ritmo, setRitmo] = useState('lenta')
-  const [corriendo, setCorriendo] = useState(false)
-  const [paso, setPaso] = useState({ ciclo: 0, fase: 0 })
-  const [terminado, setTerminado] = useState(false)
-  const reducido = preferencias.movimientoReducido
-  const r = RITMOS[ritmo]
-
-  useEffect(() => {
-    if (!corriendo) return
-    const [texto, seg] = r.fases[paso.fase]
-    if (preferencias.describirEnVoz) decir(texto.replace('…', ''))
-    if (reducido) vibrar(preferencias, 40)
-    const t = setTimeout(() => {
-      const siguienteFase = (paso.fase + 1) % r.fases.length
-      const ciclo = paso.ciclo + (siguienteFase === 0 ? 1 : 0)
-      if (ciclo >= r.ciclos) { setCorriendo(false); setTerminado(true); return }
-      setPaso({ ciclo, fase: siguienteFase })
-    }, seg * 1000)
-    return () => clearTimeout(t)
-  }, [corriendo, paso]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const [guia, seg] = r.fases[paso.fase]
-  const inhala = corriendo && !guia.startsWith('Exhala')
-  const escala = !corriendo || reducido ? 0.8 : inhala ? (paso.fase === 0 ? 1 : 1.08) : 0.62
-  const minutos = Math.round(duracionRitmo(ritmo) / 60)
-
-  return (
-    <div className="respirar" data-fase={corriendo ? (inhala ? 'inhala' : 'exhala') : 'quieto'}>
-      <div className="respiro" aria-hidden="true">
-        <div className="respiro__nube" style={{ transform: `scale(${escala})`, transitionDuration: reducido ? '0ms' : `${seg}s` }} />
-      </div>
-      <section className="hoja">
-        <h1 className="hoja__titulo-grande">Respirar con la lluvia</h1>
-        {!corriendo && !terminado && (
+    <Escena clima="nublado" hy={700} suelo={812} flores="simples" brillo={[300, 120]} mar={false} capas={capas} cabecera={cabecera} className="escena--tarjeta">
+      <Garua estado="comprensiva" tam={96} className="tarjeta__garua" />
+      <section className="tarjeta" aria-labelledby="amiga-titulo">
+        <h1 id="amiga-titulo" className="sr">{TECNICAS.amiga.titulo}</h1>
+        {!leer ? (
           <>
-            <p className="pequeno">{RITMOS.lenta.nombre}: inhala 4 s y exhala 6 s, unas 6 veces por minuto. Puedes parar cuando quieras.</p>
-            <div className="segmentos" role="radiogroup" aria-label="Tipo de respiración">
-              {Object.entries(RITMOS).map(([id, { nombre }]) => (
-                <button key={id} type="button" role="radio" aria-checked={ritmo === id} onClick={() => setRitmo(id)}>{nombre}</button>
-              ))}
-            </div>
-            {ritmo === 'suspiro' && <p className="pequeno">Dos inhalaciones seguidas por la nariz y una exhalación larga por la boca.</p>}
-            <p className="pequeno">{TECNICAS.respirar.evidencia} Dura más o menos {minutos} minuto{minutos === 1 ? '' : 's'}.</p>
-            <Boton icono="empezar" onClick={() => { setPaso({ ciclo: 0, fase: 0 }); setCorriendo(true) }}>Empezar</Boton>
+            <p className="meta">{frase ? 'Imagina que una amiga te dice' : 'Imagina que una amiga está pasando por lo mismo que tú.'}</p>
+            {frase && <blockquote className="cita">«{frase}»</blockquote>}
+            <p className="cuerpo">¿Qué le dirías? Seguro no le hablarías tan duro.</p>
+            <hr className="hr" />
+            <label htmlFor="amiga-texto" className="meta">Lo que le dirías · no se guarda</label>
+            <textarea id="amiga-texto" className="area" rows={4} value={texto} onChange={(e) => setTexto(e.target.value)}
+              placeholder="Estudiaste un montón. Una nota no dice quién eres." />
+            <Boton onClick={seguir}>Seguir</Boton>
+          </>
+        ) : (
+          <>
+            <p className="cita" role="status">{texto.trim() ? `«${texto.trim()}»` : 'Piensa en esas palabras amables.'}</p>
+            <p className="cuerpo">Ahora prueba decírtelo a ti, con el mismo cariño.</p>
+            <Boton onClick={seguir}>Listo</Boton>
           </>
         )}
-        {corriendo && (
-          <>
-            <p className="respiro__guia" aria-live="polite">{guia}</p>
-            <div className="progreso">
-              <small id="respiro-avance">Respiración {paso.ciclo + 1} de {r.ciclos}</small>
-              <div className="progreso__barra" role="progressbar" aria-labelledby="respiro-avance" aria-valuemin={1} aria-valuemax={r.ciclos} aria-valuenow={paso.ciclo + 1}>
-                <div className="progreso__relleno" style={{ width: `${((paso.ciclo + 1) / r.ciclos) * 100}%` }} />
-              </div>
-            </div>
-            <Boton tipo="secundario" onClick={onTerminar}>Terminar</Boton>
-          </>
-        )}
-        {terminado && (
-          <>
-            <p className="respiro__guia" role="status">Listo. Respira normal un momento.</p>
-            <Boton onClick={onTerminar}>Seguir</Boton>
-          </>
-        )}
-        {!corriendo && <p className="pequeno">Si te mareas, vuelve a respirar normal.</p>}
+        <p className="cap cap--centro"><Icono nombre="info" tam={16} />{TECNICAS.amiga.evidencia}</p>
       </section>
-    </div>
+    </Escena>
   )
 }
 
-// Al final: antes → después con dos climas pequeños, en palabras
-function AntesDespues({ antes, despues }) {
-  const a = climaDe(antes)
-  const d = climaDe(despues)
+// 05 · ¿Cómo quedaste? Opcional: si no se eligen los dos climas, no se guarda nada
+function Despues({ cabecera, capas, antes, despues, setAntes, setDespues, onListo, onOtra, onSaltar }) {
   return (
-    <div className="antes-despues">
-      <div className="antes-despues__clima"><small>Antes</small><span aria-hidden="true">{a.icono}</span><strong>{a.etiqueta}</strong></div>
-      <span className="antes-despues__flecha" aria-hidden="true">→</span>
-      <div className="antes-despues__clima"><small>Ahora</small><span aria-hidden="true">{d.icono}</span><strong>{d.etiqueta}</strong></div>
-    </div>
+    <>
+      <Escena clima={despues ?? 'nublado'} hy={300} suelo={380} flores="journey" brillo={[280, 220]} capas={capas} cabecera={cabecera}
+        garua={{ estado: 'contenta-suave', tam: 128, x: 32, y: 26 }}>
+        <h1 className="burbuja display-m">¿Cómo quedaste?</h1>
+      </Escena>
+      <Suelo>
+        <p className="etiqueta" id="antes-lbl">Antes</p>
+        <ElegirClima valor={antes} onElegir={setAntes} etiqueta="Cómo estabas antes" />
+        <p className="etiqueta" id="ahora-lbl">Ahora</p>
+        <ElegirClima valor={despues} onElegir={setDespues} etiqueta="Cómo estás ahora" />
+        <p className="cap"><Icono nombre="lock" tam={16} />Es opcional. Si no eliges, no se guarda nada.</p>
+        <Boton onClick={onListo}>Listo</Boton>
+        <div className="fila-enlaces fila-enlaces--extremos">
+          <Enlace onClick={onOtra}>Otra técnica</Enlace>
+          <Enlace onClick={onSaltar}>Saltar</Enlace>
+        </div>
+      </Suelo>
+    </>
   )
 }
 
-export default function Refugio({ preferencias, voz = { disponible: false }, favorita, inicial, onPaso, onGuardar, onSalir, onRiesgo }) {
-  const [paso, setPaso] = useState('antes')
+function MiniCielo({ clima, capas }) {
+  return (
+    <span className={`mini-cielo paisaje--${clima}`}>
+      <Mundo clima={clima} hy={70} suelo={96} flores="ninguna" brillo={[60, 40]} mar={false} capas={capas} />
+    </span>
+  )
+}
+
+// B06 · Tu respiro: antes → después en dos cielos pequeños y en palabras
+function Resumen({ cabecera, capas, antes, despues, guardado, guardable, onVolver, onEmpezar }) {
+  const hubo = antes && despues
+  const frase = hubo ? fraseDeCambio(antes, despues) : 'Bien por darte este momento.'
+  const titulo = hubo ? frase.split('.')[0] : 'Bien por darte este momento'
+  return (
+    <>
+      <Escena clima={despues ?? 'nublado'} hy={300} suelo={380} flores="journey" brillo={[300, 200]} capas={capas} cabecera={cabecera}
+        garua={{ estado: 'contenta-suave', tam: 128, x: 24, y: 28 }}>
+        <h1 className="burbuja display-m">{titulo}</h1>
+      </Escena>
+      <Suelo>
+        {hubo && (
+          <div className="antes-despues">
+            <div><p className="meta">Antes</p><MiniCielo clima={antes} capas={capas} /><p className="cap"><Icono nombre={antes} tam={16} />{etiquetaDe(antes)}</p></div>
+            <Icono nombre="arrow" tam={22} className="antes-despues__flecha" />
+            <div><p className="meta">Ahora</p><MiniCielo clima={despues} capas={capas} /><p className="cap"><Icono nombre={despues} tam={16} />{etiquetaDe(despues)}</p></div>
+            <p className="sr">De {etiquetaDe(antes).toLowerCase()} a {etiquetaDe(despues).toLowerCase()}.</p>
+          </div>
+        )}
+        <p className="cuerpo" role="status">{hubo ? frase.split('.').slice(1).join('.').trim() || frase : ''} Contarle a alguien de confianza cómo te sientes también ayuda.</p>
+        <Boton onClick={onVolver}>Volver al inicio</Boton>
+        {guardado && <p className="cap cap--centro"><Icono nombre="lock" tam={16} />Solo se guardó el clima de antes y de después.</p>}
+        {!guardable && (
+          <p className="cap cap--centro">¿Quieres guardar cómo te va? <Enlace onClick={onEmpezar}>Empezar</Enlace></p>
+        )}
+      </Suelo>
+    </>
+  )
+}
+
+const TITULOS = { cuenta: null, respirar: null, elegir: 'Un respiro', tierra: 'Volver al presente', tarea: 'Partir la tarea', amiga: '¿Qué le dirías a una amiga?', despues: null, resumen: 'Tu respiro' }
+
+// cabecera(opciones) arma la cabecera de la app (cerrar/volver + ayuda contextual + «Ayuda ya»)
+export default function Refugio({ cabecera, preferencias, voz = { disponible: false }, favorita, inicial, guardable = true,
+  onPaso, onGuardar, onSalir, onRiesgo, onMasAyuda, onEmpezar }) {
+  const [paso, setPaso] = useState(inicial?.tecnica ?? 'respirar')
   const [antes, setAntes] = useState(null)
   const [despues, setDespues] = useState(null)
-  const [tecnica, setTecnica] = useState(inicial?.tecnica ?? null)
+  const [tecnica, setTecnica] = useState(inicial?.tecnica ?? 'respirar')
+  const [guardado, setGuardado] = useState(false)
   const inicio = useRef(Date.now())
 
   useEffect(() => { onPaso?.(paso) }, [paso]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const ir = (p) => { setPaso(p); window.scrollTo?.(0, 0) }
   const elegirTecnica = (id) => { setTecnica(id); ir(id) }
-  function guardar() {
-    onGuardar({ fecha: fechaLocal(new Date()), tecnica, antes, despues, segundos: Math.round((Date.now() - inicio.current) / 1000) })
+  function listo() {
+    if (antes && despues && guardable) {
+      onGuardar({ fecha: fechaLocal(new Date()), tecnica, antes, despues, segundos: Math.round((Date.now() - inicio.current) / 1000) })
+      setGuardado(true)
+    }
     ir('resumen')
   }
-
-  const cielo = (c) => climaEfectivo(c, preferencias)
+  const capas = preferencias.capas
+  const cielo = (c) => (c ? climaEfectivo(c, preferencias) : c)
+  const enTecnica = ['tierra', 'tarea', 'amiga'].includes(paso)
+  const cab = cabecera({
+    izquierda: enTecnica ? 'volver' : 'cerrar',
+    etiquetaIzquierda: enTecnica ? 'Elegir otra técnica' : 'Salir del respiro',
+    onIzquierda: enTecnica ? () => ir('elegir') : onSalir,
+    titulo: TITULOS[paso],
+  })
 
   if (paso === 'respirar') {
-    return (
-      <Paisaje clima="lluvia" capas={preferencias.capas}>
-        <Respirar preferencias={preferencias} onTerminar={() => ir('despues')} />
-      </Paisaje>
-    )
+    return <Respirar cabecera={cab} preferencias={preferencias} capas={capas} onTerminar={() => ir('despues')} onOtra={() => ir('elegir')} onMasAyuda={onMasAyuda} />
   }
-
-  return (
-    <Paisaje clima={cielo(paso === 'despues' || paso === 'resumen' ? despues ?? antes : antes)} capas={preferencias.capas}>
-      {paso === 'antes' && (
-        <section className="hoja" aria-labelledby="refugio-antes">
-          <p className="rotulo">Un respiro · herramientas de autocuidado</p>
-          <h1 id="refugio-antes" className="hoja__titulo-grande">¿Cómo estás ahora?</h1>
-          <ElegirClima valor={antes} onElegir={setAntes} etiqueta="Cómo estás ahora" />
-          <Boton disabled={!antes} onClick={() => ir(tecnica ?? 'elegir')}>Continuar</Boton>
-          <Boton tipo="fantasma" onClick={onSalir}>Ahora no</Boton>
-        </section>
-      )}
-
-      {paso === 'elegir' && (
-        <section className="hoja" aria-labelledby="refugio-elegir">
-          <h1 id="refugio-elegir" className="hoja__titulo-grande">¿Qué te vendría bien?</h1>
-          <p className="pequeno">Cada una dura poco y puedes dejarla cuando quieras.</p>
-          <div className="tecnicas">
-            {ordenarTecnicas(favorita).map((id) => (
-              <button key={id} type="button" className="enlace-fila tecnica" onClick={() => elegirTecnica(id)}>
-                <span className="enlace-fila__textos">
-                  <strong>{TECNICAS[id].titulo}</strong>
-                  <small>{TECNICAS[id].duracion} · {TECNICAS[id].evidencia}</small>
-                  {id === favorita && <small className="tecnica__tuya">Te ayudó antes</small>}
-                </span>
-                <Icono nombre="siguiente" />
-              </button>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {paso === 'tierra' && <Tierra voz={voz} onRiesgo={onRiesgo} onTerminar={() => ir('despues')} />}
-
-      {paso === 'tarea' && <Tarea voz={voz} onRiesgo={onRiesgo} onTerminar={() => ir('despues')} />}
-
-      {paso === 'amiga' && <Amiga frase={inicial?.frase} onRiesgo={onRiesgo} onTerminar={() => ir('despues')} />}
-
-      {paso === 'despues' && (
-        <section className="hoja" aria-labelledby="refugio-despues">
-          <h1 id="refugio-despues" className="hoja__titulo-grande">¿Y ahora, cómo estás?</h1>
-          <ElegirClima valor={despues} onElegir={setDespues} etiqueta="Cómo estás después" />
-          <p className="pequeno">Solo se guarda el clima de antes y de después, nunca lo que dijiste.</p>
-          <Boton disabled={!despues} onClick={guardar}>Guardar</Boton>
-        </section>
-      )}
-
-      {paso === 'resumen' && (
-        <section className="hoja" aria-labelledby="refugio-resumen">
-          <h1 id="refugio-resumen" className="hoja__titulo-grande">Tu respiro</h1>
-          <AntesDespues antes={antes} despues={despues} />
-          <p role="status">{fraseDeCambio(antes, despues)}</p>
-          <p className="pequeno">Contarle a alguien de confianza cómo te sientes también ayuda.</p>
-          <Boton onClick={onSalir}>Volver al inicio</Boton>
-        </section>
-      )}
-    </Paisaje>
-  )
-}
-
-// Seguimiento en el historial: cuántos respiros y cómo suele quedar el cielo con cada técnica.
-// En climas y palabras, nunca en puntajes; sin rachas ni metas (RNF-32).
-export function LoQueTeAyudo({ refugios }) {
-  const resumen = resumenRefugios(refugios)
-  if (!resumen.length) return null
-  const n = refugios.length
-  return (
-    <section className="ayudo" aria-labelledby="ayudo-titulo">
-      <h3 id="ayudo-titulo">Lo que te ayudó</h3>
-      <p className="pequeno">Te diste {n === 1 ? '1 respiro' : `${n} respiros`}. Así suele quedar tu cielo con cada técnica:</p>
-      <ul>
-        {resumen.map((t) => {
-          const a = climaDe(t.antes)
-          const d = climaDe(t.despues)
-          return (
-            <li key={t.tecnica}>
-              <strong>{TECNICAS[t.tecnica].titulo}</strong>
-              <span className="ayudo__climas" aria-hidden="true">{a.icono} {a.etiqueta} → {d.icono} {d.etiqueta}</span>
-              <span className="sr">En general, de {a.etiqueta.toLowerCase()} a {d.etiqueta.toLowerCase()}.</span>
-              <small className="pequeno">{fraseResumen(t)}</small>
-            </li>
-          )
-        })}
-      </ul>
-    </section>
-  )
+  if (paso === 'elegir') return <Elegir cabecera={cab} capas={capas} favorita={favorita} onElegir={elegirTecnica} onMasAyuda={onMasAyuda} />
+  if (paso === 'tierra') return <Tierra cabecera={cab} capas={capas} voz={voz} onRiesgo={onRiesgo} onTerminar={() => ir('despues')} />
+  if (paso === 'tarea') return <Tarea cabecera={cab} capas={capas} voz={voz} onRiesgo={onRiesgo} onTerminar={() => ir('despues')} />
+  if (paso === 'amiga') return <Amiga cabecera={cab} capas={capas} frase={inicial?.frase} onRiesgo={onRiesgo} onTerminar={() => ir('despues')} />
+  if (paso === 'despues') {
+    return <Despues cabecera={cab} capas={capas} antes={antes} despues={despues} setAntes={setAntes} setDespues={setDespues}
+      onListo={listo} onOtra={() => ir('elegir')} onSaltar={() => ir('resumen')} />
+  }
+  return <Resumen cabecera={cab} capas={capas} antes={cielo(antes)} despues={cielo(despues)} guardado={guardado} guardable={guardable}
+    onVolver={onSalir} onEmpezar={onEmpezar} />
 }
