@@ -29,3 +29,15 @@ test('sin internet se puede registrar el día y ver las líneas de ayuda', async
   await expect(page.locator('a[href="tel:113"]')).toBeVisible()
   await context.setOffline(false)
 })
+
+test('el primer pintado no carga Sala, Historial ni Perfil, y el registro del SW va con defer (rendimiento)', async ({ page }) => {
+  const js = []
+  page.on('request', (r) => { if (r.url().endsWith('.js')) js.push(new URL(r.url()).pathname) })
+  await page.goto('/')
+  await page.getByRole('heading', { level: 1 }).waitFor()
+  expect(js.filter((p) => /\/(Sala|Historial|Privacidad|Datos|Accesibilidad)-/.test(p))).toEqual([])
+  await expect(page.locator('script[src$="registerSW.js"]')).toHaveAttribute('defer', '')
+  await page.getByRole('button', { name: 'Sala', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Crear una sala' })).toBeVisible()
+  expect(js.some((p) => /\/Sala-/.test(p))).toBe(true)
+})

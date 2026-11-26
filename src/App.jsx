@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Suspense, lazy, useEffect, useRef, useState } from 'react'
 import { proponerEmociones, proveedorActivo, proveedorSegunPermiso } from './llm/index.js'
 import { crearGrabacion, decir, sttDisponible, transcripcionLocalDisponible } from './voz/stt.js'
 import {
@@ -21,11 +21,22 @@ import Inicio from './pantallas/Inicio.jsx'
 import { Despedida, Emociones, Escuchando, Guardado, Pensando, PredecibleComo, Relato, Trampa } from './pantallas/Checkin.jsx'
 import { CuidadoDatos, HojaAa, HojaIA, HojaMicrofono } from './pantallas/Hojas.jsx'
 import Crisis from './pantallas/Crisis.jsx'
-import { DetalleDia, Historial, HistorialVacio } from './pantallas/Historial.jsx'
-import { Accesibilidad } from './pantallas/Accesibilidad.jsx'
-import { Perfil, PrivacidadYDatos, SabeDeMi } from './pantallas/Privacidad.jsx'
-import { EliminarDatos, ExportarResumen } from './pantallas/Datos.jsx'
-import Sala from './pantallas/Sala.jsx'
+
+// Rendimiento: las pantallas que no son del check-in se cargan al abrirlas (el primer pintado no las espera)
+const parte = (cargar, nombre) => lazy(() => cargar().then((m) => ({ default: m[nombre] })))
+const cargarHistorial = () => import('./pantallas/Historial.jsx')
+const cargarPrivacidad = () => import('./pantallas/Privacidad.jsx')
+const cargarDatos = () => import('./pantallas/Datos.jsx')
+const Historial = parte(cargarHistorial, 'Historial')
+const DetalleDia = parte(cargarHistorial, 'DetalleDia')
+const HistorialVacio = parte(cargarHistorial, 'HistorialVacio')
+const Perfil = parte(cargarPrivacidad, 'Perfil')
+const PrivacidadYDatos = parte(cargarPrivacidad, 'PrivacidadYDatos')
+const SabeDeMi = parte(cargarPrivacidad, 'SabeDeMi')
+const ExportarResumen = parte(cargarDatos, 'ExportarResumen')
+const EliminarDatos = parte(cargarDatos, 'EliminarDatos')
+const Accesibilidad = parte(() => import('./pantallas/Accesibilidad.jsx'), 'Accesibilidad')
+const Sala = lazy(() => import('./pantallas/Sala.jsx'))
 import Refugio from './pantallas/Refugio.jsx'
 
 const SEG_SUGERIR_CIERRE = 60
@@ -88,10 +99,12 @@ const AYUDA = {
   'refugio:resumen': ['En Historial, «Lo que te ayudó» junta tus respiros, sin rachas ni metas.'],
 }
 
-function enfocar(selector, intentos = 30) {
-  const el = document.querySelector(selector)
+// Reintenta hasta 4 s: las pantallas cargadas a demanda tardan en montar su h1, y mientras tanto
+// Suspense deja la pantalla anterior oculta (display: none), así que solo vale un h1 visible
+function enfocar(selector, hasta = performance.now() + 4000) {
+  const el = [...document.querySelectorAll(selector)].find((e) => e.getClientRects().length > 0)
   if (!el) {
-    if (intentos > 0) requestAnimationFrame(() => enfocar(selector, intentos - 1))
+    if (performance.now() < hasta) requestAnimationFrame(() => enfocar(selector, hasta))
     return
   }
   if (!el.matches('button, a[href], input, textarea, [tabindex]')) el.setAttribute('tabindex', '-1')
@@ -454,6 +467,7 @@ export default function App() {
       <main id="contenido" className={`app ${PESTANA_DE[pantalla] && completo ? 'app--nav' : ''}`} hidden={Boolean(crisis)} aria-hidden={crisis ? true : undefined}
         inert={Boolean(hoja || ayuda) || undefined}
         data-movimiento={preferencias.movimientoReducido ? 'reducido' : 'normal'} data-pantalla={pantalla}>
+        <Suspense fallback={<p className="cargando" role="status">Cargando…</p>}>
 
         {pantalla === 'bienvenida' && (
           <Bienvenida cabecera={cab} capas={capas} onEmpezar={() => empezar('adulto')} onRespiro={() => abrirRefugio()}
@@ -549,6 +563,7 @@ export default function App() {
             alVolver={() => { history.replaceState(null, '', location.pathname); setCodigoInvitacion(''); enfocar('main h1') }} />
         )}
 
+        </Suspense>
         {PESTANA_DE[pantalla] && completo && <Pestanas actual={PESTANA_DE[pantalla]} onIr={irAPestana} />}
         {import.meta.env.DEV && <footer className="pie-dev">LLM activo: {proveedorActivo().nombre}</footer>}
       </main>

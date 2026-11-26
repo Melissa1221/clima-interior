@@ -194,6 +194,7 @@ test('Historial (con datos y de ejemplo) y Perfil tienen un h1 (M8)', async ({ p
   await page.getByRole('button', { name: 'Guardar así' }).click()
   await page.getByRole('button', { name: 'Hasta mañana' }).click()
   const h1 = async () => {
+    await page.locator('main h1').first().waitFor()
     const { violations } = await new AxeBuilder({ page }).withRules(['page-has-heading-one']).analyze()
     expect(violations).toEqual([])
     await expect(page.locator('main h1')).toHaveCount(1)
