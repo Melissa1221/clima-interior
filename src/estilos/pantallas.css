@@ -303,3 +303,7 @@
 [data-tema='noche'] .crisis__principal { background: #9E3A2B; }
 [data-tema='noche'] .dia__cielo { border-color: transparent; }
 .campo input[type='date'] { min-width: 0; padding-inline: 12px; }
+/* La reflexión larga empuja la burbuja: Garúa queda debajo, sin taparse */
+.escena--guardado .escena__cuerpo { padding-bottom: 150px; }
+/* Crisis de noche: el horizonte se oscurece para que la nota final conserve el contraste */
+[data-tema='noche'] .crisis__horizonte { filter: brightness(.3) saturate(.5); }
