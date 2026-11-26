@@ -1,7 +1,7 @@
 /* Refugio (RF-42): respirar con la lluvia, 5-4-3-2-1, partir la tarea, ¿qué le dirías a una amiga? y trampas */
 .entrada-refugio { align-self: flex-start; width: auto; }
 .hoja__titulo-grande { font-size: 24px; line-height: 1.22; }
-.hoja .btn--fantasma { min-height: 48px; height: 48px; }
+.hoja .b-texto { min-height: 48px; height: 48px; }
 
 /* Respirar: la nube crece al inhalar y se encoge al exhalar; el cielo la acompaña */
 .respirar { display: flex; flex-direction: column; gap: 14px; flex: 1; justify-content: flex-end; }
@@ -38,10 +38,10 @@
 .paso__textos { display: grid; gap: 2px; }
 .paso--hecho .paso__texto { text-decoration: line-through; color: var(--texto-secundario); }
 .paso small { font-size: 13px; color: var(--texto-secundario); }
-.paso .btn-icono { width: 44px; height: 44px; min-height: 44px; border: 0; background: transparent; }
+.paso .b-icono { width: 44px; height: 44px; min-height: 44px; border: 0; background: transparent; }
 .agregar { display: flex; gap: 8px; align-items: flex-end; }
 .agregar .campo { flex: 1; min-width: 0; }
-.agregar .btn { width: auto; padding: 0 16px; }
+.agregar .b { width: auto; padding: 0 16px; }
 .hoja .campo input, .hoja textarea { width: 100%; }
 
 /* Tarjeta de trampa de pensamiento: valida primero, después pregunta */

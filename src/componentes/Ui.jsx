@@ -1,75 +1,168 @@
+// Primitivas del sistema v3 refinada: botón (sólido / en línea / texto / peligro), enlace, interruptor, fila de lista,
+// cabecera con «Aa» y «Ayuda ya», navegación inferior, hoja inferior, aviso, progreso, campo y fila de climas.
 import { useEffect, useRef } from 'react'
 import Icono from './Icono.jsx'
+import { CLIMAS } from '../datos/climas.js'
 
-// Botón del Figma: 52 px de alto, tipos primario / secundario / fantasma / ayuda / velo
-export function Boton({ tipo = 'primario', icono, children, className = '', ...props }) {
+const TIPOS = { primario: 'solido', solido: 'solido', secundario: 'linea', linea: 'linea', velo: 'linea', fantasma: 'texto', texto: 'texto', peligro: 'peligro' }
+
+// Un solo sólido por pantalla; lo demás en línea o como texto subrayado
+export function Boton({ tipo = 'solido', icono, children, className = '', type = 'button', ...props }) {
+  const t = TIPOS[tipo] ?? 'solido'
   return (
-    <button className={`btn btn--${tipo} ${className}`} {...props}>
-      {icono && <Icono nombre={icono} />}
-      <span>{children}</span>
+    <button type={type} className={`b b-${t} ${className}`} {...props}>
+      {icono && <Icono nombre={icono} tam={20} />}
+      {t === 'texto' ? <span>{children}</span> : children}
     </button>
   )
 }
 
-// Ayuda contextual a la izquierda y «Salir por hoy» siempre visible (RF-24, RF-34)
-export function BarraSuperior({ fondo = 'claro', soloAyuda = false, onAyuda, onSalir }) {
+// Enlace de texto (15/500 subrayado) que actúa como botón
+export function Enlace({ children, className = '', icono, ...props }) {
   return (
-    <header className={`barra barra--${fondo} ${soloAyuda ? 'barra--derecha' : ''}`}>
-      <button className="btn-icono" onClick={onAyuda} aria-label="Ayuda contextual"><Icono nombre="ayuda" /></button>
-      {!soloAyuda && <Boton tipo={fondo === 'paisaje' ? 'velo' : 'secundario'} icono="salir" onClick={onSalir}>Salir por hoy</Boton>}
+    <button type="button" className={`enlace ${className}`} {...props}>
+      {icono && <Icono nombre={icono} tam={20} />}{children}
+    </button>
+  )
+}
+
+// Interruptor dentro de una fila de objetivo táctil completo. El estado se ve por posición, relleno y lectura (RNF-06)
+export function FilaAjuste({ titulo, descripcion, activo, onCambio, icono }) {
+  return (
+    <button type="button" role="switch" aria-checked={activo} className="fila fila--sw" onClick={() => onCambio(!activo)}>
+      {icono && <span className="fila__icono"><Icono nombre={icono} tam={22} /></span>}
+      <span className="fila__textos">
+        <span className="fila__titulo">{titulo}</span>
+        {descripcion && <small className="fila__desc">{descripcion}</small>}
+      </span>
+      <span className="sw" aria-hidden="true" />
+    </button>
+  )
+}
+
+// Fila de lista que lleva a otra pantalla
+export function FilaLista({ icono, titulo, descripcion, onClick, chevron = true, children }) {
+  return (
+    <button type="button" className="fila" onClick={onClick}>
+      {icono && <span className="fila__icono"><Icono nombre={icono} tam={22} /></span>}
+      <span className="fila__textos">
+        <span className="fila__titulo">{titulo}</span>
+        {descripcion && <small className="fila__desc">{descripcion}</small>}
+        {children}
+      </span>
+      {chevron && <span className="fila__chev"><Icono nombre="chev" tam={20} /></span>}
+    </button>
+  )
+}
+
+// Cabecera: a la izquierda «Aa» (pantallas raíz) o volver/cerrar, y la ayuda contextual; a la derecha «Ayuda ya»
+export function Cabecera({ izquierda = 'aa', etiquetaIzquierda, onIzquierda, onAyuda, onAyudaYa, titulo, children }) {
+  return (
+    <header className="cabecera">
+      <div className="cabecera__izq">
+        {izquierda === 'aa' && (
+          <button type="button" className="ib ib-aa" aria-label="Accesibilidad: texto, movimiento y sonido" onClick={onIzquierda}>
+            <span aria-hidden="true">Aa</span>
+          </button>
+        )}
+        {(izquierda === 'volver' || izquierda === 'cerrar') && (
+          <button type="button" className="ib" aria-label={etiquetaIzquierda ?? (izquierda === 'volver' ? 'Volver' : 'Cerrar')} onClick={onIzquierda}>
+            <Icono nombre={izquierda === 'volver' ? 'back' : 'close'} tam={22} />
+          </button>
+        )}
+        {onAyuda && (
+          <button type="button" className="ib ib--plano" aria-label="Ayuda contextual" onClick={onAyuda}><Icono nombre="help" tam={22} /></button>
+        )}
+      </div>
+      {titulo && <span className="cabecera__titulo">{titulo}</span>}
+      {children}
+      {onAyudaYa && (
+        <button type="button" className="ayuda-ya" onClick={onAyudaYa} aria-label="Ayuda ya: líneas de apoyo">
+          <Icono nombre="phone" tam={18} />Ayuda ya
+        </button>
+      )}
     </header>
   )
 }
 
-// Interruptor de 56×32 dentro de una fila de objetivo táctil completo. El estado se ve por posición, check y relleno (RNF-06)
-export function FilaAjuste({ titulo, descripcion, activo, onCambio }) {
+// Navegación inferior: la activa se marca con tinta, peso 500 y una línea azul arriba (no solo color)
+export function Pestanas({ actual, onIr }) {
+  const items = [['inicio', 'Inicio'], ['historial', 'Historial'], ['sala', 'Sala'], ['perfil', 'Perfil']]
   return (
-    <button type="button" role="switch" aria-checked={activo} className="fila-ajuste" onClick={() => onCambio(!activo)}>
-      <span className="fila-ajuste__textos">
-        <strong>{titulo}</strong>
-        {descripcion && <small>{descripcion}</small>}
-      </span>
-      <span className="interruptor" aria-hidden="true">
-        <span className="interruptor__perilla">{activo && <Icono nombre="check" tam={16} />}</span>
-      </span>
-    </button>
+    <nav className="nav" aria-label="Secciones">
+      {items.map(([id, etiqueta]) => (
+        <button key={id} type="button" className="nav__item" aria-current={actual === id ? 'page' : undefined} onClick={() => onIr(id)}>
+          <Icono nombre={id} tam={24} />{etiqueta}
+        </button>
+      ))}
+    </nav>
+  )
+}
+
+// Hoja inferior modal: se cierra con Escape o tocando el velo y devuelve el foco a quien la abrió
+export function HojaInferior({ titulo, id = 'hoja-titulo', onCerrar, cerrable = true, children, extra }) {
+  const ref = useRef(null)
+  useEffect(() => {
+    const previo = document.activeElement
+    ref.current?.focus()
+    const alTecla = (e) => { if (e.key === 'Escape' && cerrable) onCerrar?.() }
+    document.addEventListener('keydown', alTecla)
+    return () => { document.removeEventListener('keydown', alTecla); previo?.focus?.() }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  return (
+    <div className="velo" onClick={() => cerrable && onCerrar?.()}>
+      <section ref={ref} tabIndex={-1} className="hoja" role="dialog" aria-modal="true" aria-labelledby={id} onClick={(e) => e.stopPropagation()}>
+        <span className="hoja__asa" aria-hidden="true" />
+        <div className="hoja__cabeza">
+          <h2 id={id}>{titulo}</h2>
+          {extra}
+          {cerrable && onCerrar && (
+            <button type="button" className="ib ib--plano" aria-label="Cerrar" onClick={onCerrar}><Icono nombre="close" tam={22} /></button>
+          )}
+        </div>
+        {children}
+      </section>
+    </div>
+  )
+}
+
+// Ayuda contextual (RF-24) como hoja inferior, con salida a crisis siempre a mano
+export function Ayuda({ titulo, children, onCerrar, onMasAyuda }) {
+  return (
+    <HojaInferior titulo={titulo} id="ayuda-titulo" onCerrar={onCerrar}>
+      <div className="hoja__cuerpo">{children}</div>
+      <div className="pila pila--centro">
+        <Boton onClick={onCerrar}>Entendido</Boton>
+        {onMasAyuda && <Enlace onClick={onMasAyuda}>Necesito más ayuda</Enlace>}
+      </div>
+    </HojaInferior>
   )
 }
 
 // Equivalente visual de toda alerta sonora; los errores se anuncian con role="alert" (RNF-03)
 export function Aviso({ tipo = 'info', titulo, children, vibra = false }) {
-  const icono = tipo === 'info' ? 'info' : tipo === 'exito' ? 'check' : 'alerta'
+  const icono = tipo === 'info' ? 'info' : tipo === 'exito' ? 'check' : 'alert'
   return (
     <div className={`aviso aviso--${tipo}`} role={tipo === 'error' ? 'alert' : 'status'}>
-      <Icono nombre={icono} />
-      <div className="aviso__textos"><strong>{titulo}</strong>{children && <small>{children}</small>}</div>
-      {vibra && <span className="aviso__vibra"><Icono nombre="vibrar" tam={19} /><small>vibra</small></span>}
+      <Icono nombre={icono} tam={20} />
+      <div className="aviso__textos"><strong className="aviso__titulo">{titulo}</strong>{children && <small>{children}</small>}</div>
+      {vibra && <span className="aviso__vibra"><Icono nombre="vibrate" tam={20} /><small>vibra</small></span>}
     </div>
   )
 }
 
-export function Progreso({ paso, total }) {
+// Progreso en rayitas, con su lectura para lectores de pantalla
+export function Progreso({ paso, total, etiqueta }) {
   return (
     <div className="progreso">
-      <small id="progreso-texto">Paso {paso} de {total}</small>
-      <div className="progreso__barra" role="progressbar" aria-valuemin={1} aria-valuemax={total} aria-valuenow={paso} aria-labelledby="progreso-texto">
-        <div className="progreso__relleno" style={{ width: `${(paso / total) * 100}%` }} />
+      <div className="rayas" role="progressbar" aria-valuemin={1} aria-valuemax={total} aria-valuenow={paso} aria-label={etiqueta ?? `Paso ${paso} de ${total}`}>
+        {Array.from({ length: total }, (_, i) => <i key={i} className={i < paso ? 'hecho' : ''} />)}
       </div>
     </div>
   )
 }
 
-// Opción excluyente con tarjeta grande (S02)
-export function Opcion({ marcada, onElegir, children }) {
-  return (
-    <button type="button" role="radio" aria-checked={marcada} className={marcada ? 'opcion opcion--marcada' : 'opcion'} onClick={onElegir}>
-      <span className="opcion__circulo" aria-hidden="true">{marcada && <span />}</span>
-      <strong>{children}</strong>
-    </button>
-  )
-}
-
-// Etiqueta siempre visible; foco con borde de 3 px (S43, S45)
+// Etiqueta siempre visible; foco con anillo azul
 export function Campo({ id, etiqueta, estado, ...props }) {
   return (
     <div className={`campo ${estado ? `campo--${estado}` : ''}`}>
@@ -79,37 +172,37 @@ export function Campo({ id, etiqueta, estado, ...props }) {
   )
 }
 
-// Diálogo de ayuda contextual: se cierra con Escape y devuelve el foco al botón que lo abrió
-export function Ayuda({ titulo, children, onCerrar }) {
-  const ref = useRef(null)
-  useEffect(() => {
-    const previo = document.activeElement
-    ref.current?.focus()
-    const alTecla = (e) => e.key === 'Escape' && onCerrar()
-    document.addEventListener('keydown', alTecla)
-    return () => { document.removeEventListener('keydown', alTecla); previo?.focus?.() }
-  }, [onCerrar])
+// Los cinco climas como opciones excluyentes, con su ícono de línea
+export function ElegirClima({ valor, onElegir, etiqueta, id }) {
   return (
-    <div className="velo" onClick={onCerrar}>
-      <section className="dialogo" role="dialog" aria-modal="true" aria-labelledby="ayuda-titulo" onClick={(e) => e.stopPropagation()}>
-        <h2 id="ayuda-titulo">{titulo}</h2>
-        <div className="dialogo__cuerpo">{children}</div>
-        <button ref={ref} className="btn btn--primario" onClick={onCerrar}><span>Entendido</span></button>
-      </section>
+    <div className="climas" role="radiogroup" aria-label={etiqueta} id={id}>
+      {CLIMAS.map((c) => (
+        <button key={c.id} type="button" role="radio" aria-checked={valor === c.id} className={`tok tok--${c.id}`} onClick={() => onElegir(c.id)}>
+          <Icono nombre={c.id} tam={26} /><span className="tok__lbl">{c.etiqueta}</span>
+        </button>
+      ))}
     </div>
   )
 }
 
-// Barra de pestañas: cada una es un objetivo de 84×60 px; la activa se marca con fondo, negrita y color (no solo color)
-export function Pestanas({ actual, onIr }) {
-  const items = [['inicio', 'inicio', 'Inicio'], ['historial', 'calendario', 'Historial'], ['sala', 'personas', 'Sala'], ['perfil', 'perfil', 'Perfil']]
+// Compatibilidad: la barra de antes (ayuda contextual + «Salir por hoy»)
+export function BarraSuperior({ soloAyuda = false, onAyuda, onSalir }) {
   return (
-    <nav className="pestanas" aria-label="Secciones">
-      {items.map(([id, icono, etiqueta]) => (
-        <button key={id} className="pestana" aria-current={actual === id ? 'page' : undefined} onClick={() => onIr(id)}>
-          <Icono nombre={icono} />{etiqueta}
-        </button>
-      ))}
-    </nav>
+    <header className="cabecera barra">
+      <div className="cabecera__izq">
+        <button type="button" className="ib" onClick={onAyuda} aria-label="Ayuda contextual"><Icono nombre="help" tam={22} /></button>
+      </div>
+      {!soloAyuda && <button type="button" className="pildora" onClick={onSalir}><Icono nombre="out" tam={18} />Salir por hoy</button>}
+    </header>
+  )
+}
+
+// Opción excluyente con tarjeta (se usa en el primer uso de antes)
+export function Opcion({ marcada, onElegir, children }) {
+  return (
+    <button type="button" role="radio" aria-checked={marcada} className="fila fila--sw opcion" onClick={onElegir}>
+      <span className="fila__textos"><span className="fila__titulo">{children}</span></span>
+      <span className="sw" aria-hidden="true" />
+    </button>
   )
 }

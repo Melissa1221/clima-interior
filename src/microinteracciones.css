@@ -6,10 +6,10 @@
 .pantalla, .paisaje, .riesgo, .historial { animation: entra 260ms ease-out both; }
 
 /* Respuesta al toque: los controles se hunden un poco */
-.btn, .btn-icono, .clima, .nube, .opcion, .pestana, .fila-ajuste, .enlace-fila, .capa, .mic-grande, .ctrl span, .segmentos button {
+.clima, .nube, .opcion, .pestana, .fila-ajuste, .enlace-fila, .capa, .mic-grande, .ctrl span, .segmentos button {
   transition: transform 120ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
 }
-.btn:active:not(:disabled), .btn-icono:active, .clima:active, .nube:active, .opcion:active, .pestana:active,
+.clima:active, .nube:active, .opcion:active, .pestana:active,
 .enlace-fila:active, .capa:active, .segmentos button:active { transform: scale(.96); }
 .fila-ajuste:active .interruptor__perilla { width: 28px; }
 .fila-ajuste:active[aria-checked='true'] .interruptor__perilla { transform: translateX(20px); }

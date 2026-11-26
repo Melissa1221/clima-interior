@@ -8,8 +8,8 @@
   --info-suave: #e6eef8; --exito: #2e7d5b; --exito-suave: #e3f3ea;
   --ayuda: #9e2f45; --ayuda-suave: #fbe9ec; --aviso: #7a4f00;
   --ia-rotulo: #5b4b8a; --ia-rotulo-suave: #eeeaf7; --foco-anillo: #ffc23d;
-  --fuente-texto: 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;
-  --fuente-titulo: 'Fraunces Variable', Georgia, serif;
+  --fuente-texto: var(--sans);
+  --fuente-titulo: var(--serif);
   font-family: var(--fuente-texto); color: var(--texto-principal); background: var(--superficie-base);
 }
 * { box-sizing: border-box; }
@@ -56,9 +56,8 @@ body { margin: 0; }
 .paisaje--tormenta { background: linear-gradient(#2a3446, #5d6a7e); }
 .paisaje--niebla { background: linear-gradient(#c9ccd1, #eceef0); }
 .tarjeta { background: #fff; border-radius: 20px; padding: 20px; width: 100%; display: grid; gap: 12px; }
-h1, h2 { margin: 0; font-family: var(--fuente-titulo); font-weight: 600; font-variation-settings: 'SOFT' 0, 'WONK' 1; }
+h1, h2 { margin: 0; font-family: var(--fuente-titulo); font-weight: 600;  }
 button { font: inherit; color: inherit; min-height: 44px; border-radius: 12px; border: 2px solid transparent; cursor: pointer; }
-button:focus-visible, a:focus-visible, textarea:focus-visible, input:focus-visible { outline: 3px solid var(--foco-anillo); outline-offset: 2px; box-shadow: 0 0 0 1px var(--texto-principal); }
 button:disabled { opacity: .45; cursor: not-allowed; }
 .principal { background: #2f4466; color: #fff; }
 .secundario { background: #fff; border-color: #2f4466; color: #2f4466; }
