@@ -111,7 +111,6 @@ describe('proveedorSegunPermiso', () => {
   })
   it('con permiso deja el proveedor elegido', () => expect(proveedorSegunPermiso(true, nube)).toBe(nube))
   it('los proveedores locales no se tocan', () => {
-    const mock = { nombre: 'mock' }
     expect(proveedorSegunPermiso(false, mock)).toBe(mock)
   })
 })

@@ -45,6 +45,7 @@ export const reflexionPorReglas = (emociones) =>
 
 export const mock = {
   nombre: 'mock',
+  enInternet: false,
   async proponerEmociones(texto) {
     const emociones = emocionesPorReglas(texto)
     return { emociones, reflexion: reflexionPorReglas(emociones), trampas: detectarTrampas(texto) }
@@ -54,6 +55,7 @@ export const mock = {
 // Modelo local con Ollama: la reflexión se genera en el dispositivo, sin salir a internet.
 export const ollama = {
   nombre: 'ollama',
+  enInternet: false,
   async proponerEmociones(texto, contexto) {
     const url = import.meta.env.VITE_OLLAMA_URL || 'http://localhost:11434'
     const res = await fetch(`${url}/api/generate`, {
@@ -75,6 +77,7 @@ const ESPERA_POR_MODELO_MS = 6500
 
 export const gemini = {
   nombre: 'gemini',
+  enInternet: true,
   async proponerEmociones(texto, contexto) {
     const clave = import.meta.env.VITE_GEMINI_API_KEY
     if (!clave) throw new Error('falta VITE_GEMINI_API_KEY')
@@ -117,6 +120,7 @@ function leerJson(texto, datos) {
 // Groq (API compatible con OpenAI, capa gratuita). Respaldo rápido cuando Gemini está saturado.
 export const groq = {
   nombre: 'groq',
+  enInternet: true,
   async proponerEmociones(texto, contexto) {
     const clave = import.meta.env.VITE_GROQ_API_KEY
     if (!clave) throw new Error('falta VITE_GROQ_API_KEY')
@@ -139,6 +143,7 @@ export const groq = {
 // API remota a través de un proxy propio que guarda la clave.
 export const remoto = {
   nombre: 'remoto',
+  enInternet: true,
   async proponerEmociones(texto, contexto) {
     if (!import.meta.env.VITE_REMOTO_URL) throw new Error('falta VITE_REMOTO_URL')
     const res = await fetch(import.meta.env.VITE_REMOTO_URL, {
