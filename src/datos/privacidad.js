@@ -16,3 +16,15 @@ export const MOTIVOS_DICTADO = {
   'sin-permiso': 'Tienes apagado «Grabar mi voz». Puedes escribirlo o activarlo en Perfil › Privacidad.',
   'requiere-internet': 'Este navegador solo transcribe en internet. Para dictar, activa «Transcribir mi voz en internet» en Perfil › Privacidad, o escríbelo.',
 }
+
+// Hoja justo a tiempo «¿Dónde pensamos tu reflexión?» (J2): solo la primera vez que se toca «Listo» con un relato,
+// y solo si el proveedor configurado sale a internet. Un proveedor que no declara `enInternet` cuenta como en internet.
+export function debePreguntarIA(avisos, proveedor) {
+  return !avisos?.ia && proveedor?.enInternet !== false
+}
+
+// Tema de la app: la persona puede fijarlo; en «auto» manda el sistema o, si no dice nada, la hora (19:00 a 6:00)
+export function temaEfectivo(preferencia = 'auto', { sistemaOscuro = false, hora = new Date().getHours() } = {}) {
+  if (preferencia === 'claro' || preferencia === 'noche') return preferencia
+  return sistemaOscuro || hora >= 19 || hora < 6 ? 'noche' : 'claro'
+}

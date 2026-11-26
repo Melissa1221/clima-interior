@@ -36,7 +36,8 @@ describe('ajustes del perfil', () => {
 
   it('arranca con los permisos más protectores', () => {
     const p = leerPerfil()
-    expect(p.privacidad).toEqual({ grabarVoz: true, transcribirEnInternet: false, iaEnInternet: false, climaCompartido: false })
+    expect(p.privacidad).toEqual({ grabarVoz: false, transcribirEnInternet: false, iaEnInternet: false, climaCompartido: false })
+    expect(p.avisos).toEqual({ ia: false, accesibilidad: false, instalar: false })
     expect(p.personalizacion.propuestas).toBe(false)
     expect(p.primerUso.completo).toBe(false)
   })
@@ -52,7 +53,7 @@ describe('ajustes del perfil', () => {
   it('guarda un grupo de ajustes sin tocar los demás', () => {
     let p = leerPerfil()
     p = guardarAjustes(p, 'privacidad', { iaEnInternet: true })
-    expect(leerPerfil().privacidad).toMatchObject({ iaEnInternet: true, grabarVoz: true })
+    expect(leerPerfil().privacidad).toMatchObject({ iaEnInternet: true, grabarVoz: false })
   })
 
   it('apaga y enciende una capa del clima por separado', () => {

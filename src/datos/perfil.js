@@ -14,11 +14,14 @@ export const PREFERENCIAS = {
   vibrar: true,
   pistas: true,
   comandosVoz: true,
+  tamanoTexto: 'normal', // panel «Aa»: 'normal' | 'grande' | 'mas-grande'
+  tema: 'auto', // 'auto' (noche según el sistema o la hora) | 'claro' | 'noche'
   capas: { lluvia: true, viento: true, niebla: true, nubes: true, luz: true },
 }
 
-// Cada permiso es independiente y arranca en el valor más protector (S03, S42)
-export const PRIVACIDAD = { grabarVoz: true, transcribirEnInternet: false, iaEnInternet: false, climaCompartido: false }
+// Cada permiso es independiente y arranca en el valor más protector (S03, S42).
+// «Grabar mi voz» también arranca apagado: se enciende con «Activar micrófono» la primera vez que se usa (journey nuevo, P1).
+export const PRIVACIDAD = { grabarVoz: false, transcribirEnInternet: false, iaEnInternet: false, climaCompartido: false }
 
 // Qué datos usa la personalización (S40). Apagar una categoría también borra lo aprendido de ella.
 export const PERSONALIZACION = { paisaje: true, ritmo: true, elegidas: true, propuestas: false, tono: true, entrada: true, refugio: true, trampas: true }
@@ -48,13 +51,15 @@ const INICIAL = {
   personalizacion: PERSONALIZACION,
   ritmo: { horaHabitual: null, segundosCheckin: null },
   primerUso: { completo: false, edad: null },
+  // Preguntas y tarjetas que se muestran una sola vez, justo cuando hacen falta (journey nuevo)
+  avisos: { ia: false, accesibilidad: false, instalar: false },
   // Lo que la app aprende del uso y lo que decidió por su cuenta a partir de eso
   aprendizaje: { emociones: {}, propuestasIA: 0, aceptadasIA: 0, fallosMic: 0, pedidosCorto: 0, trampas: {} },
   aprendido: { frasesCortas: false, entrada: 'voz', tecnicaFavorita: null, trampasSilenciadas: [] },
   cambios: [],
 }
 
-const GRUPOS = ['preferencias', 'privacidad', 'personalizacion', 'ritmo', 'primerUso', 'aprendizaje', 'aprendido']
+const GRUPOS = ['preferencias', 'privacidad', 'personalizacion', 'ritmo', 'primerUso', 'avisos', 'aprendizaje', 'aprendido']
 
 // Mezcla un nivel de profundidad: si se agrega un ajuste nuevo, los perfiles guardados lo reciben
 function combinar(base, guardado) {
@@ -133,7 +138,7 @@ export function guardarPreferencias(perfil, preferencias) {
   return persistir({ ...perfil, preferencias: { ...perfil.preferencias, ...preferencias } })
 }
 
-// Cambia un grupo de ajustes ('privacidad', 'personalizacion', 'primerUso') sin tocar los demás
+// Cambia un grupo de ajustes ('privacidad', 'personalizacion', 'primerUso', 'avisos') sin tocar los demás
 export function guardarAjustes(perfil, grupo, cambios) {
   return persistir({ ...perfil, [grupo]: { ...perfil[grupo], ...cambios } })
 }
