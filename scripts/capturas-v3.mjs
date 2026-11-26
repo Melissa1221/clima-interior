@@ -79,7 +79,7 @@ try {
   await boton(p, 'Activar micrófono'); await p.waitForTimeout(900); await foto(p, '06-te-escucho')
   await boton(p, 'Terminar'); await foto(p, '07-corregir')
   await boton(p, 'Listo'); await p.getByText('Toca las nubes').waitFor(); await foto(p, '08-emociones')
-  await p.locator('.nube').first().click(); await boton(p, 'Guardar mi día'); await foto(p, '09-reflexion-y-tarjeta')
+  await p.locator('.nube').first().click(); await boton(p, 'Seguir'); await foto(p, '09-reflexion-y-tarjeta')
   await p.context().close()
 
   // Escribir, trampa y oferta del respiro

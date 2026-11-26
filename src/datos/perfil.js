@@ -223,14 +223,13 @@ const frasesCortas = (perfil) => perfil.personalizacion.tono && perfil.aprendido
 
 // Aplica lo aprendido a la respuesta de la IA: suma tus palabras de siempre y acorta si lo pediste.
 // La IA sigue proponiendo; la persona decide.
+// Se muestran hasta 4 nubes: tus palabras de siempre (máx. 2) desplazan a las propuestas menos probables.
 export function personalizarPropuesta(perfil, propuesta) {
-  const emociones = [...propuesta.emociones]
-  for (const nombre of emocionesFavoritas(perfil)) {
-    if (!emociones.some((e) => e.nombre === nombre)) emociones.push({ nombre, confianza: 0, tuya: true })
-  }
+  const tuyas = emocionesFavoritas(perfil).filter((n) => !propuesta.emociones.some((e) => e.nombre === n)).slice(0, 2)
+  const emociones = [...propuesta.emociones.slice(0, 4 - tuyas.length), ...tuyas.map((nombre) => ({ nombre, confianza: 0, tuya: true }))]
   let reflexion = propuesta.reflexion
   if (frasesCortas(perfil)) reflexion = reflexion.match(/^[^.?!]*[.?!]/)?.[0] ?? reflexion
-  return { ...propuesta, emociones: emociones.slice(0, 6), reflexion }
+  return { ...propuesta, emociones, reflexion }
 }
 
 // Lo que el proveedor de IA puede saber del perfil: solo el largo pedido, nunca el diario

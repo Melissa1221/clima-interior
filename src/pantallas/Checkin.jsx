@@ -1,11 +1,13 @@
 // Check-in: escuchar, escribir o corregir el relato, emociones, reflexión y guardado, trampa de pensamiento
 // y «Salir por hoy». Pantallas v3 refinada (02 Te escucho) y grupo A (07 a 11 y 15).
+import { useState } from 'react'
 import Icono from '../componentes/Icono.jsx'
-import { Boton, Enlace, FilaAjuste } from '../componentes/Ui.jsx'
+import { Boton, Campo, Enlace, FilaAjuste } from '../componentes/Ui.jsx'
 import { Escena, Suelo } from '../componentes/Escena.jsx'
 import { CLIMAS, DESCRIPCION } from '../datos/climas.js'
 import { TRAMPAS } from '../datos/trampas.js'
 import { limitarPalabras } from '../datos/accesibilidad.js'
+import { hayRiesgo } from '../datos/riesgo.js'
 import Garua from '../mundo/Garua.jsx'
 
 const etiquetaDe = (id) => CLIMAS.find((c) => c.id === id)?.etiqueta ?? 'Cielo neutro'
@@ -87,8 +89,33 @@ export function Pensando({ cabecera, capas, clima }) {
 // Forma de nube de los botones de emoción (grupo A · 09)
 const NUBE = 'M16 63 H144 A15 15 0 0 0 147 33 A21 21 0 0 0 116 21 A30 30 0 0 0 60 18 A21 21 0 0 0 26 31 A16 16 0 0 0 16 63 Z'
 
-// 09 · Elegir emociones: la IA propone, la persona decide (RF-12, RNF-28)
-export function Emociones({ cabecera, capas, clima, neutral, predecible, propuesta, elegidas, onAlternar, onGuardar }) {
+// 09 · Elegir emociones: la IA propone hasta 4, la persona decide y puede poner su propia palabra (RF-12, RNF-28, M10)
+const MAX_NUBES = 4
+const MAX_PROPIAS = 2
+function Nube({ nombre, tuya, on, onAlternar }) {
+  return (
+    <button type="button" aria-pressed={on} className="nube" onClick={() => onAlternar(nombre)}>
+      <svg className="nube__forma" viewBox="0 0 160 66" preserveAspectRatio="none" aria-hidden="true"><path d={NUBE} /></svg>
+      <span className="nube__nombre">{nombre}</span>{tuya && <small className="nube__tuya"> · tuya</small>}
+    </button>
+  )
+}
+
+export function Emociones({ cabecera, capas, clima, neutral, predecible, propuesta, elegidas, onAlternar, onGuardar, onRiesgo }) {
+  const [propias, setPropias] = useState([])
+  const [escribiendo, setEscribiendo] = useState(false)
+  const [palabra, setPalabra] = useState('')
+  const nubes = propuesta.emociones.slice(0, MAX_NUBES)
+  function agregar(e) {
+    e.preventDefault()
+    const p = palabra.trim().toLowerCase()
+    if (!p) return
+    if (hayRiesgo(p)) return onRiesgo?.()
+    if (!nubes.some((n) => n.nombre === p) && !propias.includes(p)) setPropias([...propias, p])
+    if (!elegidas.includes(p)) onAlternar(p)
+    setPalabra('')
+    setEscribiendo(false)
+  }
   return (
     <>
       <Escena clima={clima} hy={250} suelo={360} flores="simples" brillo={[90, 150]} capas={capas} cabecera={cabecera} className="escena--emociones"
@@ -100,19 +127,24 @@ export function Emociones({ cabecera, capas, clima, neutral, predecible, propues
         <p className="cap"><Icono nombre="info" tam={16} />Propuestas por IA · no es consejo clínico</p>
         {neutral && <p className="cap"><Icono nombre="neutral" tam={16} />Modo neutral: hoy tu registro generaría tormenta; lo mostramos como cielo neutro y sin sonidos intensos.</p>}
         <div className="nubes" role="group" aria-label="Emociones propuestas">
-          {propuesta.emociones.map((e) => {
-            const on = elegidas.includes(e.nombre)
-            return (
-              <button key={e.nombre} type="button" aria-pressed={on} className="nube" onClick={() => onAlternar(e.nombre)}>
-                <svg className="nube__forma" viewBox="0 0 160 66" preserveAspectRatio="none" aria-hidden="true"><path d={NUBE} /></svg>
-                <span className="nube__nombre">{e.nombre}</span>{e.tuya && <small className="nube__tuya"> · tuya</small>}
-              </button>
-            )
-          })}
+          {nubes.map((e) => <Nube key={e.nombre} nombre={e.nombre} tuya={e.tuya} on={elegidas.includes(e.nombre)} onAlternar={onAlternar} />)}
+          {propias.map((p) => <Nube key={p} nombre={p} on={elegidas.includes(p)} onAlternar={onAlternar} />)}
         </div>
+        {escribiendo ? (
+          <form className="palabra-propia" onSubmit={agregar}>
+            <Campo id="palabra-propia" etiqueta="Tu palabra para lo que sientes" value={palabra} maxLength={24} autoComplete="off" autoFocus
+              placeholder="nostalgia" onChange={(e) => setPalabra(e.target.value)} />
+            <div className="fila-ctas">
+              <Boton type="submit" tipo="linea" icono="plus" disabled={!palabra.trim()}>Agregar</Boton>
+              <Boton tipo="texto" onClick={() => { setEscribiendo(false); setPalabra('') }}>Cancelar</Boton>
+            </div>
+          </form>
+        ) : propias.length < MAX_PROPIAS && (
+          <Enlace icono="plus" className="centrado" onClick={() => setEscribiendo(true)}>Poner mi propia palabra</Enlace>
+        )}
         {predecible && <p className="meta reflexion-previa">{limitarPalabras(propuesta.reflexion)}</p>}
         <div className="pila pila--centro">
-          <Boton disabled={!elegidas.length} onClick={() => onGuardar(elegidas)}>Guardar mi día</Boton>
+          <Boton disabled={!elegidas.length} onClick={() => onGuardar(elegidas)}>Seguir</Boton>
           <Boton tipo="texto" onClick={() => onGuardar([])}>No sé, guardar igual</Boton>
         </div>
       </Suelo>

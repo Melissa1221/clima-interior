@@ -466,7 +466,7 @@ export default function App() {
         {pantalla === 'emociones' && propuesta && (
           <Emociones cabecera={cab} capas={capas} clima={climaVista} neutral={climaVista !== clima} predecible={predecible} propuesta={propuesta}
             elegidas={elegidas} onAlternar={(n) => setElegidas((l) => l.includes(n) ? l.filter((x) => x !== n) : [...l, n])}
-            onGuardar={(e) => guardar({ emociones: e })} />
+            onGuardar={(e) => guardar({ emociones: e })} onRiesgo={() => abrirCrisis('detector')} />
         )}
         {pantalla === 'trampa' && trampa && (
           <Trampa cabecera={cab} capas={capas} clima={climaVista} trampa={trampa} respondioSi={trampaSi}

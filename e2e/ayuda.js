@@ -38,7 +38,7 @@ export async function checkinEscrito(page, { clima = 'Nublado', texto, elegir = 
   await page.getByRole('button', { name: 'Listo' }).click()
   await page.getByText('Toca las nubes que sientes tuyas').waitFor()
   for (const e of elegir) await page.getByRole('button', { name: new RegExp(`^${e}`) }).click()
-  await page.getByRole('button', { name: elegir.length ? 'Guardar mi día' : 'No sé, guardar igual' }).click()
+  await page.getByRole('button', { name: elegir.length ? 'Seguir' : 'No sé, guardar igual' }).click()
   await page.getByRole('heading', { name: 'Tu día quedó guardado' }).waitFor()
   const reflexion = await leerReflexion(page)
   if (masCorto) await page.getByRole('button', { name: 'Más corto' }).click()

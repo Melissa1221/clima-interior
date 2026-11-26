@@ -63,7 +63,7 @@ export const ESCENAS = [
       await boton(p, 'Listo', 3500)
       await boton(p, 'cansancio', 1500)
       await boton(p, 'calma', 3500)
-      await boton(p, 'Guardar mi día', 5000)
+      await boton(p, 'Seguir', 5000)
       await boton(p, 'Hasta mañana', 1500)
     } },
   { id: '04', tipo: 'app', perfil: PERFIL(), titulo: 'Seguridad: señales de riesgo', subtitulo: 'Un detector independiente del modelo, antes de cualquier reflexión', requisitos: ['RF-14', 'RF-15', 'RNF-25'], pantallas: 'S22',
