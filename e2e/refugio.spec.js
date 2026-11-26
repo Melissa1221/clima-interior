@@ -293,3 +293,12 @@ test('«¿Cómo quedaste?» se pregunta una sola vez por visita al Refugio (M4)'
   await expect(page.getByText('Tu cielo se despejó un poco')).toBeVisible()
   expect((await leerPerfil(page)).refugios).toHaveLength(1)
 })
+
+test('con la oferta de respiro siguen la salida y la tarjeta de ajustes (M12)', async ({ page }) => {
+  await page.getByRole('radio', { name: /Lluvia/ }).click()
+  await page.getByRole('button', { name: 'Guardar así' }).click()
+  await expect(page.getByRole('button', { name: 'Necesito un respiro' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '¿Te acomodo algo?' })).toBeVisible()
+  await page.getByRole('button', { name: 'Hasta mañana' }).click()
+  await expect(page.getByRole('button', { name: 'Guardar así' })).toBeVisible()
+})

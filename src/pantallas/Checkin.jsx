@@ -178,7 +178,7 @@ export function Guardado({ cabecera, capas, clima, climaVista, emociones, reflex
         {climaVista !== clima && <p className="cap"><Icono nombre="neutral" tam={16} />Tu tormenta se guardó y hoy se muestra como cielo neutro.</p>}
         {reflexion && <p className="cap"><Icono nombre="info" tam={16} />Escrita por IA · no es consejo clínico</p>}
         <p className="sr">{DESCRIPCION[climaVista]}</p>
-        {oferta ? (
+        {oferta && (
           <div className="oferta" role="group" aria-labelledby="oferta-titulo">
             <h2 id="oferta-titulo" className="sr">¿Te tomas un respiro?</h2>
             <p className="cuerpo">Un minuto de lluvia para respirar, o partir lo que tienes pendiente. Si no, no pasa nada.</p>
@@ -187,13 +187,11 @@ export function Guardado({ cabecera, capas, clima, climaVista, emociones, reflex
               <Boton tipo="texto" onClick={onAhoraNo}>Ahora no</Boton>
             </div>
           </div>
-        ) : (
-          <>
-            {tarjeta === 'accesibilidad' && <TarjetaAjustes preferencias={preferencias} onCambio={onTarjeta.cambiar} onMas={onTarjeta.mas} onCerrar={onTarjeta.cerrar} />}
-            {tarjeta === 'instalar' && <TarjetaInstalar onAgregar={onTarjeta.instalar} onCerrar={onTarjeta.cerrar} />}
-            <Boton onClick={onListo} className="guardado__fin">Hasta mañana</Boton>
-          </>
         )}
+        {/* M12: la tarjeta de ajustes (se muestra una sola vez) y la salida siguen aunque haya oferta de respiro */}
+        {tarjeta === 'accesibilidad' && <TarjetaAjustes preferencias={preferencias} onCambio={onTarjeta.cambiar} onMas={onTarjeta.mas} onCerrar={onTarjeta.cerrar} />}
+        {tarjeta === 'instalar' && <TarjetaInstalar onAgregar={onTarjeta.instalar} onCerrar={onTarjeta.cerrar} />}
+        <Boton tipo={oferta ? 'linea' : 'solido'} onClick={onListo} className="guardado__fin">Hasta mañana</Boton>
       </Suelo>
     </>
   )
