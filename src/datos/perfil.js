@@ -287,7 +287,8 @@ export function registrarTrampa(perfil, tipo, respuesta) {
 
 export const trampasSilenciadas = (perfil) => (perfil.personalizacion.trampas ? perfil.aprendido.trampasSilenciadas : [])
 
-// Borra todo lo que la app guardó en el dispositivo: perfil, caché y cola de sincronización (S45, RF-29)
+// Borra todo lo que la app guardó en el dispositivo: perfil, registros, respiros, tarea y caché (S45, RF-29).
+// No hay copias en un servidor: nada del diario sale del teléfono.
 export async function borrarTodo() {
   const claves = []
   for (let i = 0; i < localStorage.length; i++) claves.push(localStorage.key(i))

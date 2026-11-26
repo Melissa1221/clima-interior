@@ -67,7 +67,7 @@ export function ExportarResumen({ cabecera, registros, vibrar, onListo, onElimin
         )}
         {onEliminar && (
           <ul className="lista lista--peligro">
-            <li><FilaLista icono="trash" titulo="Eliminar todos mis datos" descripcion="Del teléfono, la caché y el servidor." onClick={onEliminar} /></li>
+            <li><FilaLista icono="trash" titulo="Eliminar todos mis datos" descripcion="Todo lo que guardó este teléfono." onClick={onEliminar} /></li>
           </ul>
         )}
       </section>
@@ -92,8 +92,6 @@ export function EliminarDatos({ cabecera, onEliminar, onCancelar, onExportar }) 
             <li>Tu perfil de personalización.</li>
             <li>Tus respiros y tu lista de «partir la tarea».</li>
             <li>La caché de la app en este teléfono.</li>
-            <li>Los registros pendientes de sincronizar.</li>
-            <li>Las copias en el servidor.</li>
           </ul>
         </div>
         <Campo id="confirmar" etiqueta="Escribe BORRAR para confirmar" value={texto} autoComplete="off" estado={confirmado ? 'ok' : ''} onChange={(e) => setTexto(e.target.value)} />
