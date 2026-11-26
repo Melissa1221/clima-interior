@@ -1,5 +1,6 @@
 // Historial (grupo A · 12 a 14): 30 días como mini cielos. Los días sin registro no son un fallo (RF-43):
 // el cielo sigue despejado, sin rachas ni reproches. Cada día con registro abre su detalle.
+import { useState } from 'react'
 import Icono from '../componentes/Icono.jsx'
 import { Boton, Enlace } from '../componentes/Ui.jsx'
 import { Escena, Suelo } from '../componentes/Escena.jsx'
@@ -52,7 +53,7 @@ export function LoQueTeAyudo({ refugios }) {
 }
 
 // 30 días alineados por día de la semana (L a D)
-function Calendario({ dias, onDia }) {
+function Calendario({ dias, onDia, onVacio }) {
   const hoy = new Date().toLocaleDateString('en-CA')
   const desfase = (aFecha(dias[0].fecha).getDay() + 6) % 7
   return (
@@ -73,7 +74,8 @@ function Calendario({ dias, onDia }) {
                   {registros.length > 1 && <span className="dia__varios" aria-hidden="true">{registros.length}</span>}
                 </button>
               ) : (
-                <span className="dia__cielo dia__cielo--vacio">
+                // B8: tocar un día vacío responde (con el puntero; para el lector ya dice «sin registro»)
+                <span className="dia__cielo dia__cielo--vacio" onClick={() => onVacio?.(fecha)}>
                   <span className={`dia__n ${fecha === hoy ? 'dia__n--hoy' : ''}`} aria-hidden="true">{n}</span>
                   <span className="sr">{nombre}: sin registro, cielo despejado</span>
                 </span>
@@ -87,6 +89,8 @@ function Calendario({ dias, onDia }) {
 }
 
 export function Historial({ cabecera, dias, demo, registros, refugios, onDia, onAlternarDemo }) {
+  const [vacio, setVacio] = useState(null)
+  const hoy = new Date().toLocaleDateString('en-CA')
   const rango = `${fechaLarga(dias[0].fecha, { dia: false })} – ${fechaLarga(dias.at(-1).fecha, { dia: false })}`
   return (
     <div className="plana plana--cielo">
@@ -97,7 +101,10 @@ export function Historial({ cabecera, dias, demo, registros, refugios, onDia, on
           {registros > 0 && <Enlace onClick={onAlternarDemo}>{demo ? 'Ver mis registros' : 'Ver ejemplo'}</Enlace>}
         </div>
         <p className="meta" role="status">{demo ? 'Modo demo: datos simulados, no son de una persona real' : `${registros} ${registros === 1 ? 'día registrado' : 'días registrados'}`}</p>
-        <Calendario dias={dias} onDia={onDia} />
+        <Calendario dias={dias} onDia={onDia} onVacio={setVacio} />
+        {vacio && <p className="cap" role="status"><Icono nombre="info" tam={16} />{vacio === hoy && !demo
+          ? 'Hoy todavía no registras tu cielo. Puedes hacerlo en Inicio.'
+          : `${fechaLarga(vacio)}: sin registro. Está bien, no es un fallo.`}</p>}
         <p className="cap"><Icono nombre="info" tam={16} />Los días sin registro no son un fallo: el cielo sigue despejado.</p>
         <LoQueTeAyudo refugios={refugios} />
       </section>

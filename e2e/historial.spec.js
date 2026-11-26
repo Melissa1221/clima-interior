@@ -47,3 +47,13 @@ test('los días del calendario miden 44 px o más a 375 px (B3)', async ({ page 
   const desborde = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
   expect(desborde).toBeLessThanOrEqual(0)
 })
+
+test('tocar un día vacío responde en vez de no hacer nada (B8)', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('radio', { name: /Nublado/ }).click()
+  await page.getByRole('button', { name: 'Guardar así' }).click()
+  await page.getByRole('button', { name: 'Hasta mañana' }).click()
+  await page.getByRole('button', { name: /Historial/ }).click()
+  await page.locator('.dia__cielo--vacio').first().click()
+  await expect(page.getByRole('status').filter({ hasText: 'sin registro' })).toBeVisible()
+})
