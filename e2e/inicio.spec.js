@@ -46,3 +46,12 @@ test.describe('320 × 568', () => {
     expect(guardar.y + guardar.height).toBeLessThanOrEqual(nav.y)
   })
 })
+
+test.describe('tema noche a las 10:00', () => {
+  test.beforeEach(perfil({ tema: 'noche' }))
+  test('el saludo sigue la hora, no el tema (B6)', async ({ page }) => {
+    await page.clock.setFixedTime(new Date('2026-11-26T10:00:00'))
+    await page.goto('/')
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('¿Cómo va tu cielo hoy?')
+  })
+})

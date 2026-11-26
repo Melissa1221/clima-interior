@@ -5,6 +5,7 @@ import Icono from '../componentes/Icono.jsx'
 import { Boton, ElegirClima } from '../componentes/Ui.jsx'
 import { Escena, Suelo } from '../componentes/Escena.jsx'
 import { CLIMAS } from '../datos/climas.js'
+import { saludo } from '../datos/saludo.js'
 import { POSE_DE_CLIMA } from '../mundo/Garua.jsx'
 
 const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
@@ -80,7 +81,7 @@ export default function Inicio({ cabecera, noche, capas, clima, climaVista, regi
           <p className="fecha"><span className="titulo-s">{DIAS[ahora.getDay()]} {ahora.getDate()}</span><span className="etiqueta-sm">de {MESES[ahora.getMonth()]}</span></p>
           <button type="button" className="pildora pildora--respiro" onClick={onRespiro}><Icono nombre="respiro" tam={20} />Necesito un respiro</button>
         </div>
-        <h1 ref={burbuja} className="burbuja burbuja--saludo display-m" style={{ maxWidth: ancha ? 'min(240px, 78%)' : `min(240px, calc(100% - ${hueco}px))` }}>{noche ? 'Buenas noches, ¿cómo va tu cielo?' : '¿Cómo va tu cielo hoy?'}</h1>
+        <h1 ref={burbuja} className="burbuja burbuja--saludo display-m" style={{ maxWidth: ancha ? 'min(240px, 78%)' : `min(240px, calc(100% - ${hueco}px))` }}>{saludo(ahora.getHours())}</h1>
       </Escena>
       <Suelo className="suelo--inicio">
         <h2 className="etiqueta" id="elige-cielo">Elige tu cielo de hoy</h2>
