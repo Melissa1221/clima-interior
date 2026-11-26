@@ -449,7 +449,9 @@ export default function App() {
 
   return (
     <TemaNoche.Provider value={noche}>
-      <main className={`app ${PESTANA_DE[pantalla] && completo ? 'app--nav' : ''}`} hidden={Boolean(crisis)} aria-hidden={crisis ? true : undefined}
+      {/* B12: con teclado se salta la cabecera y va directo al título de la pantalla */}
+      {!crisis && <a href="#contenido" className="saltar" onClick={(e) => { e.preventDefault(); enfocar('main h1') }}>Saltar al contenido</a>}
+      <main id="contenido" className={`app ${PESTANA_DE[pantalla] && completo ? 'app--nav' : ''}`} hidden={Boolean(crisis)} aria-hidden={crisis ? true : undefined}
         inert={Boolean(hoja || ayuda) || undefined}
         data-movimiento={preferencias.movimientoReducido ? 'reducido' : 'normal'} data-pantalla={pantalla}>
 

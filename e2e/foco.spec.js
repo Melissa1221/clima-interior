@@ -77,3 +77,18 @@ test('el nombre accesible del botón «Aa» contiene «Aa», lo que se ve (B2, W
   await page.goto('/')
   await expect(page.getByRole('button', { name: /^Aa\b/ })).toBeVisible()
 })
+
+test('«Saltar al contenido» es lo primero con Tab, mide 44 px y lleva al título (B12)', async ({ page }) => {
+  await page.goto('/')
+  await page.locator('body').focus()
+  await page.keyboard.press('Tab')
+  const saltar = page.getByRole('link', { name: 'Saltar al contenido' })
+  await expect(saltar).toBeFocused()
+  const caja = await saltar.boundingBox()
+  expect(caja.height).toBeGreaterThanOrEqual(44)
+  expect(caja.y).toBeGreaterThanOrEqual(0)
+  await page.keyboard.press('Enter')
+  await expect(page.locator('main h1')).toBeFocused()
+  await page.locator('main h1').blur()
+  expect((await saltar.boundingBox()).y + caja.height).toBeLessThanOrEqual(0)
+})

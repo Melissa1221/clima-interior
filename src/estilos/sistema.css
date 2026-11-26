@@ -216,3 +216,8 @@ h1[tabindex='-1']:focus { outline: none; }
 [data-movimiento='reducido'] *, [data-movimiento='reducido'] *::before, [data-movimiento='reducido'] *::after {
   animation: none !important; transition-duration: 0ms !important; scroll-behavior: auto !important;
 }
+
+/* B12: enlace para saltar al contenido, fuera de la vista hasta que recibe el foco */
+.saltar { position: fixed; top: 8px; left: 50%; z-index: 100; transform: translate(-50%, -200%); min-height: 44px; display: inline-flex; align-items: center;
+  padding: 0 18px; border-radius: 999px; background: var(--ink); color: var(--paper, #fff); font-weight: 600; text-decoration: none; }
+.saltar:focus { transform: translate(-50%, 0); }
