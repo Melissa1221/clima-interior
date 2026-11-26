@@ -336,3 +336,19 @@
 
 /* M10: palabra propia en emociones */
 .palabra-propia { display: flex; flex-direction: column; gap: 8px; }
+
+/* ───────── M14: escritorio. La app sigue siendo una columna de teléfono, centrada sobre un paisaje de lomas
+   que llena la ventana (antes, 75 % de pantalla vacía en 1440 px). ───────── */
+:root {
+  --lomas-escritorio: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 360' preserveAspectRatio='none'%3E%3Cpath d='M0 170C180 110 360 120 540 160S900 130 1080 100 1320 90 1440 110V360H0Z' fill='%23C9D6B4'/%3E%3Cpath d='M0 240C220 190 420 200 640 235S1060 210 1240 180 1400 175 1440 182V360H0Z' fill='%23A9C08C'/%3E%3Cpath d='M0 300C260 270 520 280 760 300S1180 290 1440 270V360H0Z' fill='%23F7F1E4'/%3E%3C/svg%3E");
+  --cielo-escritorio: linear-gradient(#C9D7E2 0%, #E3E9E8 45%, #EEEBE0 100%);
+}
+[data-tema='noche'] {
+  --lomas-escritorio: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 360' preserveAspectRatio='none'%3E%3Cpath d='M0 170C180 110 360 120 540 160S900 130 1080 100 1320 90 1440 110V360H0Z' fill='%23263447'/%3E%3Cpath d='M0 240C220 190 420 200 640 235S1060 210 1240 180 1400 175 1440 182V360H0Z' fill='%231F2C3B'/%3E%3Cpath d='M0 300C260 270 520 280 760 300S1180 290 1440 270V360H0Z' fill='%23141E28'/%3E%3C/svg%3E");
+  --cielo-escritorio: linear-gradient(#141D33 0%, #1D2A4D 50%, #22324A 100%);
+}
+@media (min-width: 720px) {
+  body { background: var(--lomas-escritorio) center bottom / 100% 42vh no-repeat fixed, var(--cielo-escritorio) fixed; }
+  .app { box-shadow: 0 0 0 1px var(--hair), 0 30px 80px -40px rgba(15, 23, 32, .55); }
+  .nav { border-inline: 1px solid var(--hair); }
+}
