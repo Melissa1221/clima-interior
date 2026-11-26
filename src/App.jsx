@@ -228,6 +228,7 @@ export default function App() {
       alTexto: (t) => {
         const { orden: cual, texto: limpio } = preferencias.comandosVoz ? detectarOrden(t) : { orden: null, texto: t }
         setTexto(previo ? `${previo} ${limpio}`.trim() : limpio)
+        if (limpio.trim()) setDeVoz(true) // solo cuenta como «grabado» si de verdad llegó texto dictado
         if (cual && ultimaOrden.current !== cual) { ultimaOrden.current = cual; orden.current?.(cual) }
         else if (!cual) ultimaOrden.current = null
       },
@@ -237,7 +238,7 @@ export default function App() {
         setPerfil(registrarFalloMic)
         setErrorMic(e === 'not-allowed' || e === 'service-not-allowed'
           ? 'El micrófono está bloqueado. Puedes escribirlo aquí; tu clima sigue elegido.'
-          : 'No pudimos escucharte. Puedes escribirlo aquí o volver a intentar.')
+          : 'No pudimos escucharte. Puedes escribirlo aquí; tu clima sigue elegido.')
       },
       alTerminar: () => setGrabando(false),
     })
@@ -245,7 +246,6 @@ export default function App() {
       rec.current.start()
       setSegundos(0)
       setGrabando(true)
-      setDeVoz(true)
     } catch {
       setErrorMic('No pudimos usar el micrófono. Puedes escribirlo aquí.')
     }
@@ -459,7 +459,7 @@ export default function App() {
         {pantalla === 'contar' && !grabando && (
           <Relato cabecera={cab} capas={capas} clima={clima} climaVista={climaVista} texto={texto} onTexto={setTexto} deVoz={deVoz && Boolean(texto)}
             duracion={segundos} estadoVoz={estadoVoz()} motivoVoz={deVoz ? MOTIVOS_DICTADO[estadoVoz()] : null} errorMic={errorMic}
-            puedeHablar={estadoVoz() !== 'sin-navegador'} onListo={() => listo()} onHablar={contar} />
+            puedeHablar={estadoVoz() !== 'sin-navegador' && !errorMic} onListo={() => listo()} onHablar={contar} />
         )}
         {pantalla === 'predecible-como' && <PredecibleComo cabecera={cab} onHablar={contar} onEscribir={escribir} onGuardar={() => guardar()} />}
         {pantalla === 'pensando' && <Pensando cabecera={cab} capas={capas} clima={climaVista} />}

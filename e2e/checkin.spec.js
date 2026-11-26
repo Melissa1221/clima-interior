@@ -78,6 +78,11 @@ test('micrófono bloqueado ofrece escribir sin perder el clima ni el borrador (R
   await hablar(page)
   await expect(page.getByRole('alert')).toContainText('El micrófono está bloqueado')
   await page.getByRole('textbox').fill('Lo escribo porque no funcionó el micro')
+  // A8: sin nada grabado no dice «Grabado · 0:00» ni «Lo que entendí», y no ofrece seguir hablando
+  await expect(page.getByText('¿Cómo fue tu día?')).toBeVisible()
+  await expect(page.getByText('Lo que entendí')).toHaveCount(0)
+  await expect(page.getByText(/Grabado ·/)).toHaveCount(0)
+  await expect(page.getByRole('button', { name: /hablando/ })).toHaveCount(0)
   await page.getByRole('button', { name: 'Listo' }).click()
   await expect(page.getByText('Toca las nubes que sientes tuyas')).toBeVisible()
   await expect(page.locator('.paisaje--tormenta')).toBeVisible()
