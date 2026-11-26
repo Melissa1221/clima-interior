@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240"><defs><radialGradient id="aBody" cx="92" cy="78" r="108" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".42" stop-color="#F4F2FA"/><stop offset=".78" stop-color="#E0DCF1"/><stop offset="1" stop-color="#CBC5E5"/></radialGradient>
+<radialGradient id="aCore" cx="100" cy="112" r="52" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFE2A0" stop-opacity=".95"/><stop offset=".45" stop-color="#FFEBC4" stop-opacity=".6"/><stop offset="1" stop-color="#FFF4DE" stop-opacity="0"/></radialGradient>
+<radialGradient id="aHalo" cx="100" cy="98" r="100" gradientUnits="userSpaceOnUse"><stop offset=".55" stop-color="#FFFFFF" stop-opacity=".55"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+<clipPath id="aClip"><circle cx="100" cy="64" r="42"/><circle cx="62" cy="80" r="32"/><circle cx="140" cy="78" r="34"/><circle cx="42" cy="110" r="27"/><circle cx="160" cy="108" r="28"/><circle cx="72" cy="120" r="32"/><circle cx="128" cy="120" r="32"/><circle cx="100" cy="104" r="46"/></clipPath>
+<filter id="aSoft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="7"/></filter>
+<filter id="aEdge" x="-15%" y="-15%" width="130%" height="130%"><feGaussianBlur stdDeviation="0.7"/></filter><radialGradient id="bBody" cx="92" cy="78" r="108" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".42" stop-color="#F0F7F2"/><stop offset=".78" stop-color="#D5E9DC"/><stop offset="1" stop-color="#BBD9C6"/></radialGradient>
+<radialGradient id="bCore" cx="100" cy="112" r="52" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFE2A0" stop-opacity=".95"/><stop offset=".45" stop-color="#FFEBC4" stop-opacity=".6"/><stop offset="1" stop-color="#FFF4DE" stop-opacity="0"/></radialGradient>
+<radialGradient id="bHalo" cx="100" cy="98" r="100" gradientUnits="userSpaceOnUse"><stop offset=".55" stop-color="#FFFFFF" stop-opacity=".55"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+<clipPath id="bClip"><circle cx="100" cy="64" r="42"/><circle cx="62" cy="80" r="32"/><circle cx="140" cy="78" r="34"/><circle cx="42" cy="110" r="27"/><circle cx="160" cy="108" r="28"/><circle cx="72" cy="120" r="32"/><circle cx="128" cy="120" r="32"/><circle cx="100" cy="104" r="46"/></clipPath>
+<filter id="bSoft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="7"/></filter>
+<filter id="bEdge" x="-15%" y="-15%" width="130%" height="130%"><feGaussianBlur stdDeviation="0.7"/></filter><radialGradient id="cBody" cx="92" cy="78" r="108" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".42" stop-color="#FDF1EB"/><stop offset=".78" stop-color="#F6DACD"/><stop offset="1" stop-color="#EEC6B5"/></radialGradient>
+<radialGradient id="cCore" cx="100" cy="112" r="52" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFE2A0" stop-opacity=".95"/><stop offset=".45" stop-color="#FFEBC4" stop-opacity=".6"/><stop offset="1" stop-color="#FFF4DE" stop-opacity="0"/></radialGradient>
+<radialGradient id="cHalo" cx="100" cy="98" r="100" gradientUnits="userSpaceOnUse"><stop offset=".55" stop-color="#FFFFFF" stop-opacity=".55"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+<clipPath id="cClip"><circle cx="100" cy="64" r="42"/><circle cx="62" cy="80" r="32"/><circle cx="140" cy="78" r="34"/><circle cx="42" cy="110" r="27"/><circle cx="160" cy="108" r="28"/><circle cx="72" cy="120" r="32"/><circle cx="128" cy="120" r="32"/><circle cx="100" cy="104" r="46"/></clipPath>
+<filter id="cSoft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="7"/></filter>
+<filter id="cEdge" x="-15%" y="-15%" width="130%" height="130%"><feGaussianBlur stdDeviation="0.7"/></filter><radialGradient id="dBody" cx="92" cy="78" r="108" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".42" stop-color="#F1F5F8"/><stop offset=".78" stop-color="#D9E3EC"/><stop offset="1" stop-color="#C6D4E1"/></radialGradient>
+<radialGradient id="dCore" cx="100" cy="112" r="52" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFE2A0" stop-opacity=".95"/><stop offset=".45" stop-color="#FFEBC4" stop-opacity=".6"/><stop offset="1" stop-color="#FFF4DE" stop-opacity="0"/></radialGradient>
+<radialGradient id="dHalo" cx="100" cy="98" r="100" gradientUnits="userSpaceOnUse"><stop offset=".55" stop-color="#FFFFFF" stop-opacity=".55"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+<clipPath id="dClip"><circle cx="100" cy="64" r="42"/><circle cx="62" cy="80" r="32"/><circle cx="140" cy="78" r="34"/><circle cx="42" cy="110" r="27"/><circle cx="160" cy="108" r="28"/><circle cx="72" cy="120" r="32"/><circle cx="128" cy="120" r="32"/><circle cx="100" cy="104" r="46"/></clipPath>
+<filter id="dSoft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="7"/></filter>
+<filter id="dEdge" x="-15%" y="-15%" width="130%" height="130%"><feGaussianBlur stdDeviation="0.7"/></filter></defs><g id="garua-a" transform="translate(2 92) translate(50.00 50.00) rotate(0) scale(0.5 0.5) translate(-100 -100)"><g id="halo-a"></g>
+<g id="cuerpo-a" filter="url(#aEdge)">
+  <g id="forma-a" fill="url(#aBody)" opacity="0.97"><circle cx="100" cy="64" r="42"/><circle cx="62" cy="80" r="32"/><circle cx="140" cy="78" r="34"/><circle cx="42" cy="110" r="27"/><circle cx="160" cy="108" r="28"/><circle cx="72" cy="120" r="32"/><circle cx="128" cy="120" r="32"/><circle cx="100" cy="104" r="46"/></g>
+  <g id="sombreado-a" clip-path="url(#aClip)" opacity="0.97">
+    <ellipse cx="100" cy="176" rx="118" ry="48" fill="#ADA6CF" opacity=".55" filter="url(#aSoft)"/>
+    <g id="nucleo-a"><circle cx="100" cy="112" r="52" fill="url(#aCore)" opacity="1.0"/></g>
+    <g id="brillo-a" opacity="1.0">
+      <ellipse cx="92" cy="44" rx="30" ry="14" fill="#fff" opacity=".9" filter="url(#aSoft)"/>
+      <ellipse cx="52" cy="70" rx="14" ry="9" fill="#fff" opacity=".8" filter="url(#aSoft)"/>
+      <ellipse cx="146" cy="60" rx="16" ry="9" fill="#fff" opacity=".8" filter="url(#aSoft)"/>
+    </g>
+  </g>
+</g>
+<g id="cara-a" opacity="1.0">
+  <g id="rubor-a"><ellipse cx="67" cy="109" rx="9.5" ry="5.2" fill="#F2A79E" opacity="0.55"/><ellipse cx="133" cy="109" rx="9.5" ry="5.2" fill="#F2A79E" opacity="0.55"/></g>
+  <g id="ojos-a"><path d="M74.2 100.4 C74.2 88.4 85.8 88.4 85.8 100.4 Q80 96.6 74.2 100.4 Z" fill="#26313C"/><circle cx="81.7" cy="94.2" r="1.7" fill="#fff"/><path d="M114.2 100.4 C114.2 88.4 125.8 88.4 125.8 100.4 Q120 96.6 114.2 100.4 Z" fill="#26313C"/><circle cx="121.7" cy="94.2" r="1.7" fill="#fff"/></g>
+  <g id="boca-a"><path d="M95 109.5 q5 3.6 10 0" stroke="#2A3440" stroke-width="2.8" fill="none" stroke-linecap="round"/></g>
+</g>
+<g id="gotas-a"></g></g><g id="garua-b" transform="translate(136 86) translate(52.00 52.00) rotate(0) scale(0.52 0.52) translate(-100 -100)"><g id="halo-b"></g>
+<g id="cuerpo-b" filter="url(#bEdge)">
+  <g id="forma-b" fill="url(#bBody)" opacity="0.97"><circle cx="100" cy="64" r="42"/><circle cx="62" cy="80" r="32"/><circle cx="140" cy="78" r="34"/><circle cx="42" cy="110" r="27"/><circle cx="160" cy="108" r="28"/><circle cx="72" cy="120" r="32"/><circle cx="128" cy="120" r="32"/><circle cx="100" cy="104" r="46"/></g>
+  <g id="sombreado-b" clip-path="url(#bClip)" opacity="0.97">
+    <ellipse cx="100" cy="176" rx="118" ry="48" fill="#9FC4AC" opacity=".55" filter="url(#bSoft)"/>
+    <g id="nucleo-b"><circle cx="100" cy="112" r="52" fill="url(#bCore)" opacity="1.0"/></g>
+    <g id="brillo-b" opacity="1.0">
+      <ellipse cx="92" cy="44" rx="30" ry="14" fill="#fff" opacity=".9" filter="url(#bSoft)"/>
+      <ellipse cx="52" cy="70" rx="14" ry="9" fill="#fff" opacity=".8" filter="url(#bSoft)"/>
+      <ellipse cx="146" cy="60" rx="16" ry="9" fill="#fff" opacity=".8" filter="url(#bSoft)"/>
+    </g>
+  </g>
+</g>
+<g id="cara-b" opacity="1.0">
+  <g id="rubor-b"><ellipse cx="67" cy="109" rx="9.5" ry="5.2" fill="#F2A79E" opacity="0.55"/><ellipse cx="133" cy="109" rx="9.5" ry="5.2" fill="#F2A79E" opacity="0.55"/></g>
+  <g id="ojos-b"><path d="M73 98 q7 5.5 14 0" stroke="#2A3440" stroke-width="3.2" fill="none" stroke-linecap="round"/><path d="M113 98 q7 5.5 14 0" stroke="#2A3440" stroke-width="3.2" fill="none" stroke-linecap="round"/></g>
+  <g id="boca-b"><path d="M93 109 q7 6 14 0" stroke="#2A3440" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+</g>
+<g id="gotas-b"></g></g><g id="garua-c" transform="translate(150 150) translate(42.00 42.00) rotate(0) scale(0.42 0.42) translate(-100 -100)"><g id="halo-c"></g>
+<g id="cuerpo-c" filter="url(#cEdge)">
+  <g id="forma-c" fill="url(#cBody)" opacity="0.97"><circle cx="100" cy="64" r="42"/><circle cx="62" cy="80" r="32"/><circle cx="140" cy="78" r="34"/><circle cx="42" cy="110" r="27"/><circle cx="160" cy="108" r="28"/><circle cx="72" cy="120" r="32"/><circle cx="128" cy="120" r="32"/><circle cx="100" cy="104" r="46"/></g>
+  <g id="sombreado-c" clip-path="url(#cClip)" opacity="0.97">
+    <ellipse cx="100" cy="176" rx="118" ry="48" fill="#DDA995" opacity=".55" filter="url(#cSoft)"/>
+    <g id="nucleo-c"><circle cx="100" cy="112" r="52" fill="url(#cCore)" opacity="1.0"/></g>
+    <g id="brillo-c" opacity="1.0">
+      <ellipse cx="92" cy="44" rx="30" ry="14" fill="#fff" opacity=".9" filter="url(#cSoft)"/>
+      <ellipse cx="52" cy="70" rx="14" ry="9" fill="#fff" opacity=".8" filter="url(#cSoft)"/>
+      <ellipse cx="146" cy="60" rx="16" ry="9" fill="#fff" opacity=".8" filter="url(#cSoft)"/>
+    </g>
+  </g>
+</g>
+<g id="cara-c" opacity="1.0">
+  <g id="rubor-c"><ellipse cx="67" cy="109" rx="9.5" ry="5.2" fill="#F2A79E" opacity="0.55"/><ellipse cx="133" cy="109" rx="9.5" ry="5.2" fill="#F2A79E" opacity="0.55"/></g>
+  <g id="ojos-c"><ellipse cx="80" cy="97" rx="5.60" ry="7.00" fill="#26313C"/><circle cx="81.80" cy="94.40" r="1.90" fill="#fff"/><ellipse cx="120" cy="97" rx="5.60" ry="7.00" fill="#26313C"/><circle cx="121.80" cy="94.40" r="1.90" fill="#fff"/></g>
+  <g id="boca-c"><path d="M95 109.5 q5 3.6 10 0" stroke="#2A3440" stroke-width="2.8" fill="none" stroke-linecap="round"/></g>
+</g>
+<g id="gotas-c"></g></g><g id="garua-d" transform="translate(36 132) translate(60.00 60.00) rotate(0) scale(0.6 0.6) translate(-100 -100)"><g id="halo-d"></g>
+<g id="cuerpo-d" filter="url(#dEdge)">
+  <g id="forma-d" fill="url(#dBody)" opacity="0.97"><circle cx="100" cy="64" r="42"/><circle cx="62" cy="80" r="32"/><circle cx="140" cy="78" r="34"/><circle cx="42" cy="110" r="27"/><circle cx="160" cy="108" r="28"/><circle cx="72" cy="120" r="32"/><circle cx="128" cy="120" r="32"/><circle cx="100" cy="104" r="46"/></g>
+  <g id="sombreado-d" clip-path="url(#dClip)" opacity="0.97">
+    <ellipse cx="100" cy="176" rx="118" ry="48" fill="#AFC1D2" opacity=".55" filter="url(#dSoft)"/>
+    <g id="nucleo-d"><circle cx="100" cy="112" r="52" fill="url(#dCore)" opacity="1.0"/></g>
+    <g id="brillo-d" opacity="1.0">
+      <ellipse cx="92" cy="44" rx="30" ry="14" fill="#fff" opacity=".9" filter="url(#dSoft)"/>
+      <ellipse cx="52" cy="70" rx="14" ry="9" fill="#fff" opacity=".8" filter="url(#dSoft)"/>
+      <ellipse cx="146" cy="60" rx="16" ry="9" fill="#fff" opacity=".8" filter="url(#dSoft)"/>
+    </g>
+  </g>
+</g>
+<g id="cara-d" opacity="1.0">
+  <g id="rubor-d"><ellipse cx="67" cy="109" rx="9.5" ry="5.2" fill="#F2A79E" opacity="0.55"/><ellipse cx="133" cy="109" rx="9.5" ry="5.2" fill="#F2A79E" opacity="0.55"/></g>
+  <g id="ojos-d"><ellipse cx="80" cy="97" rx="5.60" ry="7.00" fill="#26313C"/><circle cx="81.80" cy="94.40" r="1.90" fill="#fff"/><ellipse cx="120" cy="97" rx="5.60" ry="7.00" fill="#26313C"/><circle cx="121.80" cy="94.40" r="1.90" fill="#fff"/></g>
+  <g id="boca-d"><path d="M93 109 q7 6 14 0" stroke="#2A3440" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+</g>
+<g id="gotas-d"></g></g></svg>
