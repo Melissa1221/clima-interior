@@ -2,7 +2,7 @@
 // por el botón «Ayuda ya» o porque el detector de riesgo (hayRiesgo) reconoció una frase. La app nunca llama por ti.
 import { useEffect, useRef } from 'react'
 import Icono from '../componentes/Icono.jsx'
-import { Boton } from '../componentes/Ui.jsx'
+import { Boton, atraparFoco } from '../componentes/Ui.jsx'
 import { RECURSOS } from '../datos/riesgo.js'
 import { horizonteCrisis } from '../mundo/dibujo.js'
 
@@ -16,15 +16,25 @@ const TITULO = { '106': 'SAMU', '105': 'Policía Nacional', '014811070': 'Bienes
 
 export default function Crisis({ origen = 'boton', onVolver }) {
   const titulo = useRef(null)
-  useEffect(() => { titulo.current?.focus() }, [])
+  const raiz = useRef(null)
+  // B1: es un diálogo modal (no una alerta entera): Escape vuelve y el Tab no sale de él
+  useEffect(() => {
+    titulo.current?.focus()
+    const alTecla = (e) => {
+      if (e.key === 'Escape') onVolver?.()
+      atraparFoco(e, raiz.current)
+    }
+    document.addEventListener('keydown', alTecla)
+    return () => document.removeEventListener('keydown', alTecla)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
   const [principal, ...resto] = RECURSOS
   return (
-    <div className="crisis" role="alert" aria-labelledby="crisis-titulo">
+    <div ref={raiz} className="crisis" role="dialog" aria-modal="true" aria-labelledby="crisis-titulo" aria-describedby="crisis-texto">
       <svg className="crisis__horizonte" viewBox="0 0 375 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true"
         dangerouslySetInnerHTML={{ __html: horizonteCrisis() }} />
       <div className="crisis__cabeza">
         <h1 id="crisis-titulo" ref={titulo} tabIndex={-1} className="display-l">Mereces apoyo ahora mismo</h1>
-        <p className="cuerpo">{TEXTO[origen] ?? TEXTO.boton}</p>
+        <p id="crisis-texto" className="cuerpo" role="alert">{TEXTO[origen] ?? TEXTO.boton}</p>
       </div>
       <div className="crisis__lista">
         <a className="crisis__principal" href={`tel:${principal.tel}`} aria-label={`Llamar a la ${principal.nombre}: ${principal.detalle}`}>

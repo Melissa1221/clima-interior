@@ -60,3 +60,15 @@ test('en los grupos de opciones las flechas mueven y eligen, y el grupo es una s
   await page.keyboard.press('ArrowRight')
   await expect(page.getByRole('radio', { name: 'Grande', exact: true })).toHaveAttribute('aria-checked', 'true')
 })
+
+test('Crisis es un diálogo: la alerta es solo el párrafo y Escape vuelve (B1)', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: /Ayuda ya/ }).click()
+  const dialogo = page.getByRole('dialog', { name: 'Mereces apoyo ahora mismo' })
+  await expect(dialogo).toBeVisible()
+  await expect(page.getByRole('alert')).toHaveText(/Hablar con una persona puede aliviar/)
+  await expect(page.getByRole('alert')).not.toContainText('113')
+  await page.keyboard.press('Escape')
+  await expect(dialogo).toHaveCount(0)
+  await expect(page.getByRole('button', { name: /Ayuda ya/ })).toBeFocused()
+})
