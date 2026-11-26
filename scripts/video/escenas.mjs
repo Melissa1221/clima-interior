@@ -89,7 +89,7 @@ export const ESCENAS = [
       await boton(p, 'Volver', 1500)
       await boton(p, /^Privacidad/, 3500)
       await radio(p, 'En internet', 2800)
-      await radio(p, 'Solo en este teléfono', 3000)
+      await radio(p, 'En el teléfono', 3000)
     } },
   { id: '07', tipo: 'app', perfil: PERFIL(), titulo: 'Exportar resumen y eliminar datos', subtitulo: 'Se genera en el teléfono, sin lo que propuso la IA', requisitos: ['RF-38', 'RNF-24'], pantallas: 'S43, S44, S45',
     narracion: 'Puedes exportar un resumen para tu psicóloga o psicólogo: tú eliges qué incluir y se genera en tu teléfono. Nunca lleva lo que propuso la IA. Si no hay registros en esas fechas, no se genera un archivo vacío. Y puedes eliminar todos tus datos, escribiendo la palabra borrar.',

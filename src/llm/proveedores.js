@@ -52,7 +52,7 @@ export const mock = {
   },
 }
 
-// Respaldo sin red: las mismas reglas, sin intentar ningún modelo. Es lo que usa «Solo en este teléfono»
+// Respaldo sin red: las mismas reglas, sin intentar ningún modelo. Es lo que usa «En el teléfono»
 // cuando no hay un Ollama local configurado (un teléfono no tiene un modelo en el puerto 11434).
 export const reglas = {
   nombre: 'reglas',

@@ -105,7 +105,7 @@ export function SabeDeMi({ cabecera, perfil, onCambio, onOlvidar }) {
 }
 
 // S42 · Privacidad: tu voz, dónde se escribe la reflexión (sin jerga) y la demo
-export function PrivacidadYDatos({ cabecera, privacidad, onCambio, onDemo }) {
+export function PrivacidadYDatos({ cabecera, privacidad, onCambio }) {
   return (
     <div className="plana">
       {cabecera}
@@ -118,15 +118,12 @@ export function PrivacidadYDatos({ cabecera, privacidad, onCambio, onDemo }) {
         </ul>
         <h2 className="etiqueta" id="donde-reflexion">Dónde se escribe tu reflexión</h2>
         <div className="segmento segmento--ancho" role="radiogroup" aria-labelledby="donde-reflexion" onKeyDown={teclasRadio}>
-          <button type="button" role="radio" aria-checked={!privacidad.iaEnInternet} tabIndex={privacidad.iaEnInternet ? -1 : 0} onClick={() => onCambio({ iaEnInternet: false })}>Solo en este teléfono</button>
+          <button type="button" role="radio" aria-checked={!privacidad.iaEnInternet} tabIndex={privacidad.iaEnInternet ? -1 : 0} onClick={() => onCambio({ iaEnInternet: false })}>En el teléfono</button>
           <button type="button" role="radio" aria-checked={privacidad.iaEnInternet} tabIndex={privacidad.iaEnInternet ? 0 : -1} onClick={() => onCambio({ iaEnInternet: true })}>En internet</button>
         </div>
         <p className="cap"><Icono nombre="info" tam={16} />{privacidad.iaEnInternet
           ? 'Tu texto se envía sin tu nombre para escribir la reflexión, y no se guarda allá.'
           : 'Más simple. Nada sale de aquí.'}</p>
-        <ul className="lista">
-          <li><FilaLista icono="historial" titulo="Modo demo" descripcion="Mirar o salir de los 30 días simulados." onClick={onDemo} /></li>
-        </ul>
       </section>
     </div>
   )

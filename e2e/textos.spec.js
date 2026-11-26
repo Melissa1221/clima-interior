@@ -20,3 +20,21 @@ test('meta description y título por pantalla (M15)', async ({ page }) => {
   await page.getByRole('button', { name: /Ayuda ya/ }).click()
   await expect(page).toHaveTitle('Apoyo ahora · Clima Interior')
 })
+
+test('Privacidad: segmentos cortos y sin la fila «Modo demo» (B11)', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto('/')
+  await page.getByRole('button', { name: /Perfil/ }).click()
+  await page.getByRole('button', { name: /^Privacidad/ }).click()
+  await expect(page.getByRole('radio', { name: 'En el teléfono' })).toHaveAttribute('aria-checked', 'true')
+  await expect(page.getByRole('radio', { name: 'En internet' })).toBeVisible()
+  await expect(page.getByText('Modo demo')).toHaveCount(0)
+  for (const r of await page.getByRole('radio').all()) {
+    const lineas = await r.evaluate((el) => {
+      const rango = document.createRange()
+      rango.selectNodeContents(el)
+      return new Set([...rango.getClientRects()].filter((x) => x.width > 1).map((x) => Math.round(x.bottom))).size
+    })
+    expect(lineas).toBe(1)
+  }
+})

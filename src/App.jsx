@@ -530,7 +530,7 @@ export default function App() {
             onOlvidar={(categoria) => setPerfil((p) => restablecer(p, categoria))} />
         )}
         {pantalla === 'privacidad' && (
-          <PrivacidadYDatos cabecera={cab} privacidad={privacidad} onCambio={cambiarAjustes('privacidad')} onDemo={() => abrirHistorial(!demo)} />
+          <PrivacidadYDatos cabecera={cab} privacidad={privacidad} onCambio={cambiarAjustes('privacidad')} />
         )}
         {pantalla === 'accesibilidad' && (
           <Accesibilidad cabecera={cab} preferencias={preferencias} onCambio={cambiarPreferencias} onAlternarCapa={(c) => setPerfil((p) => alternarCapa(p, c))} />
