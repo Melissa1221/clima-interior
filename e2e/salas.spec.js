@@ -4,7 +4,7 @@ import { test, expect, primerUsoHecho } from './base.js'
 // El permiso «compartir mi clima» arranca apagado (S03): la primera vez se pide dentro de la sala
 async function compartir(page, clima) {
   await page.getByRole('button', { name: 'Permitir compartir mi clima' }).click()
-  await page.getByRole('button', { name: clima }).click()
+  await page.getByRole('radiogroup', { name: 'Clima que compartes' }).getByRole('radio', { name: clima }).click()
 }
 
 // Cada "dispositivo" es un contexto aislado: no comparte almacenamiento con los demás
@@ -24,7 +24,7 @@ async function dispositivo(browser, mensajes) {
 test('crear, invitar, compartir, retirar, sacar y cerrar una sala entre tres dispositivos', async ({ browser }) => {
   const mensajes = []
   const ana = await dispositivo(browser, mensajes)
-  await ana.getByRole('button', { name: /Sala/ }).click()
+  await ana.getByRole('button', { name: 'Sala', exact: true }).click()
   await ana.getByRole('button', { name: 'Crear una sala' }).click()
   await compartir(ana, /Lluvia/)
   const codigo = (await ana.locator('.codigo code').innerText()).trim().replace(/\s+/g, '-')
@@ -36,7 +36,7 @@ test('crear, invitar, compartir, retirar, sacar y cerrar una sala entre tres dis
   await bea.getByRole('button', { name: 'Unirme' }).click()
   await compartir(bea, /Soleado/)
   const ceci = await dispositivo(browser, mensajes)
-  await ceci.getByRole('button', { name: /Sala/ }).click()
+  await ceci.getByRole('button', { name: 'Sala', exact: true }).click()
   await ceci.getByLabel(/código/).fill(codigo.toLowerCase().replace(/-/g, ' '))
   await ceci.getByRole('button', { name: 'Unirme' }).click()
   await compartir(ceci, /Tormenta/)
@@ -77,19 +77,20 @@ test('crear, invitar, compartir, retirar, sacar y cerrar una sala entre tres dis
 test('quien ya registró su día comparte su clima con un toque', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('radio', { name: /Niebla/ }).click()
-  await page.getByRole('button', { name: /Así está bien/ }).click()
+  await page.getByRole('button', { name: 'Guardar así' }).click()
   await page.getByRole('button', { name: 'Hasta mañana' }).click()
-  await page.getByRole('button', { name: /Sala/ }).click()
+  await page.getByRole('button', { name: 'Sala', exact: true }).click()
   await page.getByRole('button', { name: 'Crear una sala' }).click()
   await expect(page.getByText('Compartir tu clima está apagado en Privacidad')).toBeVisible()
   await page.getByRole('button', { name: 'Permitir compartir mi clima' }).click()
-  await page.getByRole('button', { name: /Compartir mi clima de hoy \(.*Niebla\)/ }).click()
-  await expect(page.getByText('Compartes:')).toContainText('Niebla')
+  await page.getByRole('button', { name: /Compartir mi clima de hoy \(Niebla\)/ }).click()
+  await expect(page.locator('.mi-clima')).toContainText('Compartes')
+  await expect(page.locator('.mi-clima')).toContainText('Niebla')
 })
 
 test('código incompleto muestra un error que explica qué hacer', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: /Sala/ }).click()
+  await page.getByRole('button', { name: 'Sala', exact: true }).click()
   await page.getByLabel(/código/).fill('K7QF-29XM')
   await page.getByRole('button', { name: 'Unirme' }).click()
   await expect(page.getByRole('alert')).toContainText('Son 26 letras y números')
