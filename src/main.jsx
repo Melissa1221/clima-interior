@@ -7,9 +7,6 @@ import '@fontsource-variable/newsreader/opsz-italic.css'
 import '@fontsource-variable/lexend'
 import './estilos/sistema.css'
 import './estilos/mundo.css'
-import './estilos.css'
-import './componentes.css'
-import './microinteracciones.css'
-import './refugio.css'
+import './estilos/pantallas.css'
 
 createRoot(document.getElementById('root')).render(<StrictMode><App /></StrictMode>)
