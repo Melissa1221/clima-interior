@@ -27,11 +27,11 @@ Estado: 1 implementados, 0 parciales, 2 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-01** Paisaje de 5 capas sin formularios | Implementado | [Paisaje.jsx:7](https://github.com/Melissa1221/clima-interior/blob/main/src/componentes/Paisaje.jsx#L7)<br>[climas.js:20](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/climas.js#L20)<br>[climas.js:36](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/climas.js#L36) | — | Cielo, luz, nubes, viento, lluvia y niebla como capas SVG; la pantalla de inicio no usa formularios para el clima. |
+| **RF-01** Paisaje de 5 capas sin formularios | Implementado | [Mundo.jsx:11](https://github.com/Melissa1221/clima-interior/blob/main/src/mundo/Mundo.jsx#L11)<br>[climas.js:20](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/climas.js#L20)<br>[climas.js:36](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/climas.js#L36) | — | Cielo, luz, nubes, viento, lluvia y niebla como capas SVG; la pantalla de inicio no usa formularios para el clima. |
 | **RF-31** Paisaje que reacciona a la voz | Pendiente | — | — | El paisaje se mueve solo; no reacciona al volumen de la voz. |
 | **RNF-17** ≥30 FPS con modo liviano automático | Pendiente | — | — | No hay modo liviano automático. |
 
-![inicio.png](capturas/inicio.png)
+![v3/03-inicio.png](capturas/v3/03-inicio.png)
 
 Pantallas del Figma: S06.
 
@@ -47,14 +47,14 @@ Estado: 3 implementados, 3 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-05** Check-in de 60 s con pausa y cierre sugerido | Implementado | [App.jsx:25](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L25)<br>[App.jsx:178](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L178)<br>[App.jsx:216](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L216) | [e2e/checkin.spec.js (7 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/checkin.spec.js) | Reloj de 1:00 y cierre sugerido a los 60 s sin cortar la frase; «Seguir hablando» agrega al texto sin perder lo anterior. La prueba e2e recorre el dictado completo. |
-| **RF-11** Indicador de micrófono y aviso de privacidad | Implementado | [Privacidad.jsx:11](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Privacidad.jsx#L11)<br>[App.jsx:413](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L413) | — | Aviso previo y píldora «Micrófono activo» con el punto rojo. |
-| **RNF-01** ≥80% de check-ins en < 90 s | Parcial | — | [e2e/checkin.spec.js (7 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/checkin.spec.js) | La prueba e2e del check-in hablado completo dura menos de 90 s; falta medirlo con usuarios (PC5). |
-| **RNF-02** Iniciar check-in en ≤3 acciones | Implementado | [App.jsx:402](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L402) | — | Iniciar y guardar un check-in toma 2 acciones: clima y «Así está bien». |
-| **RNF-03** Errores con causa, estado y siguiente acción | Parcial | [privacidad.js:14](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/privacidad.js#L14)<br>[Datos.jsx:47](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Datos.jsx#L47) | [pruebas/privacidad.test.js (5 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/privacidad.test.js) | Los errores del dictado y la exportación explican la causa y la siguiente acción. |
-| **RNF-19** Grabación ≤200 ms; LLM ≤10 s p95 | Parcial | [index.js:7](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/index.js#L7) | [pruebas/llm.test.js (28 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/llm.test.js) | El tiempo máximo del LLM es 14 s (margen para dos modelos); el objetivo es 10 s en p95. |
+| **RF-05** Check-in de 60 s con pausa y cierre sugerido | Implementado | [App.jsx:28](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L28)<br>[App.jsx:215](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L215)<br>[App.jsx:270](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L270) | [e2e/checkin.spec.js (9 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/checkin.spec.js) | Reloj de 1:00 y cierre sugerido a los 60 s sin cortar la frase; «Seguir hablando» agrega al texto sin perder lo anterior. La prueba e2e recorre el dictado completo. |
+| **RF-11** Indicador de micrófono y aviso de privacidad | Implementado | [Hojas.jsx:10](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Hojas.jsx#L10)<br>[Checkin.jsx:21](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Checkin.jsx#L21) | — | Hoja «Antes de grabar» la primera vez que se usa el micrófono y píldora con el punto rojo y «Micrófono activo». |
+| **RNF-01** ≥80% de check-ins en < 90 s | Parcial | — | [e2e/checkin.spec.js (9 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/checkin.spec.js) | La prueba e2e del check-in hablado completo dura menos de 90 s; falta medirlo con usuarios (PC5). |
+| **RNF-02** Iniciar check-in en ≤3 acciones | Implementado | [Inicio.jsx:1](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Inicio.jsx#L1) | — | Iniciar y guardar un check-in toma 2 acciones: clima y «Guardar así». |
+| **RNF-03** Errores con causa, estado y siguiente acción | Parcial | [privacidad.js:14](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/privacidad.js#L14)<br>[Datos.jsx:49](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Datos.jsx#L49) | [pruebas/privacidad.test.js (11 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/privacidad.test.js) | Los errores del dictado y la exportación explican la causa y la siguiente acción. |
+| **RNF-19** Grabación ≤200 ms; LLM ≤10 s p95 | Parcial | [index.js:7](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/index.js#L7) | [pruebas/llm.test.js (29 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/llm.test.js) | El tiempo máximo del LLM es 14 s (margen para dos modelos); el objetivo es 10 s en p95. |
 
-![grabando.png](capturas/grabando.png) ![antes-grabar.png](capturas/antes-grabar.png) ![inicio.png](capturas/inicio.png)
+![v3/06-te-escucho.png](capturas/v3/06-te-escucho.png) ![v3/05-antes-de-grabar.png](capturas/v3/05-antes-de-grabar.png) ![v3/03-inicio.png](capturas/v3/03-inicio.png)
 
 Pantallas del Figma: S06, S07, S08, S14, S44.
 
@@ -69,10 +69,10 @@ Estado: 1 implementados, 0 parciales, 1 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-06** Transcripción plegada bajo el paisaje ("Listo" / "Ver lo que entendí"); va al LLM solo tras confirmar | Implementado | [App.jsx:243](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L243) | — | La transcripción es editable y solo llega al LLM cuando se toca «Listo». |
+| **RF-06** Transcripción plegada bajo el paisaje ("Listo" / "Ver lo que entendí"); va al LLM solo tras confirmar | Implementado | [App.jsx:298](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L298) | — | La transcripción es editable y solo llega al LLM cuando se toca «Listo». |
 | **RF-07** Revisión si confianza STT < 0.75 | Pendiente | — | — | Web Speech API no entrega confianza por frase de forma fiable; falta la revisión obligatoria. |
 
-![revision.png](capturas/revision.png)
+![v3/07-corregir.png](capturas/v3/07-corregir.png)
 
 Pantallas del Figma: S15.
 
@@ -88,10 +88,10 @@ Estado: 2 implementados, 0 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-12** Emoción propuesta que el usuario confirma o corrige | Implementado | [App.jsx:492](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L492)<br>[App.jsx:106](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L106) | — | La persona elige sus emociones o marca «no sé»; la IA solo propone. |
-| **RNF-26** Inferida nunca sobrescribe declarada | Implementado | [App.jsx:92](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L92)<br>[App.jsx:167](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L167) | — | Declarada e inferida se guardan en campos separados. |
+| **RF-12** Emoción propuesta que el usuario confirma o corrige | Implementado | [Checkin.jsx:99](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Checkin.jsx#L99)<br>[App.jsx:110](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L110) | — | La persona elige sus emociones o marca «no sé»; la IA solo propone. |
+| **RNF-26** Inferida nunca sobrescribe declarada | Implementado | [App.jsx:192](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L192)<br>[App.jsx:193](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L193) | — | Declarada e inferida se guardan en campos separados. |
 
-![emociones.png](capturas/emociones.png) ![emociones.png](capturas/emociones.png)
+![v3/08-emociones.png](capturas/v3/08-emociones.png) ![v3/08-emociones.png](capturas/v3/08-emociones.png)
 
 Pantallas del Figma: S17.
 
@@ -107,12 +107,12 @@ Estado: 2 implementados, 0 parciales, 2 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-13** Reflexión no clínica de máx. 2 frases, como subtítulo | Implementado | [proveedores.js:4](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/proveedores.js#L4)<br>[contrato.js:20](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/contrato.js#L20)<br>[App.jsx:273](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L273)<br>[perfil.js:158](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L158) | [pruebas/llm.test.js (28 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/llm.test.js)<br>[pruebas/perfil.test.js (16 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/perfil.test.js)<br>[e2e/personalizacion.spec.js (6 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/personalizacion.spec.js) | Máximo 2 frases; «Más corto» la deja en una y, al tercer pedido, la app lo recuerda. |
+| **RF-13** Reflexión no clínica de máx. 2 frases, como subtítulo | Implementado | [proveedores.js:4](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/proveedores.js#L4)<br>[contrato.js:20](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/contrato.js#L20)<br>[App.jsx:331](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L331)<br>[perfil.js:163](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L163) | [pruebas/llm.test.js (29 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/llm.test.js)<br>[pruebas/perfil.test.js (16 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/perfil.test.js)<br>[e2e/personalizacion.spec.js (8 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/personalizacion.spec.js) | Máximo 2 frases; «Más corto» la deja en una y, al tercer pedido, la app lo recuerda. |
 | **RF-16** Filtro contra respuestas diagnósticas | Pendiente | — | — | No existe todavía un filtro que reemplace respuestas diagnósticas. |
 | **RNF-24** 100% de respuestas sin diagnóstico | Pendiente | — | — | No hay un filtro ni una suite de casos prohibidos. |
-| **RNF-28** Rótulo "generado por IA" | Implementado | [App.jsx:493](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L493)<br>[PrimerUso.jsx:83](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/PrimerUso.jsx#L83) | — | Toda propuesta lleva «Generado por IA · no es consejo clínico». |
+| **RNF-28** Rótulo "generado por IA" | Implementado | [Checkin.jsx:100](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Checkin.jsx#L100)<br>[Checkin.jsx:147](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Checkin.jsx#L147) | — | Toda propuesta y reflexión lleva «… por IA · no es consejo clínico». |
 
-![emociones.png](capturas/emociones.png) ![emociones.png](capturas/emociones.png)
+![v3/08-emociones.png](capturas/v3/08-emociones.png) ![v3/08-emociones.png](capturas/v3/08-emociones.png)
 
 Pantallas del Figma: S04, S19.
 
@@ -128,12 +128,12 @@ Estado: 4 implementados, 0 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-14** Detector de riesgo independiente y previo | Implementado | [riesgo.js:12](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/riesgo.js#L12)<br>[App.jsx:245](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L245) | [pruebas/riesgo.test.js (1 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/riesgo.test.js) | Corre antes de pedir la reflexión y es independiente del LLM. |
-| **RF-15** Pantalla de derivación 113 / 106 / 105 | Implementado | [riesgo.js:17](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/riesgo.js#L17)<br>[App.jsx:515](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L515) | [pruebas/riesgo.test.js (1 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/riesgo.test.js) | Muestra la Línea 113 (opción 5), SAMU 106 y PNP 105 como enlaces `tel:`. |
+| **RF-14** Detector de riesgo independiente y previo | Implementado | [riesgo.js:12](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/riesgo.js#L12)<br>[App.jsx:300](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L300) | [pruebas/riesgo.test.js (1 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/riesgo.test.js) | Corre antes de pedir la reflexión y es independiente del LLM. |
+| **RF-15** Pantalla de derivación 113 / 106 / 105 | Implementado | [riesgo.js:17](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/riesgo.js#L17)<br>[App.jsx:544](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L544) | [pruebas/riesgo.test.js (1 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/riesgo.test.js) | Muestra la Línea 113 (opción 5), SAMU 106 y PNP 105 como enlaces `tel:`. |
 | **RNF-20** Funciones clave y recursos de crisis offline | Implementado | [riesgo.js:17](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/riesgo.js#L17)<br>[vite.config.js:22](https://github.com/Melissa1221/clima-interior/blob/main/vite.config.js#L22) | — | Los números de ayuda viajan dentro de la app y se cachean con el service worker; se verifica offline en la URL publicada. |
 | **RNF-25** Derivación en ≤1 s sin contactar terceros | Implementado | [riesgo.js:12](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/riesgo.js#L12) | [pruebas/riesgo.test.js (1 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/riesgo.test.js) | Detección síncrona y local; la app nunca contacta a terceros. |
 
-![riesgo.png](capturas/riesgo.png) ![riesgo.png](capturas/riesgo.png) ![riesgo.png](capturas/riesgo.png)
+![v3/23-crisis-detector.png](capturas/v3/23-crisis-detector.png) ![v3/23-crisis-detector.png](capturas/v3/23-crisis-detector.png) ![v3/23-crisis-detector.png](capturas/v3/23-crisis-detector.png)
 
 Pantallas del Figma: S22, S24.
 
@@ -161,10 +161,10 @@ Estado: 1 implementados, 1 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-21** Perfil persistente | Implementado | [perfil.js:78](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L78)<br>[perfil.js:105](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L105)<br>[perfil.js:147](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L147) | [pruebas/perfil.test.js (16 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/perfil.test.js)<br>[e2e/personalizacion.spec.js (6 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/personalizacion.spec.js) | Registros, ajustes, ritmo (hora y duración), emociones que eliges, aciertos de la IA y fallos del micrófono persisten en el dispositivo. |
-| **RF-22** Paisaje y lenguaje que evolucionan | Parcial | [perfil.js:221](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L221)<br>[perfil.js:158](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L158)<br>[perfil.js:147](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L147)<br>[perfil.js:240](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L240) | [pruebas/perfil.test.js (16 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/perfil.test.js)<br>[e2e/personalizacion.spec.js (6 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/personalizacion.spec.js) | Cambian con el uso las emociones ofrecidas («tuya»), el largo de la reflexión, la entrada inicial (voz o texto) y el saludo; cada cambio anota su motivo. El paisaje todavía no evoluciona. |
+| **RF-21** Perfil persistente | Implementado | [perfil.js:83](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L83)<br>[perfil.js:110](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L110)<br>[perfil.js:152](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L152) | [pruebas/perfil.test.js (16 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/perfil.test.js)<br>[e2e/personalizacion.spec.js (8 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/personalizacion.spec.js) | Registros, ajustes, ritmo (hora y duración), emociones que eliges, aciertos de la IA y fallos del micrófono persisten en el dispositivo. |
+| **RF-22** Paisaje y lenguaje que evolucionan | Parcial | [perfil.js:226](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L226)<br>[perfil.js:163](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L163)<br>[perfil.js:152](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L152)<br>[perfil.js:245](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L245) | [pruebas/perfil.test.js (16 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/perfil.test.js)<br>[e2e/personalizacion.spec.js (8 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/personalizacion.spec.js) | Cambian con el uso las emociones ofrecidas («tuya»), el largo de la reflexión, la entrada inicial (voz o texto) y el saludo; cada cambio anota su motivo. El paisaje todavía no evoluciona. |
 
-![perfil.png](capturas/perfil.png) ![perfil.png](capturas/perfil.png)
+![v3/30-lo-que-sabe.png](capturas/v3/30-lo-que-sabe.png) ![v3/30-lo-que-sabe.png](capturas/v3/30-lo-que-sabe.png)
 
 Pantallas del Figma: S40.
 
@@ -179,10 +179,10 @@ Estado: 2 implementados, 0 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-23** Control sobre la personalización | Implementado | [Privacidad.jsx:69](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Privacidad.jsx#L69)<br>[perfil.js:200](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L200)<br>[perfil.js:169](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L169) | [pruebas/perfil.test.js (16 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/perfil.test.js)<br>[e2e/personalizacion.spec.js (6 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/personalizacion.spec.js) | Cada categoría se ve, se apaga u olvida por separado; apagarla borra lo aprendido de ella y la lista «Lo que cambió por su cuenta» dice por qué cambió cada cosa. |
+| **RF-23** Control sobre la personalización | Implementado | [Privacidad.jsx:66](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Privacidad.jsx#L66)<br>[perfil.js:205](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L205)<br>[perfil.js:174](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L174) | [pruebas/perfil.test.js (16 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/perfil.test.js)<br>[e2e/personalizacion.spec.js (8 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/personalizacion.spec.js) | Cada categoría se ve, se apaga u olvida por separado; apagarla borra lo aprendido de ella y la lista «Lo que cambió por su cuenta» dice por qué cambió cada cosa. |
 | **RNF-27** Accesibilidad no se usa para inferir riesgo | Implementado | [riesgo.js:12](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/riesgo.js#L12) | [pruebas/riesgo.test.js (1 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/riesgo.test.js) | El detector recibe solo el texto: ningún ajuste de accesibilidad entra al cálculo. |
 
-![perfil.png](capturas/perfil.png)
+![v3/30-lo-que-sabe.png](capturas/v3/30-lo-que-sabe.png)
 
 Pantallas del Figma: S40.
 
@@ -198,10 +198,10 @@ Estado: 2 implementados, 0 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-24** Ayuda contextual por paso | Implementado | [Ui.jsx:83](https://github.com/Melissa1221/clima-interior/blob/main/src/componentes/Ui.jsx#L83)<br>[App.jsx:34](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L34) | — | Botón «?» en todas las pantallas con ayuda propia; se cierra con Escape. |
-| **RF-25** Pista proactiva a los 12 s | Implementado | [App.jsx:130](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L130)<br>[accesibilidad.js:15](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/accesibilidad.js#L15) | [pruebas/accesibilidad.test.js (10 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/accesibilidad.test.js) | A los 12 s de silencio: texto, voz y vibración, si la persona lo dejó activo. |
+| **RF-24** Ayuda contextual por paso | Implementado | [Ui.jsx:131](https://github.com/Melissa1221/clima-interior/blob/main/src/componentes/Ui.jsx#L131)<br>[App.jsx:44](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L44) | — | Botón «?» en todas las pantallas con ayuda propia; se cierra con Escape. |
+| **RF-25** Pista proactiva a los 12 s | Implementado | [App.jsx:149](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L149)<br>[accesibilidad.js:15](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/accesibilidad.js#L15) | [pruebas/accesibilidad.test.js (10 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/accesibilidad.test.js) | A los 12 s de silencio: texto, voz y vibración, si la persona lo dejó activo. |
 
-![ayuda.png](capturas/ayuda.png) ![grabando.png](capturas/grabando.png)
+![ayuda.png](capturas/ayuda.png) ![v3/06-te-escucho.png](capturas/v3/06-te-escucho.png)
 
 Pantallas del Figma: S10, S21.
 
@@ -217,13 +217,13 @@ Estado: 2 implementados, 1 parciales, 2 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-19** PWA instalable | Implementado | [vite.config.js:3](https://github.com/Melissa1221/clima-interior/blob/main/vite.config.js#L3)<br>[App.jsx:282](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L282) | — | Manifiesto, service worker e instalación desde la bienvenida; se verifica en la URL publicada. |
-| **RF-20** Check-in offline con cola | Parcial | [vite.config.js:22](https://github.com/Melissa1221/clima-interior/blob/main/vite.config.js#L22)<br>[perfil.js:86](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L86) | — | La app y el perfil funcionan sin red; no hay cola de sincronización porque aún no hay servidor. |
+| **RF-19** PWA instalable | Implementado | [vite.config.js:3](https://github.com/Melissa1221/clima-interior/blob/main/vite.config.js#L3)<br>[App.jsx:336](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L336) | — | Manifiesto, service worker e instalación sugerida tras unos días de uso; se verifica en la URL publicada. |
+| **RF-20** Check-in offline con cola | Parcial | [vite.config.js:22](https://github.com/Melissa1221/clima-interior/blob/main/vite.config.js#L22)<br>[perfil.js:91](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L91) | — | La app y el perfil funcionan sin red; no hay cola de sincronización porque aún no hay servidor. |
 | **RNF-18** LCP ≤2.5 s, INP ≤200 ms | Pendiente | — | — | Falta medir LCP e INP en la URL publicada. |
 | **RNF-20** Funciones clave y recursos de crisis offline | Implementado | [riesgo.js:17](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/riesgo.js#L17)<br>[vite.config.js:22](https://github.com/Melissa1221/clima-interior/blob/main/vite.config.js#L22) | — | Los números de ayuda viajan dentro de la app y se cachean con el service worker; se verifica offline en la URL publicada. |
 | **RNF-21** Sincronización ordenada sin duplicados | Pendiente | — | — | Sin servidor no hay sincronización. |
 
-![primer-uso.png](capturas/primer-uso.png) ![riesgo.png](capturas/riesgo.png)
+![v3/01-bienvenida.png](capturas/v3/01-bienvenida.png) ![v3/23-crisis-detector.png](capturas/v3/23-crisis-detector.png)
 
 Pantallas del Figma: S24, S54.
 
@@ -239,13 +239,13 @@ Estado: 5 implementados, 0 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-26** Salas con código que caduca | Implementado | [sala.js:6](https://github.com/Melissa1221/clima-interior/blob/main/src/salas/sala.js#L6)<br>[Sala.jsx:21](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Sala.jsx#L21)<br>[salas.mjs:14](https://github.com/Melissa1221/clima-interior/blob/main/server/salas.mjs#L14) | [pruebas/salas.test.js (10 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/salas.test.js)<br>[pruebas/servidor-salas.test.js (3 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/servidor-salas.test.js)<br>[e2e/salas.spec.js (4 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/salas.spec.js) | Crear, unirse por código o enlace y salir; el relé borra la sala al cerrarla o a las 24 h. |
+| **RF-26** Salas con código que caduca | Implementado | [sala.js:6](https://github.com/Melissa1221/clima-interior/blob/main/src/salas/sala.js#L6)<br>[Sala.jsx:40](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Sala.jsx#L40)<br>[salas.mjs:14](https://github.com/Melissa1221/clima-interior/blob/main/server/salas.mjs#L14) | [pruebas/salas.test.js (10 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/salas.test.js)<br>[pruebas/servidor-salas.test.js (3 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/servidor-salas.test.js)<br>[e2e/salas.spec.js (4 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/salas.spec.js) | Crear, unirse por código o enlace y salir; el relé borra la sala al cerrarla o a las 24 h. |
 | **RF-27** Solo parámetros del clima con seudónimo | Implementado | [mensaje.js:22](https://github.com/Melissa1221/clima-interior/blob/main/src/salas/mensaje.js#L22)<br>[mensaje.js:53](https://github.com/Melissa1221/clima-interior/blob/main/src/salas/mensaje.js#L53)<br>[sala.js:78](https://github.com/Melissa1221/clima-interior/blob/main/src/salas/sala.js#L78) | [pruebas/salas.test.js (10 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/salas.test.js)<br>[e2e/salas.spec.js (4 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/salas.spec.js) | Solo viaja el clima en números con un seudónimo efímero; «Retirar mi clima» lo quita en todos. Compartir respeta el permiso «clima compartido». |
 | **RF-28** Clima colectivo de la sala | Implementado | [mensaje.js:60](https://github.com/Melissa1221/clima-interior/blob/main/src/salas/mensaje.js#L60) | [pruebas/salas.test.js (10 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/salas.test.js)<br>[e2e/salas.spec.js (4 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/salas.spec.js) | Clima colectivo por valencia promedio de los climas compartidos. |
 | **RNF-13** Mensajes de sala solo numéricos | Implementado | [mensaje.js:22](https://github.com/Melissa1221/clima-interior/blob/main/src/salas/mensaje.js#L22)<br>[salas.mjs:51](https://github.com/Melissa1221/clima-interior/blob/main/server/salas.mjs#L51)<br>[transporte.js:14](https://github.com/Melissa1221/clima-interior/blob/main/src/salas/transporte.js#L14) | [pruebas/salas.test.js (10 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/salas.test.js)<br>[pruebas/servidor-salas.test.js (3 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/servidor-salas.test.js)<br>[e2e/salas.spec.js (4 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/salas.spec.js) | Esquema numérico cerrado validado al enviar, al recibir y en el relé; la prueba e2e revisa cada mensaje del WebSocket. |
 | **RNF-14** Seudónimos efímeros, borrado a 24 h, 128 bits | Implementado | [mensaje.js:38](https://github.com/Melissa1221/clima-interior/blob/main/src/salas/mensaje.js#L38)<br>[mensaje.js:8](https://github.com/Melissa1221/clima-interior/blob/main/src/salas/mensaje.js#L8)<br>[salas.mjs:9](https://github.com/Melissa1221/clima-interior/blob/main/server/salas.mjs#L9) | [pruebas/salas.test.js (10 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/salas.test.js)<br>[pruebas/servidor-salas.test.js (3 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/servidor-salas.test.js) | Código de 128 bits, seudónimo por sesión y borrado al cerrar o a las 24 h. |
 
-![sala.png](capturas/sala.png) ![sala.png](capturas/sala.png) ![sala.png](capturas/sala.png)
+![v3/36-sala-activa.png](capturas/v3/36-sala-activa.png) ![v3/36-sala-activa.png](capturas/v3/36-sala-activa.png) ![v3/36-sala-activa.png](capturas/v3/36-sala-activa.png)
 
 Pantallas del Figma: S34-S39.
 
@@ -265,7 +265,7 @@ Estado: 1 implementados, 2 parciales, 0 pendientes.
 | **RNF-14** Seudónimos efímeros, borrado a 24 h, 128 bits | Implementado | [mensaje.js:38](https://github.com/Melissa1221/clima-interior/blob/main/src/salas/mensaje.js#L38)<br>[mensaje.js:8](https://github.com/Melissa1221/clima-interior/blob/main/src/salas/mensaje.js#L8)<br>[salas.mjs:9](https://github.com/Melissa1221/clima-interior/blob/main/server/salas.mjs#L9) | [pruebas/salas.test.js (10 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/salas.test.js)<br>[pruebas/servidor-salas.test.js (3 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/servidor-salas.test.js) | Código de 128 bits, seudónimo por sesión y borrado al cerrar o a las 24 h. |
 | **RNF-15** TLS y aislamiento entre usuarios y salas | Parcial | [salas.mjs:53](https://github.com/Melissa1221/clima-interior/blob/main/server/salas.mjs#L53) | [pruebas/servidor-salas.test.js (3 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/servidor-salas.test.js) | Aislamiento entre salas e identidad fija por conexión; TLS depende del despliegue (wss). |
 
-![sala.png](capturas/sala.png) ![sala.png](capturas/sala.png)
+![v3/36-sala-activa.png](capturas/v3/36-sala-activa.png) ![v3/36-sala-activa.png](capturas/v3/36-sala-activa.png)
 
 Pantallas del Figma: S34-S39.
 
@@ -293,11 +293,11 @@ Estado: 2 implementados, 1 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-03** Descripción textual y hablada del paisaje | Implementado | [Paisaje.jsx:10](https://github.com/Melissa1221/clima-interior/blob/main/src/componentes/Paisaje.jsx#L10)<br>[climas.js:10](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/climas.js#L10)<br>[App.jsx:221](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L221) | — | Cada paisaje tiene descripción textual (`aria-label`) y se puede describir en voz alta. |
+| **RF-03** Descripción textual y hablada del paisaje | Implementado | [Mundo.jsx:27](https://github.com/Melissa1221/clima-interior/blob/main/src/mundo/Mundo.jsx#L27)<br>[climas.js:10](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/climas.js#L10)<br>[App.jsx:275](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L275) | — | Cada paisaje tiene descripción textual (`aria-label`) y se puede describir en voz alta. |
 | **RF-04** Sonificación del clima | Implementado | [accesibilidad.js:39](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/accesibilidad.js#L39) | — | Una nota corta por clima; en modo neutral la tormenta suena como cielo neutro. |
-| **RNF-04** WCAG 2.2 AA sin violaciones críticas | Parcial | — | [e2e/accesibilidad.spec.js (2 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/accesibilidad.spec.js) | axe-core sin fallas graves de WCAG 2.2 AA en 14 pantallas; falta la revisión manual con lector de pantalla. |
+| **RNF-04** WCAG 2.2 AA sin violaciones críticas | Parcial | — | [e2e/accesibilidad.spec.js (4 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/accesibilidad.spec.js) | axe-core sin fallas graves de WCAG 2.2 AA en 14 pantallas; falta la revisión manual con lector de pantalla. |
 
-![accesibilidad.png](capturas/accesibilidad.png) ![accesibilidad.png](capturas/accesibilidad.png)
+![v3/32-accesibilidad.png](capturas/v3/32-accesibilidad.png) ![v3/32-accesibilidad.png](capturas/v3/32-accesibilidad.png)
 
 Pantallas del Figma: S46.
 
@@ -313,9 +313,9 @@ Estado: 1 implementados, 1 parciales, 0 pendientes.
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
 | **RF-02** Codificación no cromática | Parcial | [climas.js:20](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/climas.js#L20) | — | Los climas se distinguen por densidad de nubes, lluvia y viento; falta la prueba en escala de grises. |
-| **RNF-05** Contraste 4.5:1 / 3:1 | Implementado | [App.jsx:28](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L28) | [e2e/accesibilidad.spec.js (2 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/accesibilidad.spec.js) | axe revisa el contraste en 14 pantallas, con paisaje y sin él. |
+| **RNF-05** Contraste 4.5:1 / 3:1 | Implementado | [sistema.css:6](https://github.com/Melissa1221/clima-interior/blob/main/src/estilos/sistema.css#L6) | [e2e/accesibilidad.spec.js (4 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/accesibilidad.spec.js) | axe revisa el contraste (WCAG 2.2 AA) en todas las pantallas, también en el tema de noche. |
 
-![inicio.png](capturas/inicio.png)
+![v3/03-inicio.png](capturas/v3/03-inicio.png)
 
 Pantallas del Figma: S06.
 
@@ -332,10 +332,10 @@ Estado: 1 implementados, 2 parciales, 0 pendientes.
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
 | **RF-09** TTS con subtítulos integrados | Parcial | [stt.js:32](https://github.com/Melissa1221/clima-interior/blob/main/src/voz/stt.js#L32) | — | La reflexión se escucha con TTS y siempre está escrita en pantalla. |
-| **RF-36** Alertas visuales y hápticas | Implementado | [Ui.jsx:40](https://github.com/Melissa1221/clima-interior/blob/main/src/componentes/Ui.jsx#L40)<br>[accesibilidad.js:15](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/accesibilidad.js#L15) | [pruebas/accesibilidad.test.js (10 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/accesibilidad.test.js) | Los errores tienen aviso visual con rol `alert` y vibran si está activo. |
-| **RNF-08** Texto equivalente en < 1 s | Parcial | [Ui.jsx:40](https://github.com/Melissa1221/clima-interior/blob/main/src/componentes/Ui.jsx#L40) | — | Cada aviso sonoro o vibrado tiene texto, pero no se midió el tiempo. |
+| **RF-36** Alertas visuales y hápticas | Implementado | [Ui.jsx:144](https://github.com/Melissa1221/clima-interior/blob/main/src/componentes/Ui.jsx#L144)<br>[accesibilidad.js:15](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/accesibilidad.js#L15) | [pruebas/accesibilidad.test.js (10 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/accesibilidad.test.js) | Los errores tienen aviso visual con rol `alert` y vibran si está activo. |
+| **RNF-08** Texto equivalente en < 1 s | Parcial | [Ui.jsx:144](https://github.com/Melissa1221/clima-interior/blob/main/src/componentes/Ui.jsx#L144) | — | Cada aviso sonoro o vibrado tiene texto, pero no se midió el tiempo. |
 
-![emociones.png](capturas/emociones.png) ![sin-registros.png](capturas/sin-registros.png)
+![v3/08-emociones.png](capturas/v3/08-emociones.png) ![v3/28-historial-vacio.png](capturas/v3/28-historial-vacio.png)
 
 Pantallas del Figma: S19, S45.
 
@@ -351,11 +351,11 @@ Estado: 1 implementados, 2 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-35** Teclado, conmutador y comandos de voz | Parcial | [accesibilidad.js:25](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/accesibilidad.js#L25)<br>[estilos.css:61](https://github.com/Melissa1221/clima-interior/blob/main/src/estilos.css#L61) | [pruebas/accesibilidad.test.js (10 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/accesibilidad.test.js) | Órdenes de voz (terminar, pausar, ayuda, salir por hoy) y foco visible; no se probó con un conmutador real. |
-| **RNF-06** Controles 44×44 px y foco visible | Implementado | [componentes.css:5](https://github.com/Melissa1221/clima-interior/blob/main/src/componentes.css#L5)<br>[estilos.css:61](https://github.com/Melissa1221/clima-interior/blob/main/src/estilos.css#L61) | [e2e/accesibilidad.spec.js (2 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/accesibilidad.spec.js) | Botones de 52 px y foco con anillo doble ámbar; la prueba e2e verifica que todo control visible mida al menos 44×44 px. |
-| **RNF-09** Zoom 200% y reflujo 320 px | Parcial | — | [e2e/accesibilidad.spec.js (2 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/accesibilidad.spec.js) | Sin scroll horizontal a 320 px en 14 pantallas; falta probar zoom al 200 %. |
+| **RF-35** Teclado, conmutador y comandos de voz | Parcial | [accesibilidad.js:25](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/accesibilidad.js#L25)<br>[sistema.css:59](https://github.com/Melissa1221/clima-interior/blob/main/src/estilos/sistema.css#L59) | [pruebas/accesibilidad.test.js (10 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/accesibilidad.test.js) | Órdenes de voz (terminar, pausar, ayuda, salir por hoy) y foco visible; no se probó con un conmutador real. |
+| **RNF-06** Controles 44×44 px y foco visible | Implementado | [sistema.css:79](https://github.com/Melissa1221/clima-interior/blob/main/src/estilos/sistema.css#L79)<br>[sistema.css:59](https://github.com/Melissa1221/clima-interior/blob/main/src/estilos/sistema.css#L59) | [e2e/accesibilidad.spec.js (4 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/accesibilidad.spec.js) | Botones de 52 px y foco con anillo doble ámbar; la prueba e2e verifica que todo control visible mida al menos 44×44 px. |
+| **RNF-09** Zoom 200% y reflujo 320 px | Parcial | — | [e2e/accesibilidad.spec.js (4 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/accesibilidad.spec.js) | Sin scroll horizontal a 320 px en 14 pantallas; falta probar zoom al 200 %. |
 
-![accesibilidad.png](capturas/accesibilidad.png) ![accesibilidad.png](capturas/accesibilidad.png)
+![v3/32-accesibilidad.png](capturas/v3/32-accesibilidad.png) ![v3/32-accesibilidad.png](capturas/v3/32-accesibilidad.png)
 
 Pantallas del Figma: S51.
 
@@ -370,11 +370,11 @@ Estado: 2 implementados, 1 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-08** Entrada alternativa sin perder borrador | Implementado | [App.jsx:237](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L237)<br>[App.jsx:182](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L182) | — | Cambiar a texto o volver a hablar conserva lo dicho. |
-| **RF-10** Micrófono denegado con ruta alternativa | Implementado | [privacidad.js:7](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/privacidad.js#L7)<br>[privacidad.js:14](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/privacidad.js#L14) | [pruebas/privacidad.test.js (5 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/privacidad.test.js) | Si el micrófono no se puede usar se explica el motivo y queda escribir; el clima elegido no se pierde. |
-| **RNF-03** Errores con causa, estado y siguiente acción | Parcial | [privacidad.js:14](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/privacidad.js#L14)<br>[Datos.jsx:47](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Datos.jsx#L47) | [pruebas/privacidad.test.js (5 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/privacidad.test.js) | Los errores del dictado y la exportación explican la causa y la siguiente acción. |
+| **RF-08** Entrada alternativa sin perder borrador | Implementado | [App.jsx:291](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L291)<br>[App.jsx:219](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L219) | — | Cambiar a texto o volver a hablar conserva lo dicho. |
+| **RF-10** Micrófono denegado con ruta alternativa | Implementado | [privacidad.js:7](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/privacidad.js#L7)<br>[privacidad.js:14](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/privacidad.js#L14) | [pruebas/privacidad.test.js (11 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/privacidad.test.js) | Si el micrófono no se puede usar se explica el motivo y queda escribir; el clima elegido no se pierde. |
+| **RNF-03** Errores con causa, estado y siguiente acción | Parcial | [privacidad.js:14](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/privacidad.js#L14)<br>[Datos.jsx:49](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Datos.jsx#L49) | [pruebas/privacidad.test.js (11 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/privacidad.test.js) | Los errores del dictado y la exportación explican la causa y la siguiente acción. |
 
-![revision.png](capturas/revision.png) ![antes-grabar.png](capturas/antes-grabar.png) ![sin-registros.png](capturas/sin-registros.png)
+![v3/07-corregir.png](capturas/v3/07-corregir.png) ![v3/05-antes-de-grabar.png](capturas/v3/05-antes-de-grabar.png) ![v3/28-historial-vacio.png](capturas/v3/28-historial-vacio.png)
 
 Pantallas del Figma: S12, S13, S14, S44.
 
@@ -389,7 +389,7 @@ Estado: 1 implementados, 1 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-33** Modo predecible | Implementado | [accesibilidad.js:9](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/accesibilidad.js#L9)<br>[App.jsx:445](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L445) | [pruebas/accesibilidad.test.js (10 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/accesibilidad.test.js) | Una pregunta por pantalla y reflexiones de 80 palabras como máximo. |
+| **RF-33** Modo predecible | Implementado | [accesibilidad.js:9](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/accesibilidad.js#L9)<br>[App.jsx:457](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L457) | [pruebas/accesibilidad.test.js (10 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/accesibilidad.test.js) | Una pregunta por pantalla y reflexiones de 80 palabras como máximo. |
 | **RNF-10** Modo predecible: ≤15 palabras/oración, ≤80 total | Parcial | [accesibilidad.js:9](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/accesibilidad.js#L9) | [pruebas/accesibilidad.test.js (10 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/accesibilidad.test.js) | Límite de 80 palabras; falta el de 15 palabras por oración. |
 
 ![predecible.png](capturas/predecible.png) ![predecible.png](capturas/predecible.png)
@@ -407,10 +407,10 @@ Estado: 2 implementados, 0 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-32** Modo movimiento reducido | Implementado | [Accesibilidad.jsx:8](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Accesibilidad.jsx#L8)<br>[microinteracciones.css:45](https://github.com/Melissa1221/clima-interior/blob/main/src/microinteracciones.css#L45)<br>[accesibilidad.js:4](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/accesibilidad.js#L4) | [pruebas/accesibilidad.test.js (10 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/accesibilidad.test.js) | Movimiento reducido (del sistema o elegido) apaga las animaciones; las capas del clima se apagan por separado. |
-| **RNF-07** ≤3 destellos/s; animaciones ≤200 ms | Implementado | [microinteracciones.css:45](https://github.com/Melissa1221/clima-interior/blob/main/src/microinteracciones.css#L45) | — | Sin destellos; en movimiento reducido no hay animaciones y las transiciones duran 0 ms. |
+| **RF-32** Modo movimiento reducido | Implementado | [Accesibilidad.jsx:10](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Accesibilidad.jsx#L10)<br>[sistema.css:213](https://github.com/Melissa1221/clima-interior/blob/main/src/estilos/sistema.css#L213)<br>[accesibilidad.js:4](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/accesibilidad.js#L4) | [pruebas/accesibilidad.test.js (10 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/accesibilidad.test.js) | Movimiento reducido (del sistema o elegido) apaga las animaciones; las capas del clima se apagan por separado. |
+| **RNF-07** ≤3 destellos/s; animaciones ≤200 ms | Implementado | [sistema.css:213](https://github.com/Melissa1221/clima-interior/blob/main/src/estilos/sistema.css#L213) | — | Sin destellos; en movimiento reducido no hay animaciones y las transiciones duran 0 ms. |
 
-![accesibilidad.png](capturas/accesibilidad.png) ![accesibilidad.png](capturas/accesibilidad.png)
+![v3/32-accesibilidad.png](capturas/v3/32-accesibilidad.png) ![v3/32-accesibilidad.png](capturas/v3/32-accesibilidad.png)
 
 Pantallas del Figma: S46.
 
@@ -425,7 +425,7 @@ Estado: 0 implementados, 1 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-34** Modo neutral y "no quiero profundizar" | Parcial | [climas.js:31](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/climas.js#L31)<br>[App.jsx:491](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L491) | — | La tormenta se ve como cielo neutro y sin sonidos intensos; falta el botón «No quiero profundizar» (S28). |
+| **RF-34** Modo neutral y "no quiero profundizar" | Parcial | [climas.js:31](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/climas.js#L31)<br>[Checkin.jsx:101](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Checkin.jsx#L101) | — | La tormenta se ve como cielo neutro y sin sonidos intensos; falta el botón «No quiero profundizar» (S28). |
 
 ![neutral.png](capturas/neutral.png)
 
@@ -437,16 +437,16 @@ Pantallas del Figma: S49.
 
 Estado: 2 implementados, 1 parciales, 0 pendientes.
 
-- **Escenario 1: primer uso.** Dado que abro la app por primera vez, cuando declaro mi edad y acepto grabar pero no el LLM remoto, entonces la app usa el modelo local y ninguna solicitud sale a un proveedor externo.
+- **Escenario 1: primer uso y permisos justo a tiempo.** Dado que abro la app por primera vez, cuando declaro mi edad en la bienvenida, entonces todos los permisos quedan apagados; y cuando toco «Contar mi día» por primera vez, la app me explica el micrófono antes de pedirlo, y si no acepto la IA en internet usa el modelo del teléfono y ninguna solicitud sale a un proveedor externo.
 - **Escenario 2: el audio no se guarda.** Dado que terminé un check-in, cuando se obtiene la transcripción, entonces el audio se elimina de memoria y no aparece en ningún log ni reporte.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-37** Edad y consentimiento granular | Implementado | [PrimerUso.jsx:23](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/PrimerUso.jsx#L23)<br>[PrimerUso.jsx:44](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/PrimerUso.jsx#L44)<br>[perfil.js:21](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L21) | [pruebas/privacidad.test.js (5 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/privacidad.test.js)<br>[pruebas/perfil.test.js (16 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/perfil.test.js) | Edad declarada y cuatro permisos independientes, apagados por defecto. |
+| **RF-37** Edad y consentimiento granular | Implementado | [Bienvenida.jsx:36](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Bienvenida.jsx#L36)<br>[privacidad.js:22](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/privacidad.js#L22)<br>[perfil.js:24](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L24) | [pruebas/privacidad.test.js (11 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/privacidad.test.js)<br>[pruebas/perfil.test.js (16 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/perfil.test.js) | Bienvenida única con edad (pantalla propia para menores de 18) y cuatro permisos independientes, apagados por defecto; el micrófono y la IA en internet se piden justo a tiempo, la primera vez que se usan. |
 | **RNF-11** El audio no se guarda | Implementado | [stt.js:14](https://github.com/Melissa1221/clima-interior/blob/main/src/voz/stt.js#L14) | — | La app nunca guarda audio: usa Web Speech API y solo conserva el texto confirmado. |
 | **RNF-12** Cero datos sensibles en logs y analítica | Parcial | [index.js:57](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/index.js#L57) | — | No se registra el relato del usuario, pero falta un escáner de logs. |
 
-![permisos.png](capturas/permisos.png) ![antes-grabar.png](capturas/antes-grabar.png)
+![v3/05-antes-de-grabar.png](capturas/v3/05-antes-de-grabar.png) ![v3/05-antes-de-grabar.png](capturas/v3/05-antes-de-grabar.png)
 
 Pantallas del Figma: S02, S03, S07.
 
@@ -462,9 +462,9 @@ Estado: 1 implementados, 0 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-38** Exportar para psicóloga y eliminar datos | Implementado | [exportar.js:25](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/exportar.js#L25)<br>[exportar.js:40](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/exportar.js#L40)<br>[perfil.js:286](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L286)<br>[Datos.jsx:70](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Datos.jsx#L70) | [pruebas/exportar.test.js (11 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/exportar.test.js)<br>[pruebas/perfil.test.js (16 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/perfil.test.js) | Resumen en PDF sin propuestas de la IA, rango vacío sin archivo y borrado total confirmado con BORRAR. |
+| **RF-38** Exportar para psicóloga y eliminar datos | Implementado | [exportar.js:25](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/exportar.js#L25)<br>[exportar.js:40](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/exportar.js#L40)<br>[perfil.js:291](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L291)<br>[Datos.jsx:79](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Datos.jsx#L79) | [pruebas/exportar.test.js (11 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/exportar.test.js)<br>[pruebas/perfil.test.js (16 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/perfil.test.js) | Resumen en PDF sin propuestas de la IA, rango vacío sin archivo y borrado total confirmado con BORRAR. |
 
-![exportar.png](capturas/exportar.png)
+![v3/33-mis-datos.png](capturas/v3/33-mis-datos.png)
 
 Pantallas del Figma: S43, S44, S45.
 
@@ -480,12 +480,12 @@ Estado: 2 implementados, 2 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-18** Adaptadores LLM / STT / TTS intercambiables | Parcial | [index.js:9](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/index.js#L9)<br>[proveedores.js:46](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/proveedores.js#L46)<br>[proveedores.js:55](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/proveedores.js#L55)<br>[proveedores.js:76](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/proveedores.js#L76)<br>[proveedores.js:140](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/proveedores.js#L140) | [pruebas/llm.test.js (28 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/llm.test.js) | LLM intercambiable; STT y TTS usan Web Speech API sin capa de adaptadores. |
+| **RF-18** Adaptadores LLM / STT / TTS intercambiables | Parcial | [index.js:9](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/index.js#L9)<br>[proveedores.js:46](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/proveedores.js#L46)<br>[proveedores.js:56](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/proveedores.js#L56)<br>[proveedores.js:78](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/proveedores.js#L78)<br>[proveedores.js:144](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/proveedores.js#L144) | [pruebas/llm.test.js (29 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/llm.test.js) | LLM intercambiable; STT y TTS usan Web Speech API sin capa de adaptadores. |
 | **RNF-16** Resistencia a inyección de prompts | Parcial | [proveedores.js:9](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/proveedores.js#L9) | — | El relato va delimitado en el prompt; falta la suite de inyección. |
-| **RNF-22** Proveedor por variable `LLM_PROVIDER` | Implementado | [index.js:9](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/index.js#L9) | [pruebas/llm.test.js (28 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/llm.test.js) | `VITE_LLM_PROVIDER` elige mock, gemini, ollama o remoto. |
-| **RNF-23** Esquema común y reflexión local de respaldo | Implementado | [contrato.js:20](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/contrato.js#L20)<br>[index.js:45](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/index.js#L45) | [pruebas/llm.test.js (28 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/llm.test.js) | Respuesta inválida o más lenta que el límite: se usa la reflexión local. |
+| **RNF-22** Proveedor por variable `LLM_PROVIDER` | Implementado | [index.js:9](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/index.js#L9) | [pruebas/llm.test.js (29 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/llm.test.js) | `VITE_LLM_PROVIDER` elige mock, gemini, ollama o remoto. |
+| **RNF-23** Esquema común y reflexión local de respaldo | Implementado | [contrato.js:20](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/contrato.js#L20)<br>[index.js:45](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/index.js#L45) | [pruebas/llm.test.js (29 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/llm.test.js) | Respuesta inválida o más lenta que el límite: se usa la reflexión local. |
 
-![privacidad.png](capturas/privacidad.png) ![emociones.png](capturas/emociones.png)
+![v3/31-privacidad.png](capturas/v3/31-privacidad.png) ![v3/08-emociones.png](capturas/v3/08-emociones.png)
 
 Pantallas del Figma: S20, S42.
 
@@ -500,10 +500,10 @@ Estado: 1 implementados, 1 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-39** Demo de 30 días simulados | Implementado | [App.jsx:270](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L270)<br>[App.jsx:75](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L75) | — | 30 días simulados desde `public/demo/registros-30-dias.json`. |
-| **RNF-30** Demo en ≤2 s y restablecible | Parcial | [App.jsx:270](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L270) | — | La demo carga al instante; no se puede restablecer. |
+| **RF-39** Demo de 30 días simulados | Implementado | [App.jsx:320](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L320)<br>[App.jsx:84](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L84) | — | 30 días simulados desde `public/demo/registros-30-dias.json`. |
+| **RNF-30** Demo en ≤2 s y restablecible | Parcial | [App.jsx:320](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L320) | — | La demo carga al instante; no se puede restablecer. |
 
-![semana.png](capturas/semana.png) ![semana.png](capturas/semana.png)
+![v3/26-historial.png](capturas/v3/26-historial.png) ![v3/26-historial.png](capturas/v3/26-historial.png)
 
 Pantallas del Figma: S58.
 
@@ -531,10 +531,10 @@ Estado: 2 implementados, 0 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-40** Check-in rápido: elegir 1 de 5 climas primero; contarlo es opcional | Implementado | [App.jsx:402](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L402) | — | Elegir un clima y guardar son dos acciones; contar el día es opcional. |
-| **RNF-31** Check-in sin relato en ≤10 s y ≤2 acciones | Implementado | [App.jsx:402](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L402) | — | Check-in sin relato en 2 acciones. |
+| **RF-40** Check-in rápido: elegir 1 de 5 climas primero; contarlo es opcional | Implementado | [Inicio.jsx:1](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Inicio.jsx#L1) | — | Elegir un clima y «Guardar así» son dos acciones; contar el día es opcional. |
+| **RNF-31** Check-in sin relato en ≤10 s y ≤2 acciones | Implementado | [Inicio.jsx:1](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Inicio.jsx#L1) | — | Check-in sin relato en 2 acciones: clima y «Guardar así». |
 
-![inicio.png](capturas/inicio.png) ![inicio.png](capturas/inicio.png)
+![v3/03-inicio.png](capturas/v3/03-inicio.png) ![v3/03-inicio.png](capturas/v3/03-inicio.png)
 
 Pantallas del Figma: S06, S28.
 
@@ -549,9 +549,9 @@ Estado: 1 implementados, 0 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-41** Emociones como nubes tocables, con equivalente en botones accesibles | Implementado | [App.jsx:495](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L495) | — | Las emociones son botones con forma de nube y `aria-pressed`. |
+| **RF-41** Emociones como nubes tocables, con equivalente en botones accesibles | Implementado | [Checkin.jsx:102](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Checkin.jsx#L102) | — | Las emociones son botones con forma de nube y `aria-pressed`. |
 
-![emociones.png](capturas/emociones.png)
+![v3/08-emociones.png](capturas/v3/08-emociones.png)
 
 Pantallas del Figma: S17.
 
@@ -567,9 +567,9 @@ Estado: 1 implementados, 0 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-42** "1 minuto de lluvia para respirar", opcional | Implementado | [Refugio.jsx:274](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Refugio.jsx#L274)<br>[refugio.js:20](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/refugio.js#L20)<br>[perfil.js:249](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L249)<br>[App.jsx:373](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L373) | [pruebas/refugio.test.js (18 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/refugio.test.js)<br>[e2e/refugio.spec.js (14 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/refugio.spec.js) | Refugio de autocuidado: respiración lenta (4 s / 6 s) o suspiro cíclico al ritmo de la lluvia, 5-4-3-2-1 (práctica clínica, sin ensayos), partir la tarea y «¿qué le dirías a una amiga?». Botón en el inicio y oferta tras un check-in pesado («Ahora no» no la repite ese día). Guarda solo el clima de antes y después, y aprende qué técnica ayuda más. |
+| **RF-42** "1 minuto de lluvia para respirar", opcional | Implementado | [Refugio.jsx:390](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Refugio.jsx#L390)<br>[refugio.js:20](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/refugio.js#L20)<br>[perfil.js:254](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/perfil.js#L254)<br>[Inicio.jsx:2](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Inicio.jsx#L2) | [pruebas/refugio.test.js (18 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/refugio.test.js)<br>[e2e/refugio.spec.js (17 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/refugio.spec.js) | Refugio de autocuidado: respiración lenta (4 s / 6 s) o suspiro cíclico al ritmo de la lluvia, 5-4-3-2-1 (práctica clínica, sin ensayos), partir la tarea y «¿qué le dirías a una amiga?». Botón en el inicio y oferta tras un check-in pesado («Ahora no» no la repite ese día). Guarda solo el clima de antes y después, y aprende qué técnica ayuda más. |
 
-![refugio/04-respirar.png](capturas/refugio/04-respirar.png)
+![v3/15-respiro-inhala.png](capturas/v3/15-respiro-inhala.png)
 
 Pantallas del Figma: .
 
@@ -584,10 +584,10 @@ Estado: 1 implementados, 1 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-43** "Tu cielo de la semana" con patrón descriptivo | Parcial | [App.jsx:75](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L75) | — | Calendario sin días «perdidos»; falta el patrón descriptivo de la semana. |
-| **RNF-32** 0 mensajes de racha perdida o culpa | Implementado | [App.jsx:75](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L75) | — | Los días sin registro no se muestran como fallo. |
+| **RF-43** "Tu cielo de la semana" con patrón descriptivo | Parcial | [App.jsx:84](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L84) | — | Calendario sin días «perdidos»; falta el patrón descriptivo de la semana. |
+| **RNF-32** 0 mensajes de racha perdida o culpa | Implementado | [App.jsx:84](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L84) | — | Los días sin registro no se muestran como fallo. |
 
-![semana.png](capturas/semana.png) ![semana.png](capturas/semana.png)
+![v3/26-historial.png](capturas/v3/26-historial.png) ![v3/26-historial.png](capturas/v3/26-historial.png)
 
 Pantallas del Figma: S30.
 
@@ -616,9 +616,9 @@ Estado: 1 implementados, 0 parciales, 0 pendientes.
 
 | Requerimiento | Estado | Código | Pruebas | Nota |
 |---|---|---|---|---|
-| **RF-45** Trampas de pensamiento propuestas como pregunta, nunca como diagnóstico; la crisis va primero | Implementado | [trampas.js:144](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/trampas.js#L144)<br>[trampas.js:171](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/trampas.js#L171)<br>[contrato.js:26](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/contrato.js#L26)<br>[App.jsx:537](https://github.com/Melissa1221/clima-interior/blob/main/src/App.jsx#L537) | [pruebas/trampas.test.js (9 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/trampas.test.js)<br>[pruebas/llm.test.js (28 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/llm.test.js)<br>[e2e/refugio.spec.js (14 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/refugio.spec.js) | La trampa se propone como pregunta y con la frase literal de la persona; máximo una tarjeta por check-in. El detector por reglas cubre el modo mock y el respaldo; con riesgo no se muestra nada salvo la pantalla de crisis. |
+| **RF-45** Trampas de pensamiento propuestas como pregunta, nunca como diagnóstico; la crisis va primero | Implementado | [trampas.js:144](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/trampas.js#L144)<br>[trampas.js:171](https://github.com/Melissa1221/clima-interior/blob/main/src/datos/trampas.js#L171)<br>[contrato.js:26](https://github.com/Melissa1221/clima-interior/blob/main/src/llm/contrato.js#L26)<br>[Checkin.jsx:220](https://github.com/Melissa1221/clima-interior/blob/main/src/pantallas/Checkin.jsx#L220) | [pruebas/trampas.test.js (9 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/trampas.test.js)<br>[pruebas/llm.test.js (29 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/pruebas/llm.test.js)<br>[e2e/refugio.spec.js (17 pruebas)](https://github.com/Melissa1221/clima-interior/blob/main/e2e/refugio.spec.js) | La trampa se propone como pregunta y con la frase literal de la persona; máximo una tarjeta por check-in. El detector por reglas cubre el modo mock y el respaldo; con riesgo no se muestra nada salvo la pantalla de crisis. |
 
-![refugio/08-trampa.png](capturas/refugio/08-trampa.png)
+![v3/11-trampa.png](capturas/v3/11-trampa.png)
 
 Pantallas del Figma: .
 

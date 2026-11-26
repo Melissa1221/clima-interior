@@ -540,8 +540,8 @@
   "escenarios": [
    {
     "n": 1,
-    "titulo": "primer uso",
-    "texto": "Dado que abro la app por primera vez, cuando declaro mi edad y acepto grabar pero no el LLM remoto, entonces la app usa el modelo local y ninguna solicitud sale a un proveedor externo."
+    "titulo": "primer uso y permisos justo a tiempo",
+    "texto": "Dado que abro la app por primera vez, cuando declaro mi edad en la bienvenida, entonces todos los permisos quedan apagados; y cuando toco «Contar mi día» por primera vez, la app me explica el micrófono antes de pedirlo, y si no acepto la IA en internet usa el modelo del teléfono y ninguna solicitud sale a un proveedor externo."
    },
    {
     "n": 2,
