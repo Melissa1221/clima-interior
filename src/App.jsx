@@ -540,10 +540,11 @@ export default function App() {
         )}
         {pantalla === 'eliminar' && <EliminarDatos cabecera={cab} onEliminar={eliminarTodo} onCancelar={() => ir('exportar')} onExportar={() => ir('exportar')} />}
 
+        {/* B9: «Salir» de una sala vuelve a la entrada de Salas, no a Inicio */}
         {pantalla === 'sala' && (
           <Sala key={codigoInvitacion} cabecera={cabecera} capas={capas} climaHoy={climaHoy} codigoInicial={codigoInvitacion}
             permitido={privacidad.climaCompartido} onPermitir={() => cambiarAjustes('privacidad')({ climaCompartido: true })}
-            alVolver={() => { history.replaceState(null, '', location.pathname); reiniciar() }} />
+            alVolver={() => { history.replaceState(null, '', location.pathname); setCodigoInvitacion(''); enfocar('main h1') }} />
         )}
 
         {PESTANA_DE[pantalla] && completo && <Pestanas actual={PESTANA_DE[pantalla]} onIr={irAPestana} />}

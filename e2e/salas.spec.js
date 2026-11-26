@@ -113,3 +113,14 @@ test('el código de la sala es corto y se copia con un toque (A6)', async ({ pag
   await expect(page.getByText('Código copiado')).toBeVisible()
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(codigo)
 })
+
+test('«Salir» de una sala vuelve a la entrada de Salas, no a Inicio (B9)', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Sala', exact: true }).click()
+  await page.getByRole('button', { name: 'Crear una sala' }).click()
+  await expect(page.locator('.codigo__valor')).toBeVisible()
+  await page.getByRole('button', { name: 'Salir', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Crear una sala' })).toBeVisible()
+  await expect(page).toHaveTitle('Sala · Clima Interior')
+  expect(new URL(page.url()).hash).toBe('')
+})
