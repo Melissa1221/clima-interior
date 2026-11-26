@@ -302,3 +302,17 @@ test('con la oferta de respiro siguen la salida y la tarjeta de ajustes (M12)', 
   await page.getByRole('button', { name: 'Hasta mañana' }).click()
   await expect(page.getByRole('button', { name: 'Guardar así' })).toBeVisible()
 })
+
+test('con movimiento reducido del sistema (sin activarlo en la app) Garúa no cambia de tamaño ni de pose (B5)', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.reload()
+  await page.getByRole('button', { name: 'Necesito un respiro' }).click()
+  const nube = page.locator('.respiro__nube')
+  const cuenta = await nube.evaluate((el) => el.style.transform)
+  await expect(page.locator('.respiro__guia')).toHaveText('Inhala…', { timeout: 5000 })
+  const inhala = await nube.evaluate((el) => [el.style.transform, el.querySelector('.garua').dataset.estado])
+  await expect(page.locator('.respiro__guia')).toHaveText('Exhala…', { timeout: 6000 })
+  const exhala = await nube.evaluate((el) => [el.style.transform, el.querySelector('.garua').dataset.estado])
+  expect(inhala[0]).toBe(cuenta)
+  expect(exhala).toEqual(inhala)
+})

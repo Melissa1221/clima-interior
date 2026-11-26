@@ -11,7 +11,7 @@ import Garua from '../mundo/Garua.jsx'
 import { CLIMAS, climaEfectivo } from '../datos/climas.js'
 import { RITMOS, TECNICAS, duracionRitmo, fraseDeCambio, ordenarTecnicas } from '../datos/refugio.js'
 import { crearGrabacion, decir } from '../voz/stt.js'
-import { vibrar } from '../datos/accesibilidad.js'
+import { sistemaPideMenosMovimiento, vibrar } from '../datos/accesibilidad.js'
 import { hayRiesgo } from '../datos/riesgo.js'
 import { agregarPaso, alternarPaso, borrarTarea, cambiarQue, leerTarea, quitarPaso } from '../datos/tarea.js'
 
@@ -51,7 +51,8 @@ function Respirar({ cabecera, preferencias, capas, onTerminar, onOtra, onMasAyud
   const [cambiando, setCambiando] = useState(false)
   const [paso, setPaso] = useState({ ciclo: 0, fase: 0 })
   const [terminado, setTerminado] = useState(false)
-  const reducido = preferencias.movimientoReducido
+  // B5: también si lo pide el sistema aunque no se haya activado en la app (si no, Garúa cambiaba de tamaño a saltos)
+  const reducido = preferencias.movimientoReducido || sistemaPideMenosMovimiento()
   const r = RITMOS[ritmo]
   const corriendo = cuenta === 0 && !terminado
 
@@ -121,7 +122,7 @@ function Respirar({ cabecera, preferencias, capas, onTerminar, onOtra, onMasAyud
             </svg>
           )}
           <div className="respiro__nube" style={{ transform: `scale(${escala})`, transitionDuration: reducido ? '0ms' : `${corriendo ? seg : 0.6}s` }}>
-            <Garua estado={corriendo && !inhala ? 'exhala' : 'inhala'} tam={300} animacion="ninguna" />
+            <Garua estado={corriendo && !inhala && !reducido ? 'exhala' : 'inhala'} tam={300} animacion="ninguna" />
           </div>
         </div>
         <div className="respiro__pie">
