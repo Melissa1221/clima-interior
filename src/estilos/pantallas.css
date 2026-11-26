@@ -57,7 +57,8 @@
 
 /* ───────── Inicio ───────── */
 .escena--inicio { min-height: 340px; }
-.escena--inicio .escena__cuerpo { padding-top: 12px; }
+.escena--inicio .escena__cuerpo { padding-top: 12px; padding-bottom: 40px; } /* el borde del suelo (27 px) no tapa la burbuja */
+
 .burbuja--saludo { margin-top: 6px; max-width: 220px; }
 .escena--bienvenida { min-height: 290px; }
 .escena--bienvenida .burbuja { margin-top: 14px; }

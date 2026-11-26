@@ -446,7 +446,7 @@ export default function App() {
 
         {pantalla === 'inicio' && (
           <Inicio cabecera={cab} noche={noche} capas={capas} clima={clima} climaVista={climaVista} registros={perfil.registros}
-            notaRitmo={notaDeRitmo(perfil)} porTexto={porTexto} predecible={predecible}
+            notaRitmo={notaDeRitmo(perfil)} porTexto={porTexto} predecible={predecible} tamanoTexto={preferencias.tamanoTexto}
             onElegir={elegirClima} onGuardar={() => guardar()} onContar={contar} onEscribir={escribir}
             onPredecible={() => ir('predecible-como')} onRespiro={() => abrirRefugio()} />
         )}
