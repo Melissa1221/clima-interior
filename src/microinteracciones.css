@@ -30,16 +30,6 @@
   animation: aparece-check 320ms cubic-bezier(.2, 1.4, .4, 1) both; }
 .sello .icono { width: 28px !important; height: 28px !important; }
 
-/* Paisaje vivo: nubes a la deriva, viento que sopla y lluvia que cae (sin destellos ni parpadeos) */
-@keyframes deriva { to { translate: 26px 0; } }
-@keyframes sopla { to { stroke-dashoffset: -64; } }
-@keyframes cae { from { translate: 0 -14px; opacity: 0; } 20% { opacity: .6; } to { translate: -5px 36px; opacity: 0; } }
-.cielo__nube { animation: deriva 32s ease-in-out infinite alternate; }
-.cielo__nube:nth-child(even) { animation-duration: 44s; animation-direction: alternate-reverse; }
-.cielo__viento { stroke-dasharray: 40 24; animation: sopla 6s linear infinite; }
-.cielo__gota { animation: cae 1.6s linear infinite; }
-.cielo__gota:nth-child(3n) { animation-delay: -.5s; }
-.cielo__gota:nth-child(3n + 1) { animation-delay: -1s; }
 
 /* Movimiento reducido: sin animaciones; los cambios de estado son inmediatos */
 [data-movimiento='reducido'] *, [data-movimiento='reducido'] *::before, [data-movimiento='reducido'] *::after {

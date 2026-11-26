@@ -17,15 +17,6 @@ body { margin: 0; }
 .app { display: flow-root; max-width: 480px; margin: 0 auto; min-height: 100dvh; position: relative; }
 .paisaje { min-height: 100dvh; padding: 80px 14px 86px; display: flex; flex-direction: column; justify-content: flex-end;
   gap: 14px; position: relative; overflow: hidden; transition: background 600ms ease; }
-.paisaje > :not(.cielo) { position: relative; z-index: 1; }
-.cielo { position: absolute; inset: 0 0 auto 0; width: 100%; height: 75%; }
-.cielo__sol { fill: #f3d27a; opacity: .75; filter: blur(1px); }
-.paisaje--lluvia .cielo__sol, .paisaje--tormenta .cielo__sol { opacity: .3; }
-.cielo__nube { fill: #fff; opacity: .55; }
-.paisaje--lluvia .cielo__nube, .paisaje--tormenta .cielo__nube { fill: #8794a8; opacity: .8; }
-.cielo__viento { fill: none; stroke: #fff; stroke-width: 2; opacity: .6; stroke-linecap: round; }
-.cielo__gota { stroke: #dbe6f5; stroke-width: 2; opacity: .6; }
-.cielo__niebla { fill: url(#none); fill: #fff; opacity: .35; }
 .saludo { margin-bottom: auto; background: rgba(255,255,255,.85); border-radius: 18px; padding: 16px 20px; }
 .saludo p { margin: 4px 0 0; color: #5a6475; }
 .ayer { background: #2b3447; color: #fff; border-radius: 16px; padding: 14px 16px; margin: 0; font-size: 14px; }
@@ -49,12 +40,6 @@ body { margin: 0; }
 .ctrl { background: none; color: #fff; display: grid; justify-items: center; gap: 6px; }
 .ctrl span { width: 52px; height: 52px; border-radius: 50%; background: #3a4458; display: grid; place-items: center; font-size: 20px; }
 .ctrl--parar span { width: 76px; height: 76px; background: #d9534f; font-size: 28px; }
-.paisaje--inicio { background: linear-gradient(#bcd3ee, #f4f1ea); }
-.paisaje--soleado { background: linear-gradient(#6fa8e8, #f6d98a); }
-.paisaje--nublado { background: linear-gradient(#9fb0c4, #dfe4ea); }
-.paisaje--lluvia { background: linear-gradient(#56657a, #9aa7b6); }
-.paisaje--tormenta { background: linear-gradient(#2a3446, #5d6a7e); }
-.paisaje--niebla { background: linear-gradient(#c9ccd1, #eceef0); }
 .tarjeta { background: #fff; border-radius: 20px; padding: 20px; width: 100%; display: grid; gap: 12px; }
 h1, h2 { margin: 0; font-family: var(--fuente-titulo); font-weight: 600;  }
 button { font: inherit; color: inherit; min-height: 44px; border-radius: 12px; border: 2px solid transparent; cursor: pointer; }
@@ -108,3 +93,5 @@ textarea { font: inherit; padding: 10px; border-radius: 12px; border: 1px solid 
 .sabe { display: grid; gap: 2px; }
 .sabe .enlace { justify-self: start; min-height: 44px; padding: 0 4px; }
 .sabe__titulo { font-size: 18px; margin: 12px 0 0; }
+.paisaje > :not(.mundo) { position: relative; z-index: 1; }
+.paisaje { isolation: isolate; }
