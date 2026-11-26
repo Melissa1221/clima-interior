@@ -44,8 +44,9 @@ export default function Inicio({ cabecera, noche, capas, clima, climaVista, regi
   // A7: Garúa nunca queda bajo la burbuja. La burbuja deja libre la columna de Garúa y la escena crece según
   // el alto real de lo que va arriba (texto grande, noche, 320 px), medido con ResizeObserver.
   const vista = useVista()
+  const bajo = vista.alto < 700
   const angosto = vista.ancho < 360
-  const tam = Math.round((noche && !clima ? 168 : 150) * (angosto ? 0.66 : 1) * (ESCALA_TEXTO[tamanoTexto] ?? 1))
+  const tam = Math.round((noche && !clima ? 168 : 150) * (bajo || angosto ? 0.66 : 1) * (ESCALA_TEXTO[tamanoTexto] ?? 1))
   const hueco = tam + GARUA_X - (angosto ? 16 : 24) + 8
   const burbuja = useRef(null)
   const [alto, setAlto] = useState(null)
@@ -60,7 +61,7 @@ export default function Inicio({ cabecera, noche, capas, clima, climaVista, regi
     const medir = () => {
       const arriba = escena.getBoundingClientRect().top
       const fondoFila = fila.getBoundingClientRect().bottom - arriba
-      setAlto(Math.ceil(Math.max(340, fondoFila + 6 + tam + GARUA_Y)))
+      setAlto(Math.ceil(Math.max(bajo ? 0 : 340, fondoFila + 6 + tam + GARUA_Y)))
       const rb = b.getBoundingClientRect()
       const rg = garua.getBoundingClientRect()
       if (rb.right > rg.left + tam * 0.2 && rb.bottom + 14 > rg.top + tam * 0.15) setAncha(false) // + la colita de la burbuja
@@ -69,7 +70,7 @@ export default function Inicio({ cabecera, noche, capas, clima, climaVista, regi
     const ro = new ResizeObserver(medir)
     ro.observe(b); ro.observe(fila); ro.observe(escena)
     return () => ro.disconnect()
-  }, [tam, ancha])
+  }, [tam, bajo, ancha])
   return (
     <>
       <Escena clima={climaVista ?? 'nublado'} hy={280} suelo={430} flores="journey" brillo={[310, 150]} noche={noche} capas={capas}

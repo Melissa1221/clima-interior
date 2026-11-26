@@ -1,4 +1,5 @@
-// Composición del Inicio en tamaños difíciles: la burbuja nunca tapa a Garúa (A7).
+// Composición del Inicio en tamaños difíciles: la burbuja nunca tapa a Garúa (A7) y en 320 × 568
+// «Guardar así» se ve sin bajar (M6).
 import { test, expect } from './base.js'
 
 const perfil = (preferencias) => async ({ page }) => {
@@ -34,3 +35,14 @@ for (const [nombre, ancho, alto, prefs] of CASOS) {
     })
   })
 }
+
+test.describe('320 × 568', () => {
+  test.beforeEach(perfil({ tema: 'claro' }))
+  test('«Guardar así» se ve entero sobre la barra inferior al abrir (M6)', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 })
+    await page.goto('/')
+    const guardar = await page.getByRole('button', { name: 'Guardar así' }).boundingBox()
+    const nav = await page.locator('nav.nav').boundingBox()
+    expect(guardar.y + guardar.height).toBeLessThanOrEqual(nav.y)
+  })
+})
