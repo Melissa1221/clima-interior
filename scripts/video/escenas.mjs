@@ -5,9 +5,10 @@ import { readFileSync } from 'node:fs'
 const estados = Object.values(JSON.parse(readFileSync(new URL('../../docs/trazabilidad-codigo.json', import.meta.url), 'utf8'))).map((m) => m.estado)
 const n = (e) => estados.filter((x) => x === e).length
 
-// Perfil de ejemplo con el primer uso hecho
+// Perfil de ejemplo con la bienvenida hecha y el tema claro (el video se graba siempre de día)
 export const PERFIL = (extra = {}) => JSON.stringify({
   primerUso: { completo: true, edad: 'adulto' },
+  preferencias: { tema: 'claro' },
   registros: [
     { fecha: '2026-10-06', hora: '21:30', clima: 'nublado', emocion_declarada: ['cansancio'], emocion_inferida: ['cansancio', 'frustración'], transcripcion: 'Día largo' },
     { fecha: '2026-10-07', hora: '21:10', clima: 'lluvia', emocion_declarada: ['tristeza', 'calma'], emocion_inferida: ['tristeza'], transcripcion: 'Llovió todo el día' },
@@ -29,7 +30,7 @@ export const radio = (p, nombre, pausa) => tocar(p, rol(p, 'radio', nombre), pau
 export const interruptor = (p, nombre, pausa) => tocar(p, rol(p, 'switch', nombre), pausa)
 export const enlace = (p, texto, pausa) => tocar(p, p.getByText(texto).first(), pausa)
 export const escribir = async (p, etiqueta, texto, pausa = 1200) => {
-  const campo = p.getByLabel(etiqueta)
+  const campo = p.getByRole('textbox', { name: etiqueta }).first()
   await tocar(p, campo, 300)
   await p.keyboard.type(texto, { delay: 45 })
   await p.waitForTimeout(pausa)
@@ -41,28 +42,24 @@ export const ESCENAS = [
     narracion: 'Clima Interior es un diario emocional generativo: cuentas tu día en un minuto y lo ves convertido en un clima.', duracion: 7 },
   { id: '01', tipo: 'placa', titulo: 'El problema', subtitulo: 'A muchas personas les cuesta ponerle nombre a lo que sienten', pie: 'La IA propone, la persona decide',
     narracion: 'A muchas personas les cuesta ponerle nombre a lo que sienten, y los formularios y las encuestas no ayudan. Clima Interior propone otra cosa: elegir un clima, contar el día si quieres, y decidir tú qué palabras son tuyas. La IA propone, la persona decide.', duracion: 16 },
-  { id: '02', tipo: 'app', titulo: 'Primer uso y consentimiento', subtitulo: 'Edad, cuatro permisos por separado, límites y ajustes iniciales', requisitos: ['RF-37', 'RNF-28', 'RF-32'], pantallas: 'S01 a S05',
-    narracion: 'La primera vez, la app te recibe sin pedirte nada: puedes mirar la demo de treinta días o empezar. Primero, tu edad, porque las emociones son un dato sensible. Después, cuatro permisos por separado, todos apagados: nada sale de tu teléfono sin tu permiso. Luego, lo que la app es y lo que no es: no diagnostica ni reemplaza a una persona profesional. Y por último, ajustes de accesibilidad desde el primer minuto.',
+  { id: '02', tipo: 'app', titulo: 'Bienvenida y permisos justo a tiempo', subtitulo: 'Una sola pantalla; cada permiso se pide cuando hace falta', requisitos: ['RF-37', 'RNF-28', 'RF-15'], pantallas: 'S1 y S2 del journey nuevo',
+    narracion: 'La primera vez, Garúa te recibe en una sola pantalla: lo que cuentas se queda en tu teléfono, y la app no diagnostica ni reemplaza a una persona. Puedes leer cómo cuidamos tus datos sin salir de ahí. Arriba a la derecha, en todas las pantallas, está Ayuda ya. Un toque declara tu edad, y los permisos, todos apagados, se piden justo cuando hacen falta.',
     acciones: async (p) => {
       await pausa(p, 3500)
-      await boton(p, 'Empezar', 1500)
-      await radio(p, /18 años o más/, 3500)
-      await boton(p, 'Continuar', 2200)
-      await interruptor(p, /Transcribir mi voz en internet/, 1800)
-      await interruptor(p, /Transcribir mi voz en internet/, 2200)
-      await boton(p, 'Guardar mis decisiones', 4500)
-      await boton(p, 'Entendido', 2500)
-      await interruptor(p, /Modo neutral/, 2500)
-      await boton(p, 'Listo', 3000)
+      await boton(p, 'cómo cuidamos tus datos', 3500)
+      await boton(p, 'Entendido', 1500)
+      await boton(p, /Ayuda ya/, 4000)
+      await boton(p, 'Volver cuando quieras', 1500)
+      await boton(p, 'Tengo 18 años o más, empecemos', 3000)
     } },
   { id: '03', tipo: 'app', perfil: PERFIL(), titulo: 'Check-in por voz, emociones y reflexión', subtitulo: 'El clima primero; contarlo es opcional', requisitos: ['RF-40', 'RF-11', 'RF-06', 'RF-12', 'RNF-26'], pantallas: 'S06, S07, S08, S15, S17, S19, S27',
-    narracion: 'Para el check-in eliges el clima de hoy. Con eso basta si no tienes ganas de hablar. Si quieres contarlo, un aviso te recuerda cómo cuidamos tu privacidad. Mientras dictas, ves el micrófono activo y puedes terminar con la voz. Revisas lo que entendimos y lo corriges antes de que lo lea la IA. Entonces la IA propone emociones, siempre con su etiqueta, y tú eliges las tuyas o marcas no sé. Al guardar, lo que propuso la IA queda aparte de lo que tú elegiste.',
+    narracion: 'Para el check-in eliges el clima de hoy. Con eso basta si no tienes ganas de hablar. Si quieres contarlo, la primera vez la app te explica el micrófono antes de pedirlo. Mientras dictas, ves el micrófono activo y puedes terminar con la voz. Revisas lo que entendimos y lo corriges antes de que lo lea la IA. Entonces la IA propone emociones, siempre con su etiqueta, y tú eliges las tuyas o marcas no sé. Al guardar, lo que propuso la IA queda aparte de lo que tú elegiste.',
     acciones: async (p) => {
       await pausa(p, 2500)
       await radio(p, /Nublado/, 2500)
       await boton(p, 'Contar mi día por voz', 5500)
-      await boton(p, 'Empezar a grabar', 6000)
-      await boton(p, 'A texto', 4500)
+      await boton(p, 'Activar micrófono', 6000)
+      await boton(p, 'Terminar', 4500)
       await boton(p, 'Listo', 3500)
       await boton(p, 'cansancio', 1500)
       await boton(p, 'calma', 3500)
@@ -75,7 +72,7 @@ export const ESCENAS = [
       await pausa(p, 1500)
       await radio(p, /Lluvia/, 1500)
       await boton(p, 'Escribir', 1500)
-      await escribir(p, /Lo que entendí/, 'Hoy no quiero seguir', 1500)
+      await escribir(p, /Cómo fue tu día/, 'Hoy no quiero seguir', 1500)
       await boton(p, 'Listo', 7000)
     } },
   { id: '05', tipo: 'app', perfil: PERFIL(), titulo: 'Historial de 30 días', subtitulo: 'Sin rachas ni culpa: un día sin registro no es un fallo', requisitos: ['RF-39', 'RF-43', 'RNF-32'], pantallas: 'S30',
@@ -85,35 +82,35 @@ export const ESCENAS = [
     narracion: 'En Perfil ves lo que la app sabe de ti y apagas cada dato. En Privacidad cambias los permisos y eliges dónde se genera la reflexión: en tu dispositivo o en internet.',
     acciones: async (p) => {
       await pausa(p, 1200)
-      await boton(p, 'Perfil', 3000)
+      await boton(p, 'Perfil', 2500)
+      await boton(p, /Lo que sabe de ti/, 3000)
       await interruptor(p, /Emociones que propuso la IA/, 2200)
       await interruptor(p, /Emociones que propuso la IA/, 1800)
-      await boton(p, 'Privacidad', 3500)
+      await boton(p, 'Volver', 1500)
+      await boton(p, /^Privacidad/, 3500)
       await radio(p, 'En internet', 2800)
-      await radio(p, 'En este dispositivo', 3000)
+      await radio(p, 'Solo en este teléfono', 3000)
     } },
   { id: '07', tipo: 'app', perfil: PERFIL(), titulo: 'Exportar resumen y eliminar datos', subtitulo: 'Se genera en el teléfono, sin lo que propuso la IA', requisitos: ['RF-38', 'RNF-24'], pantallas: 'S43, S44, S45',
     narracion: 'Puedes exportar un resumen para tu psicóloga o psicólogo: tú eliges qué incluir y se genera en tu teléfono. Nunca lleva lo que propuso la IA. Si no hay registros en esas fechas, no se genera un archivo vacío. Y puedes eliminar todos tus datos, escribiendo la palabra borrar.',
     acciones: async (p) => {
-      await boton(p, 'Perfil', 1200); await boton(p, 'Privacidad', 1500)
-      await enlace(p, 'Exportar resumen', 4000)
-      await interruptor(p, /transcripciones/, 2200)
+      await boton(p, 'Perfil', 1200); await boton(p, /Mis datos/, 4000)
+      await interruptor(p, /Lo que contaste/, 2200)
       await p.getByLabel('Desde').fill('2026-08-01'); await p.getByLabel('Hasta').fill('2026-08-05')
       await boton(p, 'Generar PDF', 5500)
-      await boton(p, 'Salir por hoy', 1200); await boton(p, 'Perfil', 1200); await boton(p, 'Privacidad', 1200)
-      await enlace(p, 'Eliminar todos mis datos', 3500)
+      await boton(p, /Eliminar todos mis datos/, 3500)
       await escribir(p, /Escribe BORRAR/, 'BORRAR', 3500)
       await boton(p, 'Cancelar', 1500)
     } },
   { id: '08', tipo: 'app', perfil: PERFIL(), titulo: 'Accesibilidad', subtitulo: 'Movimiento reducido, capas, modo neutral y modo predecible', requisitos: ['RF-32', 'RF-33', 'RF-34', 'RF-36', 'RNF-07'], pantallas: 'S46 a S49',
     narracion: 'En Accesibilidad activas movimiento reducido y apagas cada capa del clima por separado. El modo neutral muestra una tormenta como un cielo neutro, sin sonidos intensos. El modo predecible hace una pregunta por pantalla. También hay descripción hablada, vibración y órdenes de voz.',
     acciones: async (p) => {
-      await boton(p, 'Perfil', 1500); await boton(p, 'Accesibilidad', 3000)
+      await boton(p, 'Perfil', 1500); await boton(p, /^Accesibilidad Movimiento/, 3000)
       await boton(p, 'Viento', 1800); await boton(p, 'Lluvia', 1800)
       await interruptor(p, /Movimiento reducido/, 2500)
       await interruptor(p, /Modo neutral/, 2000)
       await boton(p, 'Inicio', 1500); await radio(p, /Tormenta/, 3500)
-      await boton(p, 'Perfil', 1500); await boton(p, 'Accesibilidad', 1800)
+      await boton(p, 'Perfil', 1500); await boton(p, /^Accesibilidad Movimiento/, 1800)
       await interruptor(p, /Modo predecible/, 2000)
       await boton(p, 'Inicio', 1500); await radio(p, /Nublado/, 1800)
       await boton(p, 'Continuar', 5000)
@@ -127,7 +124,7 @@ export const ESCENAS = [
       await p.context().setOffline(true)
       await p.reload(); await pausa(p, 2500)
       await radio(p, /Lluvia/, 2000); await boton(p, 'Escribir', 1500)
-      await escribir(p, /Lo que entendí/, 'Hoy no quiero seguir', 1200)
+      await escribir(p, /Cómo fue tu día/, 'Hoy no quiero seguir', 1200)
       await boton(p, 'Listo', 6500)
     } },
   { id: '10', tipo: 'placa', titulo: 'Trazabilidad y arquitectura', subtitulo: `${n('implementado')} de ${estados.length} requerimientos implementados, ${n('parcial')} parciales y ${n('pendiente')} pendientes`, pie: 'Reporte generado desde el código · Diagramas C4 en docs/arquitectura.md',
