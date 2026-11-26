@@ -494,7 +494,7 @@ export default function App() {
         {pantalla === 'semana' && (demo || perfil.registros.length > 0) && (
           <Historial cabecera={completo ? cab : cabecera({ izquierda: 'volver', onIzquierda: () => ir('bienvenida'), etiquetaIzquierda: 'Volver' })}
             dias={demo ? treintaDias(demo) : treintaDias(perfil.registros, { terminaHoy: true })} demo={Boolean(demo)}
-            registros={diasRegistrados(perfil.registros)} refugios={perfil.refugios}
+            registros={diasRegistrados(perfil.registros)} refugios={demo ? [] : perfil.refugios}
             onDia={(f) => { setDetalle(f); ir('detalle') }} onAlternarDemo={() => abrirHistorial(!demo)} />
         )}
         {pantalla === 'semana' && !demo && perfil.registros.length === 0 && (

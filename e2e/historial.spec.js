@@ -22,3 +22,17 @@ test('dos registros el mismo día cuentan como un día y el detalle muestra los 
   await expect(page.locator('.detalle__registro').first()).toContainText('Lluvia')
   await expect(page.locator('.detalle__registro').last()).toContainText('Soleado')
 })
+
+test('el historial de ejemplo no mezcla tus respiros reales (M1)', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('clima-interior:perfil', JSON.stringify({
+    primerUso: { completo: true, edad: 'adulto' }, preferencias: { tema: 'claro' },
+    registros: [{ fecha: new Date().toLocaleDateString('en-CA'), hora: '10:00', clima: 'nublado', emocion_declarada: null }],
+    refugios: [{ fecha: new Date().toLocaleDateString('en-CA'), tecnica: 'respirar', antes: 'lluvia', despues: 'nublado', segundos: 60 }],
+  })))
+  await page.goto('/')
+  await page.getByRole('button', { name: /Historial/ }).click()
+  await expect(page.getByRole('heading', { name: 'Lo que te ayudó' })).toBeVisible()
+  await page.getByRole('button', { name: /ejemplo/i }).click()
+  await expect(page.getByText(/datos simulados/)).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Lo que te ayudó' })).toHaveCount(0)
+})
