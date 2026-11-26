@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { normalizar, proponerEmociones, proveedorSegunPermiso } from '../src/llm/index.js'
-import { gemini, groq, mock, ollama, remoto, PROMPT } from '../src/llm/proveedores.js'
+import { emocionesPorReglas, gemini, groq, mock, ollama, ollamaEnInternet, reglas, remoto, urlOllama, PROMPT } from '../src/llm/proveedores.js'
 import { validarRespuesta } from '../src/llm/contrato.js'
 
 const ok = { emociones: [{ nombre: 'calma', confianza: 0.8 }], reflexion: 'Hoy hubo calma.' }
@@ -105,26 +105,56 @@ describe('proveedor gemini', () => {
 
 describe('proveedorSegunPermiso', () => {
   const nube = { nombre: 'gemini' }
-  it('sin permiso de internet cambia la nube por el modelo local', () => {
-    expect(proveedorSegunPermiso(false, nube).nombre).toBe('ollama')
-    expect(proveedorSegunPermiso(false, { nombre: 'remoto' }).nombre).toBe('ollama')
+  const sinOllama = {}
+  const ollamaLocal = { VITE_OLLAMA_URL: 'http://127.0.0.1:11434' }
+  it('sin permiso y sin Ollama configurado va directo a las reglas, sin intentar localhost:11434 (M9)', () => {
+    expect(proveedorSegunPermiso(false, nube, sinOllama)).toBe(reglas)
+    expect(proveedorSegunPermiso(false, { nombre: 'remoto' }, sinOllama)).toBe(reglas)
   })
-  it('con permiso deja el proveedor elegido', () => expect(proveedorSegunPermiso(true, nube)).toBe(nube))
-  it('los proveedores locales no se tocan', () => {
-    expect(proveedorSegunPermiso(false, mock)).toBe(mock)
+  it('sin permiso y con un Ollama local configurado, usa Ollama', () => {
+    expect(proveedorSegunPermiso(false, nube, ollamaLocal)).toBe(ollama)
+    expect(proveedorSegunPermiso(false, nube, { VITE_OLLAMA_URL: 'http://localhost:11434' })).toBe(ollama)
   })
-  it.each([gemini, groq, remoto])('sin permiso, $nombre se cambia por ollama', (nube) => {
-    expect(proveedorSegunPermiso(false, nube)).toBe(ollama)
+  it('un Ollama en otra máquina no cuenta como local', () => {
+    expect(proveedorSegunPermiso(false, nube, { VITE_OLLAMA_URL: 'http://192.168.1.20:11434' })).toBe(reglas)
+    expect(proveedorSegunPermiso(false, nube, { VITE_OLLAMA_URL: 'https://ollama.ejemplo.com' })).toBe(reglas)
   })
-  it.each([mock, ollama])('sin permiso, $nombre (local) se queda igual', (local) => {
-    expect(proveedorSegunPermiso(false, local)).toBe(local)
+  it('con permiso deja el proveedor elegido', () => expect(proveedorSegunPermiso(true, nube, sinOllama)).toBe(nube))
+  it.each([gemini, groq, remoto])('sin permiso, $nombre no sale del dispositivo', (p) => {
+    expect(proveedorSegunPermiso(false, p, sinOllama)).toBe(reglas)
   })
-  it.each([gemini, groq, remoto, mock, ollama])('con permiso, $nombre se queda igual', (p) => {
-    expect(proveedorSegunPermiso(true, p)).toBe(p)
+  it.each([mock, reglas])('sin permiso, $nombre (local) se queda igual', (local) => {
+    expect(proveedorSegunPermiso(false, local, sinOllama)).toBe(local)
+  })
+  it.each([gemini, groq, remoto, mock, reglas])('con permiso, $nombre se queda igual', (p) => {
+    expect(proveedorSegunPermiso(true, p, sinOllama)).toBe(p)
   })
   it('un proveedor que no declara enInternet no sale del dispositivo sin permiso', () => {
-    expect(proveedorSegunPermiso(false, { nombre: 'nuevo-en-la-nube' })).toBe(ollama)
+    expect(proveedorSegunPermiso(false, { nombre: 'nuevo-en-la-nube' }, sinOllama)).toBe(reglas)
   })
+})
+
+describe('Ollama: solo si se configuró, y remoto cuenta como internet (M9)', () => {
+  it('sin configurar no hay URL', () => expect(urlOllama({})).toBeNull())
+  it('VITE_LLM_PROVIDER=ollama usa localhost por defecto', () => expect(urlOllama({ VITE_LLM_PROVIDER: 'ollama' })).toBe('http://localhost:11434'))
+  it('una URL que no es localhost es «en internet»', () => {
+    expect(ollamaEnInternet({ VITE_OLLAMA_URL: 'http://10.0.0.5:11434' })).toBe(true)
+    expect(ollamaEnInternet({ VITE_OLLAMA_URL: 'http://localhost:11434' })).toBe(false)
+    expect(ollamaEnInternet({})).toBe(false)
+  })
+})
+
+describe('reglas sin IA: un texto ansioso no recibe «calma» (M9)', () => {
+  const nombres = (t) => emocionesPorReglas(t).map((e) => e.nombre)
+  it.each(['siempre me sale mal', 'seguro que voy a jalar', 'seguro que voy a jalar el parcial, no me da la cabeza', 'hoy no me fue bien'])('%s', (t) => {
+    const n = nombres(t)
+    expect(n).not.toContain('calma')
+    expect(n).not.toContain('alegría')
+    expect(n.length).toBeGreaterThanOrEqual(3)
+  })
+  it('«siempre me sale mal» propone frustración', () => expect(nombres('siempre me sale mal')).toContain('frustración'))
+  it('«seguro que voy a jalar» propone ansiedad', () => expect(nombres('seguro que voy a jalar')).toContain('ansiedad'))
+  it('un día tranquilo sigue pudiendo ser calma', () => expect(nombres('escuché música y estuve tranquila')).toContain('calma'))
 })
 
 describe('contrato: trampas de pensamiento (opcional)', () => {

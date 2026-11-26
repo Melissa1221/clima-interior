@@ -1,6 +1,6 @@
 import { validarRespuesta, RESPALDO_LOCAL, EMOCIONES_VALIDAS } from './contrato.js'
 import * as proveedores from './proveedores.js'
-import { emocionesPorReglas, reflexionPorReglas } from './proveedores.js'
+import { emocionesPorReglas, esLocal, reflexionPorReglas, urlOllama } from './proveedores.js'
 import { detectarTrampas, estaEnElRelato, TIPOS_TRAMPA } from '../datos/trampas.js'
 
 // RNF-19 pide ≤10 s en p95; se deja margen para que Gemini pruebe dos modelos
@@ -10,11 +10,13 @@ export function proveedorActivo() {
   return proveedores[import.meta.env.VITE_LLM_PROVIDER] || proveedores.mock
 }
 
-// «Usar IA en internet» apagado: los proveedores en la nube se reemplazan por el modelo local (Ollama).
-// Si tampoco hay modelo local, proponerEmociones cae al respaldo por reglas y nada sale del dispositivo (S03, S42).
+// «Usar IA en internet» apagado: los proveedores en la nube se reemplazan por un Ollama en este equipo, solo si se
+// configuró y su URL es localhost/127.0.0.1; si no, van directo a las reglas, sin intentar ninguna conexión (M9).
 // Cada proveedor declara `enInternet`; uno que no lo declare se trata como si saliera a internet.
-export function proveedorSegunPermiso(iaEnInternet, activo = proveedorActivo()) {
-  return !iaEnInternet && activo.enInternet !== false ? proveedores.ollama : activo
+export function proveedorSegunPermiso(iaEnInternet, activo = proveedorActivo(), env = import.meta.env) {
+  if (iaEnInternet || activo.enInternet === false) return activo
+  const url = urlOllama(env)
+  return url && esLocal(url) ? proveedores.ollama : proveedores.reglas
 }
 
 // Los modelos devuelven "Cansancio", " calma " o emociones fuera de la lista.
