@@ -307,3 +307,5 @@
 .escena--guardado .escena__cuerpo { padding-bottom: 150px; }
 /* Crisis de noche: el horizonte se oscurece para que la nota final conserve el contraste */
 [data-tema='noche'] .crisis__horizonte { filter: brightness(.3) saturate(.5); }
+/* Textos secundarios que van directo sobre el cielo (no sobre papel): en tinta, para pasar 4,5:1 medido en píxeles */
+.escena > .cabecera .ib--plano, .escena .fecha .etiqueta-sm, .respiro .etiqueta, .tierra__arriba .meta, .colectivo .meta { color: var(--ink); }

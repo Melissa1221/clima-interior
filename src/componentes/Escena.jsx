@@ -1,15 +1,21 @@
 // Composición de las pantallas v3: arriba la escena (mundo ilustrado + cabecera + voz de Garúa), abajo el suelo
 // arenoso con lo que se lee y se toca. Las pantallas sin mundo usan <Plana>.
+import { createContext, useContext } from 'react'
 import { DESCRIPCION } from '../datos/climas.js'
 import { BordeSuelo, Mundo } from '../mundo/Mundo.jsx'
 import Garua from '../mundo/Garua.jsx'
 
+// Tema noche de la app: todas las escenas pintan el cielo de noche, así los textos claros del tema siempre
+// quedan sobre un fondo oscuro (antes el Refugio dejaba el cielo de día con letras claras, 1,5:1).
+export const TemaNoche = createContext(false)
+
 // clima: el cielo; hy: la línea del horizonte en el lienzo de 375; garua: { estado, tam, x, y, animacion, etiqueta }
 // (x, y = distancia de Garúa al borde derecho y al suelo, como en las pantallas de diseño)
 export function Escena({ clima = 'nublado', hy = 300, suelo, flores = 'inicio', brillo, mar, lluvia, noche, capas, garua, cabecera, children, className = '', alto }) {
+  const temaNoche = useContext(TemaNoche)
   return (
     <div className={`escena paisaje paisaje--${clima} ${className}`} style={alto ? { minHeight: alto } : undefined}>
-      <Mundo clima={clima} hy={hy} suelo={suelo} flores={flores} brillo={brillo} mar={mar} lluvia={lluvia} noche={noche} capas={capas}
+      <Mundo clima={clima} hy={hy} suelo={suelo} flores={flores} brillo={brillo} mar={mar} lluvia={lluvia} noche={noche ?? temaNoche} capas={capas}
         descripcion={DESCRIPCION[clima] ?? undefined} />
       {cabecera}
       <div className="escena__cuerpo">{children}</div>

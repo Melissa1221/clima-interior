@@ -13,6 +13,7 @@ import { debePreguntarIA, estadoDictado, MOTIVOS_DICTADO, temaEfectivo } from '.
 import { hayRiesgo } from './datos/riesgo.js'
 import { DESCRIPCION, climaEfectivo } from './datos/climas.js'
 import { Ayuda, Cabecera, Pestanas } from './componentes/Ui.jsx'
+import { TemaNoche } from './componentes/Escena.jsx'
 import { Bienvenida, Menor } from './pantallas/Bienvenida.jsx'
 import Inicio from './pantallas/Inicio.jsx'
 import { Despedida, Emociones, Escuchando, Guardado, Pensando, PredecibleComo, Relato, Trampa } from './pantallas/Checkin.jsx'
@@ -427,7 +428,7 @@ export default function App() {
   const registroDetalle = detalle && (demo ?? perfil.registros).find((r) => r.fecha === detalle)
 
   return (
-    <>
+    <TemaNoche.Provider value={noche}>
       <main className={`app ${PESTANA_DE[pantalla] && completo ? 'app--nav' : ''}`} hidden={Boolean(crisis)} aria-hidden={crisis ? true : undefined}
         data-movimiento={preferencias.movimientoReducido ? 'reducido' : 'normal'} data-pantalla={pantalla}>
 
@@ -542,7 +543,7 @@ export default function App() {
         </Ayuda>
       )}
       {crisis && <Crisis origen={crisis} onVolver={cerrarCrisis} />}
-    </>
+    </TemaNoche.Provider>
   )
 }
 
