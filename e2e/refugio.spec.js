@@ -65,7 +65,17 @@ test('a un toque desde el inicio: cuenta de 3 s, respirar con la lluvia y, al fi
 test('se puede cambiar el ritmo durante la cuenta', async ({ page }) => {
   await page.getByRole('button', { name: 'Necesito un respiro' }).click()
   await page.getByRole('button', { name: 'Cambiar ritmo' }).click()
-  await page.getByRole('radio', { name: 'Suspiro cíclico' }).click()
+  await page.getByRole('radio', { name: /Suspiro cíclico/ }).click()
+  // M5: cada ritmo se explica en una línea y «Elegir otra cosa» sigue a mano
+  await expect(page.getByRole('radio', { name: /Suspiro cíclico/ })).toContainText('exhalación larga')
+  await expect(page.getByRole('radio', { name: /Lenta/ })).toContainText('exhalas 6 s')
+  await expect(page.getByRole('button', { name: 'Elegir otra cosa' })).toBeInViewport()
+  await page.getByRole('button', { name: 'Listo' }).click()
+  await expect(page.getByText('Suspiro cíclico · 7 respiraciones', { exact: false })).toBeVisible()
+  // y Escape cierra sin cambiar
+  await page.getByRole('button', { name: 'Cambiar ritmo' }).click()
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('radiogroup', { name: 'Tipo de respiración' })).toHaveCount(0)
   await expect(page.getByText('Suspiro cíclico · 7 respiraciones', { exact: false })).toBeVisible()
 })
 

@@ -81,12 +81,19 @@ function Respirar({ cabecera, preferencias, capas, onTerminar, onOtra, onMasAyud
   const escala = !corriendo || reducido ? 0.86 : inhala ? (paso.fase === 0 ? 1.08 : 1.14) : 0.78
   const minutos = Math.max(1, Math.round(duracionRitmo(ritmo) / 60))
   const resumen = `${r.nombre} · ${r.ciclos} respiraciones · ${minutos} min`
-  const elegirRitmo = (id) => { setRitmo(id); setCambiando(false); setCuenta(CUENTA); setPaso({ ciclo: 0, fase: 0 }) }
+  // M5: elegir un ritmo no cierra el panel (se puede comparar); «Listo» o Escape lo cierran y la cuenta vuelve a empezar
+  const cerrarRitmo = () => { setCambiando(false); setCuenta(CUENTA); setPaso({ ciclo: 0, fase: 0 }) }
+  useEffect(() => {
+    if (!cambiando) return
+    const alTecla = (e) => { if (e.key === 'Escape') cerrarRitmo() }
+    document.addEventListener('keydown', alTecla)
+    return () => document.removeEventListener('keydown', alTecla)
+  }, [cambiando])
 
   return (
     <Escena clima="lluvia" hy={660} suelo={812} flores="journey" brillo={[188, 400]} mar={false} capas={capas} cabecera={cabecera}
       className="escena--respiro" alto="100dvh">
-      <div className="respiro" data-fase={corriendo ? (inhala ? 'inhala' : 'exhala') : 'quieto'}>
+      <div className={`respiro ${cambiando ? 'respiro--cambiando' : ''}`} data-fase={corriendo ? (inhala ? 'inhala' : 'exhala') : 'quieto'}>
         {cuenta > 0 ? (
           <div className="respiro__textos">
             <p className="etiqueta">Respirar con la lluvia</p>
@@ -128,10 +135,17 @@ function Respirar({ cabecera, preferencias, capas, onTerminar, onOtra, onMasAyud
             </>
           )}
           {cambiando && (
-            <div className="segmento segmento--ancho" role="radiogroup" aria-label="Tipo de respiración">
-              {Object.entries(RITMOS).map(([id, { nombre }]) => (
-                <button key={id} type="button" role="radio" aria-checked={ritmo === id} onClick={() => elegirRitmo(id)}>{nombre}</button>
-              ))}
+            <div className="ritmos">
+              <div className="lista ritmos__lista" role="radiogroup" aria-label="Tipo de respiración">
+                {Object.entries(RITMOS).map(([id, { nombre, descripcion }]) => (
+                  <button key={id} type="button" role="radio" aria-checked={ritmo === id} className="fila fila--radio" onClick={() => setRitmo(id)}>
+                    <span className="radio-marca" aria-hidden="true" />
+                    <span className="fila__textos"><span className="fila__titulo">{nombre}</span><small className="fila__desc">{descripcion}</small></span>
+                  </button>
+                ))}
+              </div>
+              <Boton tipo="linea" onClick={cerrarRitmo}>Listo</Boton>
+              <Enlace onClick={onOtra}>Elegir otra cosa</Enlace>
             </div>
           )}
           {corriendo && (

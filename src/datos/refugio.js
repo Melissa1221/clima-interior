@@ -18,8 +18,9 @@ export const ORDEN_TECNICAS = ['respirar', 'tierra', 'tarea', 'amiga']
 // Ritmos de respiración, en segundos por fase. Lenta: 4 s inhalar + 6 s exhalar = 6 por minuto.
 // Suspiro cíclico: dos inhalaciones seguidas por la nariz y una exhalación larga por la boca.
 export const RITMOS = {
-  lenta: { nombre: 'Lenta', fases: [['Inhala…', 4], ['Exhala…', 6]], ciclos: 6 },
-  suspiro: { nombre: 'Suspiro cíclico', fases: [['Inhala…', 2], ['Un poco más…', 1], ['Exhala lento…', 6]], ciclos: 7 },
+  lenta: { nombre: 'Lenta', descripcion: 'Inhalas 4 s y exhalas 6 s. Baja el ritmo de a poco.', fases: [['Inhala…', 4], ['Exhala…', 6]], ciclos: 6 },
+  suspiro: { nombre: 'Suspiro cíclico', descripcion: 'Dos inhalaciones por la nariz y una exhalación larga por la boca. Alivia rápido.',
+    fases: [['Inhala…', 2], ['Un poco más…', 1], ['Exhala lento…', 6]], ciclos: 7 },
 }
 export const duracionRitmo = (id) => RITMOS[id].fases.reduce((s, [, seg]) => s + seg, 0) * RITMOS[id].ciclos
 

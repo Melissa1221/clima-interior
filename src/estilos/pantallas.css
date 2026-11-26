@@ -323,3 +323,13 @@
 [data-tema='noche'] .crisis__horizonte { filter: brightness(.3) saturate(.5); }
 /* Textos secundarios que van directo sobre el cielo (no sobre papel): en tinta, para pasar 4,5:1 medido en píxeles */
 .escena > .cabecera .ib--plano, .escena .fecha .etiqueta-sm, .respiro .etiqueta, .tierra__arriba .meta, .colectivo .meta { color: var(--ink); }
+
+/* M5: cambiar ritmo, una línea por ritmo; Garúa se achica para que «Elegir otra cosa» quede a la vista */
+.respiro--cambiando .respiro__garua { zoom: .55; margin-top: 0; }
+.respiro--cambiando .respiro__textos { min-height: 0; padding-top: 8px; }
+.ritmos { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; }
+.ritmos__lista { width: 100%; text-align: left; }
+.fila--radio { align-items: flex-start; }
+.radio-marca { flex: none; width: 22px; height: 22px; margin-top: 1px; border-radius: 50%; border: 1.5px solid var(--ink-3); display: grid; place-items: center; }
+[aria-checked='true'] > .radio-marca { border-color: var(--primary); }
+[aria-checked='true'] > .radio-marca::after { content: ''; width: 12px; height: 12px; border-radius: 50%; background: var(--primary); }
