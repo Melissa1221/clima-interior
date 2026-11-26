@@ -3,7 +3,7 @@
 import Icono from '../componentes/Icono.jsx'
 import { Enlace, FilaAjuste, FilaLista, teclasRadio } from '../componentes/Ui.jsx'
 import { Escena, Suelo } from '../componentes/Escena.jsx'
-import { CATEGORIAS, emocionesFavoritas } from '../datos/perfil.js'
+import { CATEGORIAS, MIN_REGISTROS_RITMO, emocionesFavoritas, ritmoConocido } from '../datos/perfil.js'
 import { TECNICAS } from '../datos/refugio.js'
 import { TRAMPAS } from '../datos/trampas.js'
 
@@ -35,7 +35,12 @@ const duracion = (seg) => seg < 60 ? `${seg} s` : `${Math.floor(seg / 60)} min $
 function aprendidoDe(perfil, id) {
   const { ritmo, aprendizaje, aprendido, registros } = perfil
   if (id === 'ritmo') {
-    if (!ritmo.horaHabitual) return 'Aún no hay registros suficientes para conocer tu ritmo.'
+    if (!ritmoConocido(perfil)) {
+      const faltan = Math.max(1, MIN_REGISTROS_RITMO - registros.length)
+      return registros.length < MIN_REGISTROS_RITMO
+        ? `Aún no hay registros suficientes para conocer tu ritmo (faltan ${faltan === 1 ? '1 registro' : `${faltan} registros`}).`
+        : 'Todavía no se ve una hora habitual: registras a horas distintas, y está bien.'
+    }
     return `Sueles registrar a las ${ritmo.horaHabitual}:00.${ritmo.segundosCheckin ? ` Tu check-in dura unos ${duracion(ritmo.segundosCheckin)}.` : ''}`
   }
   if (id === 'elegidas') {

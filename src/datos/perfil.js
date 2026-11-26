@@ -243,8 +243,16 @@ export function contextoParaLLM(perfil, hoy = new Date().toLocaleDateString('en-
 export const empiezaEscribiendo = (perfil) => perfil.personalizacion.entrada && perfil.aprendido.entrada === 'texto'
 
 // Saludo que reconoce el ritmo de la persona, sin rachas ni reproches (RF-43)
+// B7: no se infiere el ritmo con pocos datos. Hacen falta 3 registros o más y que la hora habitual se repita.
+export const MIN_REGISTROS_RITMO = 3
+export function ritmoConocido(perfil) {
+  const { horaHabitual } = perfil.ritmo
+  if (!horaHabitual || perfil.registros.length < MIN_REGISTROS_RITMO) return false
+  return perfil.registros.filter((r) => r.hora?.slice(0, 2) === horaHabitual).length >= 2
+}
+
 export function notaDeRitmo(perfil, ahora = new Date()) {
-  if (!perfil.personalizacion.ritmo || perfil.registros.length < 3 || !perfil.ritmo.horaHabitual) return null
+  if (!perfil.personalizacion.ritmo || !ritmoConocido(perfil)) return null
   return String(ahora.getHours()).padStart(2, '0') === perfil.ritmo.horaHabitual
     ? 'Llegas a tu hora de siempre.'
     : null

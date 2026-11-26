@@ -142,3 +142,22 @@ describe('personalización continua', () => {
     expect(notaDeRitmo(p, ahora)).toMatch(/hora de siempre/)
   })
 })
+
+describe('lo que sabe de ti no infiere con pocos datos (B7)', () => {
+  beforeEach(() => localStorage.clear())
+  it('con 2 registros no conoce tu ritmo; con 3 y una hora repetida, sí', async () => {
+    const { ritmoConocido } = await import('../src/datos/perfil.js')
+    let p = leerPerfil()
+    p = guardarRegistro(p, { hora: '10:00', clima: 'soleado' })
+    p = guardarRegistro(p, { hora: '10:10', clima: 'nublado' })
+    expect(ritmoConocido(p)).toBe(false)
+    p = guardarRegistro(p, { hora: '22:00', clima: 'nublado' })
+    expect(ritmoConocido(p)).toBe(true)
+  })
+  it('con 3 registros a horas distintas tampoco', async () => {
+    const { ritmoConocido } = await import('../src/datos/perfil.js')
+    let p = leerPerfil()
+    for (const hora of ['08:00', '14:00', '21:00']) p = guardarRegistro(p, { hora, clima: 'soleado' })
+    expect(ritmoConocido(p)).toBe(false)
+  })
+})
