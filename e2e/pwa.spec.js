@@ -41,3 +41,9 @@ test('el primer pintado no carga Sala, Historial ni Perfil, y el registro del SW
   await expect(page.getByRole('button', { name: 'Crear una sala' })).toBeVisible()
   expect(js.some((p) => /\/Sala-/.test(p))).toBe(true)
 })
+
+test('robots.txt existe y es texto, no la app (SEO)', async ({ request }) => {
+  const r = await request.get('/robots.txt')
+  expect(r.ok()).toBe(true)
+  expect(await r.text()).toMatch(/^User-agent: \*/)
+})
