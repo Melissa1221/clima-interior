@@ -34,7 +34,7 @@ C4Container
   title Clima Interior: contenedores
   Person(usuario, "Usuario")
   System_Boundary(app, "Clima Interior") {
-    Container(pwa, "PWA", "React + Vite", "Primer uso, check-in por voz, paisaje, privacidad, exportar resumen y accesibilidad.")
+    Container(pwa, "PWA", "React + Vite", "Bienvenida, check-in por voz, mundo ilustrado y Garúa, respiro, privacidad, exportar resumen y accesibilidad.")
     Container(sw, "Service worker", "Workbox", "Caché offline de la app, los datos demo y los recursos de crisis.")
     ContainerDb(local, "Perfil local", "localStorage → IndexedDB", "Registros, permisos, ajustes de accesibilidad, ritmo, lo aprendido y el motivo de cada cambio. El audio no se guarda.")
     Container(rele, "Relé de salas", "Node.js + ws (server/salas.mjs)", "Reenvía mensajes numéricos entre quienes tienen el mismo código. No guarda diarios; borra la sala al cerrarla o a las 24 h.")
@@ -62,8 +62,10 @@ flowchart LR
     contar --> emociones["Nubes de emociones"]
     emociones --> guardado["Día guardado"]
     inicio --> semana["Historial 30 días"]
-    bienvenida["Primer uso S01-S05<br/>edad · permisos · límites · ajustes"] --> inicio
-    inicio --> antes["Antes de grabar (S07)"] --> contar
+    bienvenida["Bienvenida única<br/>edad · menores de 18"] --> inicio
+    inicio --> antes["Hojas justo a tiempo<br/>micrófono (J1) · IA en internet (J2)"] --> contar
+    ayudaya["Ayuda ya (todas las pantallas)"] --> crisis
+    inicio --> respiro["Necesito un respiro<br/>sin bienvenida, cuenta de 3 s"]
     inicio --> miperfil["Lo que sabe de mí (S40)<br/>aprendizaje, olvidar, motivo de cada cambio"]
     miperfil --> priv["Privacidad y datos (S42)"]
     priv --> exportar["Exportar PDF (S43-S44)"]
