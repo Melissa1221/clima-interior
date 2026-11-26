@@ -187,3 +187,21 @@ test('el foco de teclado se ve en cada control (anillo azul de 2 px)', async ({ 
   const anillo = await page.evaluate(() => getComputedStyle(document.activeElement).outlineWidth)
   expect(anillo).toBe('2px')
 })
+
+test('Historial (con datos y de ejemplo) y Perfil tienen un h1 (M8)', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('radio', { name: /Nublado/ }).click()
+  await page.getByRole('button', { name: 'Guardar así' }).click()
+  await page.getByRole('button', { name: 'Hasta mañana' }).click()
+  const h1 = async () => {
+    const { violations } = await new AxeBuilder({ page }).withRules(['page-has-heading-one']).analyze()
+    expect(violations).toEqual([])
+    await expect(page.locator('main h1')).toHaveCount(1)
+  }
+  await page.getByRole('button', { name: /Historial/ }).click()
+  await h1()
+  await page.getByRole('button', { name: /ejemplo/i }).click()
+  await h1()
+  await page.getByRole('button', { name: 'Perfil', exact: true }).click()
+  await h1()
+})

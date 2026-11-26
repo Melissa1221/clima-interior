@@ -93,7 +93,7 @@ export function Historial({ cabecera, dias, demo, registros, refugios, onDia, on
       {cabecera}
       <section className="plana__cuerpo historial" aria-labelledby="historial-titulo">
         <div className="historial__cabeza">
-          <p className="fecha"><span id="historial-titulo" className="titulo-s">Tus últimos 30 días</span><span className="etiqueta-sm">{rango}</span></p>
+          <div className="fecha"><h1 id="historial-titulo" className="titulo-s">Tus últimos 30 días</h1><span className="etiqueta-sm">{rango}</span></div>
           {registros > 0 && <Enlace onClick={onAlternarDemo}>{demo ? 'Ver mis registros' : 'Ver ejemplo'}</Enlace>}
         </div>
         <p className="meta" role="status">{demo ? 'Modo demo: datos simulados, no son de una persona real' : `${registros} ${registros === 1 ? 'día registrado' : 'días registrados'}`}</p>

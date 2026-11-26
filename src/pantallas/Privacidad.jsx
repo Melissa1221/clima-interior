@@ -13,7 +13,7 @@ export function Perfil({ cabecera, capas, onSabe, onPrivacidad, onAccesibilidad,
     <>
       <Escena clima="nublado" hy={190} suelo={260} flores="simples" brillo={[300, 100]} mar={false} capas={capas} cabecera={cabecera} alto={260}
         garua={{ estado: 'contenta-suave', tam: 104, x: 20, y: 40 }}>
-        <p className="burbuja burbuja--derecha display-s">Todo lo tuyo vive en este teléfono.</p>
+        <h1 className="burbuja burbuja--derecha display-s"><span className="sr">Perfil. </span>Todo lo tuyo vive en este teléfono.</h1>
       </Escena>
       <Suelo matas={false}>
         <ul className="lista">
