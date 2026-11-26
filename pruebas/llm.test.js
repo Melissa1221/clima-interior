@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { normalizar, proponerEmociones, proveedorSegunPermiso } from '../src/llm/index.js'
-import { gemini, mock, PROMPT } from '../src/llm/proveedores.js'
+import { gemini, groq, mock, ollama, remoto, PROMPT } from '../src/llm/proveedores.js'
 import { validarRespuesta } from '../src/llm/contrato.js'
 
 const ok = { emociones: [{ nombre: 'calma', confianza: 0.8 }], reflexion: 'Hoy hubo calma.' }
@@ -112,6 +112,18 @@ describe('proveedorSegunPermiso', () => {
   it('con permiso deja el proveedor elegido', () => expect(proveedorSegunPermiso(true, nube)).toBe(nube))
   it('los proveedores locales no se tocan', () => {
     expect(proveedorSegunPermiso(false, mock)).toBe(mock)
+  })
+  it.each([gemini, groq, remoto])('sin permiso, $nombre se cambia por ollama', (nube) => {
+    expect(proveedorSegunPermiso(false, nube)).toBe(ollama)
+  })
+  it.each([mock, ollama])('sin permiso, $nombre (local) se queda igual', (local) => {
+    expect(proveedorSegunPermiso(false, local)).toBe(local)
+  })
+  it.each([gemini, groq, remoto, mock, ollama])('con permiso, $nombre se queda igual', (p) => {
+    expect(proveedorSegunPermiso(true, p)).toBe(p)
+  })
+  it('un proveedor que no declara enInternet no sale del dispositivo sin permiso', () => {
+    expect(proveedorSegunPermiso(false, { nombre: 'nuevo-en-la-nube' })).toBe(ollama)
   })
 })
 
