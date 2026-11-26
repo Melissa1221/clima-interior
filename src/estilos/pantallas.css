@@ -209,6 +209,9 @@
 .detalle__bloque { display: flex; flex-direction: column; gap: 4px; }
 .detalle__datos { display: grid; gap: 10px; }
 .detalle__datos dd { margin: 0; }
+.detalle__registro { display: flex; flex-direction: column; gap: 14px; }
+.detalle__registro + .detalle__registro { border-top: 1px solid var(--hair); padding-top: 14px; }
+.dia__varios { position: absolute; top: 3px; right: 5px; font-size: 10px; line-height: 1; font-weight: 600; }
 .vacio { align-items: center; text-align: center; }
 .vacio .fecha { align-self: flex-start; }
 .vacio__garua { margin: 20px 0 0; }

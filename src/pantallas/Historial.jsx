@@ -59,7 +59,7 @@ function Calendario({ dias, onDia }) {
     <>
       <div className="semana-dias" aria-hidden="true">{'LMMJVSD'.split('').map((d, i) => <span key={i}>{d}</span>)}</div>
       <ol className="calendario" aria-label="Últimos 30 días">
-        {dias.map(({ fecha, r }, i) => {
+        {dias.map(({ fecha, r, registros = [] }, i) => {
           const nombre = fechaLarga(fecha)
           const estilo = i === 0 && desfase ? { gridColumnStart: desfase + 1 } : undefined
           const n = Number(fecha.slice(8))
@@ -67,9 +67,10 @@ function Calendario({ dias, onDia }) {
             <li key={fecha} style={estilo} className={r ? `dia dia--${r.clima} paisaje--${r.clima}` : 'dia dia--vacio'}>
               {r ? (
                 <button type="button" className="dia__cielo" onClick={() => onDia(fecha)}
-                  aria-label={`${nombre}: ${DESCRIPCION[r.clima]} Emoción: ${emocionesDe(r)}${fecha === hoy ? ', hoy' : ''}`}>
+                  aria-label={`${nombre}: ${DESCRIPCION[r.clima]} Emoción: ${emocionesDe(r)}${registros.length > 1 ? `. ${registros.length} registros` : ''}${fecha === hoy ? ', hoy' : ''}`}>
                   <span className={`dia__n ${fecha === hoy ? 'dia__n--hoy' : ''}`} aria-hidden="true">{n}</span>
                   <span className="dia__i" aria-hidden="true"><Icono nombre={r.clima} tam={16} /></span>
+                  {registros.length > 1 && <span className="dia__varios" aria-hidden="true">{registros.length}</span>}
                 </button>
               ) : (
                 <span className="dia__cielo dia__cielo--vacio">
@@ -104,33 +105,48 @@ export function Historial({ cabecera, dias, demo, registros, refugios, onDia, on
   )
 }
 
-// 13 · Detalle de un día
-export function DetalleDia({ cabecera, capas, registro, refugios = [], neutral }) {
-  const clima = neutral && registro.clima === 'tormenta' ? 'neutral' : registro.clima
+// 13 · Detalle de un día: todos sus registros, del primero al último (un día puede tener varios)
+function Registro({ registro, clima, varios }) {
   const frase = registro.transcripcion?.match(/^[^.?!]*[.?!]?/)?.[0]?.trim()
+  return (
+    <article className="detalle__registro">
+      <div className="detalle__clima">
+        <Icono nombre={clima} tam={26} />
+        <p className="fila__textos"><span className="titulo-s">{etiquetaDe(clima) || 'Cielo neutro'}</span><small className="meta">{DESCRIPCION[clima]}</small></p>
+        {registro.hora && <span className="meta">{varios ? <span className="sr">Registro de las </span> : null}{registro.hora}</span>}
+      </div>
+      {frase && (
+        <div className="detalle__bloque">
+          <p className="meta">Me contaste</p>
+          <blockquote className="cita">«{frase}»</blockquote>
+        </div>
+      )}
+      <dl className="detalle__datos">
+        <div><dt className="meta">Lo que sentiste</dt><dd className="cuerpo">{emocionesDe(registro)}</dd></div>
+      </dl>
+    </article>
+  )
+}
+
+export function DetalleDia({ cabecera, capas, registros, refugios = [], neutral }) {
+  const climaDe = (r) => (neutral && r.clima === 'tormenta' ? 'neutral' : r.clima)
+  const clima = climaDe(registros.at(-1))
+  const varios = registros.length > 1
   return (
     <>
       <Escena clima={clima} hy={200} suelo={300} flores="simples" brillo={[80, 120]} mar={false} capas={capas} cabecera={cabecera}
         garua={{ estado: POSE_DE_CLIMA[clima], tam: 130, x: 'calc(50% - 65px)', y: 12 }} alto={300} />
       <Suelo matas={false}>
-        <div className="detalle__clima">
-          <Icono nombre={clima} tam={26} />
-          <p className="fila__textos"><span className="titulo-s">{etiquetaDe(clima) || 'Cielo neutro'}</span><small className="meta">{DESCRIPCION[clima]}</small></p>
-          {registro.hora && <span className="meta">{registro.hora}</span>}
-        </div>
-        <h1 className="sr">{fechaLarga(registro.fecha)}</h1>
-        {frase && (
-          <div className="detalle__bloque">
-            <p className="meta">Me contaste</p>
-            <blockquote className="cita">«{frase}»</blockquote>
-          </div>
+        <h1 className="sr">{fechaLarga(registros[0].fecha)}</h1>
+        {varios && <p className="meta">{registros.length} registros este día</p>}
+        {registros.map((r, i) => <Registro key={`${r.hora}-${i}`} registro={r} clima={climaDe(r)} varios={varios} />)}
+        {refugios.length > 0 && (
+          <dl className="detalle__datos">
+            {refugios.map((r, i) => (
+              <div key={i}><dt className="meta">Tu respiro</dt><dd className="cuerpo">{TECNICAS[r.tecnica]?.titulo} <Transicion antes={r.antes} despues={r.despues} /></dd></div>
+            ))}
+          </dl>
         )}
-        <dl className="detalle__datos">
-          <div><dt className="meta">Lo que sentiste</dt><dd className="cuerpo">{emocionesDe(registro)}</dd></div>
-          {refugios.map((r, i) => (
-            <div key={i}><dt className="meta">Tu respiro</dt><dd className="cuerpo">{TECNICAS[r.tecnica]?.titulo} <Transicion antes={r.antes} despues={r.despues} /></dd></div>
-          ))}
-        </dl>
       </Suelo>
     </>
   )

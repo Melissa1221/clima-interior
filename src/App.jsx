@@ -12,6 +12,7 @@ import { detectarOrden, sistemaPideMenosMovimiento, sonificarClima, vibrar } fro
 import { debePreguntarIA, estadoDictado, MOTIVOS_DICTADO, temaEfectivo } from './datos/privacidad.js'
 import { hayRiesgo } from './datos/riesgo.js'
 import { DESCRIPCION, climaEfectivo } from './datos/climas.js'
+import { diasRegistrados, fechaLocal, registrosDelDia, treintaDias } from './datos/historial.js'
 import { Ayuda, Cabecera, Pestanas } from './componentes/Ui.jsx'
 import { TemaNoche } from './componentes/Escena.jsx'
 import { Bienvenida, Menor } from './pantallas/Bienvenida.jsx'
@@ -75,23 +76,6 @@ const AYUDA = {
     'Lo que escribas aquí no se guarda.'],
   'refugio:despues': ['Si quieres, elige cómo estabas y cómo quedaste. Se guarda solo el clima de antes y de después, nunca lo que dijiste.'],
   'refugio:resumen': ['En Historial, «Lo que te ayudó» junta tus respiros, sin rachas ni metas.'],
-}
-
-// Fecha en la zona del usuario: con toISOString un registro de las 20:00 en Lima caía en el día siguiente
-const fechaLocal = (d) => d.toLocaleDateString('en-CA')
-
-// 30 días seguidos, incluidos los que no tienen registro (RF-43: sin rachas que castiguen).
-// La demo empieza en su primer registro; el historial real termina hoy.
-function treintaDias(registros, { terminaHoy = false } = {}) {
-  const porFecha = Object.fromEntries(registros.map((r) => [r.fecha, r]))
-  const inicio = terminaHoy ? new Date() : new Date(`${registros[0].fecha}T12:00:00`)
-  if (terminaHoy) inicio.setDate(inicio.getDate() - 29)
-  return Array.from({ length: 30 }, (_, i) => {
-    const d = new Date(inicio)
-    d.setDate(d.getDate() + i)
-    const fecha = fechaLocal(d)
-    return { fecha, r: porFecha[fecha] }
-  })
 }
 
 const sistemaOscuro = () => typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches
@@ -425,7 +409,7 @@ export default function App() {
     )
   }
   const cab = cabecera()
-  const registroDetalle = detalle && (demo ?? perfil.registros).find((r) => r.fecha === detalle)
+  const registrosDetalle = detalle ? registrosDelDia(demo ?? perfil.registros, detalle) : []
 
   return (
     <TemaNoche.Provider value={noche}>
@@ -488,14 +472,14 @@ export default function App() {
         {pantalla === 'semana' && (demo || perfil.registros.length > 0) && (
           <Historial cabecera={completo ? cab : cabecera({ izquierda: 'volver', onIzquierda: () => ir('bienvenida'), etiquetaIzquierda: 'Volver' })}
             dias={demo ? treintaDias(demo) : treintaDias(perfil.registros, { terminaHoy: true })} demo={Boolean(demo)}
-            registros={perfil.registros.length} refugios={perfil.refugios}
+            registros={diasRegistrados(perfil.registros)} refugios={perfil.refugios}
             onDia={(f) => { setDetalle(f); ir('detalle') }} onAlternarDemo={() => abrirHistorial(!demo)} />
         )}
         {pantalla === 'semana' && !demo && perfil.registros.length === 0 && (
           <HistorialVacio cabecera={cab} onContar={reiniciar} onDemo={() => abrirHistorial(true)} />
         )}
-        {pantalla === 'detalle' && registroDetalle && (
-          <DetalleDia cabecera={cabecera({ titulo: registroDetalleTitulo(registroDetalle) })} capas={capas} registro={registroDetalle}
+        {pantalla === 'detalle' && registrosDetalle.length > 0 && (
+          <DetalleDia cabecera={cabecera({ titulo: registroDetalleTitulo(registrosDetalle[0]) })} capas={capas} registros={registrosDetalle}
             neutral={preferencias.modoNeutral} refugios={demo ? [] : perfil.refugios.filter((r) => r.fecha === detalle)} />
         )}
 
