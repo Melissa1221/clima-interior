@@ -163,6 +163,7 @@ img, svg { display: block; }
 /* Campo de texto */
 .campo { display: grid; gap: 8px; }
 .campo label { font-size: var(--t-label); color: var(--ink-2); }
+.campo textarea { resize: none; field-sizing: content; min-height: 56px; }
 .campo input, .campo textarea, .entrada { width: 100%; min-height: 56px; border-radius: 12px; border: 1px solid var(--line); background: var(--paper);
   padding: 14px 16px; font-size: var(--t-body); color: var(--ink); line-height: 1.4; }
 .campo input:focus-visible, .campo textarea:focus-visible, .entrada:focus-visible { outline: 2px solid var(--primary); outline-offset: 0; border-color: var(--primary); }

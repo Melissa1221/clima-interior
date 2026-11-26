@@ -244,7 +244,7 @@ function Tarea({ cabecera, capas, voz, onRiesgo, onTerminar }) {
         garua={{ estado: 'pensando', tam: 70, x: 40, y: 12 }} />
       <Suelo matas={false} className="suelo--form">
         <h1 className="sr">Partir la tarea</h1>
-        <Campo id="tarea-que" etiqueta="¿Qué tienes que hacer?" value={tarea.que} placeholder="Estudiar para el parcial de IA" maxLength={120}
+        <Campo id="tarea-que" multilinea etiqueta="¿Qué tienes que hacer?" value={tarea.que} placeholder="Estudiar para el parcial de IA" maxLength={120}
           onChange={(e) => setTarea((t) => cambiarQue(t, e.target.value))} onBlur={(e) => revisar(e.target.value)} />
         {tarea.pasos.length > 0 && (
           <>
@@ -268,12 +268,14 @@ function Tarea({ cabecera, capas, voz, onRiesgo, onTerminar }) {
           </>
         )}
         <form className="agregar" onSubmit={(e) => { e.preventDefault(); agregar() }}>
-          <Campo id="tarea-paso" etiqueta={tarea.pasos.length ? 'Otro paso pequeño' : 'Un primer paso de unos 15 minutos'} value={nuevo}
+          <Campo id="tarea-paso" multilinea etiqueta={tarea.pasos.length ? 'Otro paso pequeño' : 'Un primer paso de unos 15 minutos'} value={nuevo}
             placeholder={tarea.pasos.length ? 'Algo chiquito' : 'Leer la primera página'} maxLength={140} onChange={(e) => setNuevo(e.target.value)} />
-          <Boton type="submit" tipo="linea" icono="plus" disabled={!nuevo.trim()}>Agregar</Boton>
-          {voz.disponible && (dictado.escuchando
-            ? <button type="button" className="ib" aria-label="Ya lo dije" onClick={dictado.parar}><Icono nombre="pause" tam={20} /></button>
-            : <button type="button" className="ib" aria-label="Dictar un paso" onClick={() => dictado.empezar((t) => agregar(t))}><Icono nombre="mic" tam={20} /></button>)}
+          <div className="agregar__botones">
+            <Boton type="submit" tipo="linea" icono="plus" disabled={!nuevo.trim()}>Agregar paso</Boton>
+            {voz.disponible && (dictado.escuchando
+              ? <button type="button" className="ib" aria-label="Ya lo dije" onClick={dictado.parar}><Icono nombre="pause" tam={20} /></button>
+              : <button type="button" className="ib" aria-label="Dictar un paso" onClick={() => dictado.empezar((t) => agregar(t))}><Icono nombre="mic" tam={20} /></button>)}
+          </div>
         </form>
         {dictado.escuchando && <p className="cap" aria-live="polite">{dictado.oido ? `«${dictado.oido}»` : 'Te escucho…'}</p>}
         <Boton onClick={onTerminar}>Listo por ahora</Boton>

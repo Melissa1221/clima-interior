@@ -165,12 +165,14 @@ export function Progreso({ paso, total, etiqueta }) {
   )
 }
 
-// Etiqueta siempre visible; foco con anillo azul
-export function Campo({ id, etiqueta, estado, ...props }) {
+// Etiqueta siempre visible; foco con anillo azul. multilinea: textarea que crece con el texto (no lo corta)
+export function Campo({ id, etiqueta, estado, multilinea = false, ...props }) {
   return (
     <div className={`campo ${estado ? `campo--${estado}` : ''}`}>
       <label htmlFor={id}>{etiqueta}</label>
-      <input id={id} {...props} />
+      {multilinea
+        ? <textarea id={id} rows={2} className="campo__area" onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); e.currentTarget.form?.requestSubmit() } }} {...props} />
+        : <input id={id} {...props} />}
     </div>
   )
 }

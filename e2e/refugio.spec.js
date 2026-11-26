@@ -251,3 +251,19 @@ test('ayuda contextual distinta en cada paso del refugio', async ({ page }) => {
   await page.getByRole('button', { name: 'Ayuda contextual' }).click()
   await expect(page.getByRole('dialog')).toContainText('pasos chiquitos')
 })
+
+test('partir la tarea: el campo del paso va a todo el ancho y los botones en su fila, a 320 px (A2)', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 700 })
+  await abrirTecnicas(page)
+  await page.getByRole('button', { name: /Partir la tarea/ }).click()
+  await page.getByLabel('¿Qué tienes que hacer?').fill('Estudiar para el parcial de Inteligencia Artificial del jueves')
+  const que = await page.getByLabel('¿Qué tienes que hacer?').evaluate((el) => el.scrollHeight <= el.clientHeight + 1)
+  expect(que).toBe(true) // el texto largo no se corta
+  const campo = await page.locator('#tarea-paso').boundingBox()
+  const boton = await page.getByRole('button', { name: 'Agregar paso' }).boundingBox()
+  const suelo = await page.locator('.suelo--form').boundingBox()
+  expect(campo.width).toBeGreaterThan(suelo.width * 0.85)
+  expect(boton.y).toBeGreaterThanOrEqual(campo.y + campo.height)
+  const lineas = await page.locator('label[for="tarea-paso"]').evaluate((el) => Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight || 20)))
+  expect(lineas).toBeLessThanOrEqual(2)
+})

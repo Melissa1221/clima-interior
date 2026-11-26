@@ -251,9 +251,9 @@
 .paso__textos { display: grid; gap: 2px; }
 .paso small { font-size: var(--t-caption); color: var(--ink-2); }
 .paso--hecho .paso__texto { text-decoration: line-through; color: var(--ink-2); }
-.agregar { display: flex; gap: 8px; align-items: flex-end; }
-.agregar .campo { flex: 1; min-width: 0; }
-.agregar .b { width: auto; padding: 0 14px; }
+.agregar { display: flex; flex-direction: column; gap: 8px; }
+.agregar__botones { display: flex; gap: 8px; }
+.agregar__botones .b { flex: 1; }
 .agregar .ib { width: 56px; height: 56px; }
 
 .antes-despues { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; }
