@@ -43,6 +43,15 @@ const CHECKIN = new Set(['contar', 'pensando', 'emociones', 'trampa', 'predecibl
 const PADRE = { menor: 'bienvenida', detalle: 'semana', 'perfil-sabe': 'perfil', privacidad: 'perfil', accesibilidad: 'perfil', exportar: 'perfil', eliminar: 'exportar' }
 const TITULO = { 'perfil-sabe': 'Lo que sabe de ti', privacidad: 'Privacidad', accesibilidad: 'Accesibilidad', exportar: 'Mis datos', eliminar: 'Eliminar mis datos' }
 
+// Título del documento por pantalla (M15): el lector y la pestaña dicen dónde estás
+const TITULO_DOC = {
+  bienvenida: 'Bienvenida', menor: 'Menores de 18', inicio: 'Inicio', contar: 'Cuéntame tu día', pensando: 'Mirando tu cielo',
+  emociones: 'Lo que sientes', trampa: 'Mirar un pensamiento', guardado: 'Día guardado', despedida: 'Listo por hoy',
+  'predecible-como': '¿Cómo quieres contarlo?', refugio: 'Un respiro', semana: 'Historial', detalle: 'Detalle del día', sala: 'Sala',
+  perfil: 'Perfil', 'perfil-sabe': 'Lo que sabe de ti', privacidad: 'Privacidad', accesibilidad: 'Accesibilidad', exportar: 'Mis datos',
+  eliminar: 'Eliminar mis datos',
+}
+
 // Ayuda contextual (RF-24): qué hacer en cada pantalla, sin salir del flujo
 const AYUDA = {
   general: ['Cuenta cómo va tu cielo. Elegir el clima ya basta; contarlo es opcional.',
@@ -183,6 +192,11 @@ export default function App() {
     if (a.crisis) return enfocar('.ayuda-ya')
     if (a.pantalla !== pantalla || a.pasoRefugio !== pasoRefugio) enfocar('main h1')
   }, [pantalla, pasoRefugio, crisis])
+
+  useEffect(() => {
+    const t = crisis ? 'Apoyo ahora' : TITULO_DOC[pantalla]
+    document.title = t ? `${t} · Clima Interior` : 'Clima Interior'
+  }, [pantalla, crisis])
 
   const ir = (p) => { setPantalla(p); window.scrollTo?.(0, 0) }
   const cambiarAjustes = (grupo) => (cambios) => setPerfil((p) => guardarAjustes(p, grupo, cambios))
