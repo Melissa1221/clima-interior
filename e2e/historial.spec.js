@@ -57,3 +57,24 @@ test('tocar un día vacío responde en vez de no hacer nada (B8)', async ({ page
   await page.locator('.dia__cielo--vacio').first().click()
   await expect(page.getByRole('status').filter({ hasText: 'sin registro' })).toBeVisible()
 })
+
+test('la cabecera del historial no se parte en dos líneas a 375 px (B14)', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto('/')
+  await page.getByRole('radio', { name: /Nublado/ }).click()
+  await page.getByRole('button', { name: 'Guardar así' }).click()
+  await page.getByRole('button', { name: 'Hasta mañana' }).click()
+  await page.getByRole('button', { name: /Historial/ }).click()
+  for (const sel of ['.historial__cabeza .etiqueta-sm', '.historial__alternar']) {
+    const lineas = await page.locator(sel).evaluate((el) => {
+      const r = document.createRange()
+      r.selectNodeContents(el)
+      return new Set([...r.getClientRects()].filter((x) => x.width > 1).map((x) => Math.round(x.bottom))).size
+    })
+    expect(lineas).toBe(1)
+    const cortado = await page.locator(sel).evaluate((el) => el.scrollWidth > el.clientWidth + 1)
+    expect(cortado).toBe(false)
+  }
+  await page.getByRole('button', { name: 'Ver ejemplo' }).click()
+  await expect(page.getByRole('button', { name: 'Mis registros' })).toBeVisible()
+})

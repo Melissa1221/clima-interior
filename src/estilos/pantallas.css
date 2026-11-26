@@ -196,6 +196,7 @@
 
 /* ───────── Historial ───────── */
 .historial__cabeza { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; }
+.historial__cabeza .etiqueta-sm, .historial__alternar { white-space: nowrap; }
 .semana-dias { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: var(--t-caption); color: var(--ink-2); margin: 0 -8px -6px; }
 /* B3: el calendario usa 8 px de cada margen y huecos de 4 px para que cada día mida 44 px o más a 375 px */
 .calendario { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-inline: -8px; }

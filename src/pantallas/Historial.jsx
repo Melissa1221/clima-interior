@@ -91,14 +91,17 @@ function Calendario({ dias, onDia, onVacio }) {
 export function Historial({ cabecera, dias, demo, registros, refugios, onDia, onAlternarDemo }) {
   const [vacio, setVacio] = useState(null)
   const hoy = new Date().toLocaleDateString('en-CA')
-  const rango = `${fechaLarga(dias[0].fecha, { dia: false })} – ${fechaLarga(dias.at(-1).fecha, { dia: false })}`
+  // B14: rango corto («28 oct – 26 nov») para que la cabecera no se parta en dos líneas
+  const corta = (f) => { const d = aFecha(f); return `${d.getDate()} ${MESES[d.getMonth()].slice(0, 3)}` }
+  const rango = `${corta(dias[0].fecha)} – ${corta(dias.at(-1).fecha)}`
+  const rangoLargo = `del ${fechaLarga(dias[0].fecha, { dia: false })} al ${fechaLarga(dias.at(-1).fecha, { dia: false })}`
   return (
     <div className="plana plana--cielo">
       {cabecera}
       <section className="plana__cuerpo historial" aria-labelledby="historial-titulo">
         <div className="historial__cabeza">
-          <div className="fecha"><h1 id="historial-titulo" className="titulo-s">Tus últimos 30 días</h1><span className="etiqueta-sm">{rango}</span></div>
-          {registros > 0 && <Enlace onClick={onAlternarDemo}>{demo ? 'Ver mis registros' : 'Ver ejemplo'}</Enlace>}
+          <div className="fecha"><h1 id="historial-titulo" className="titulo-s">Tus últimos 30 días</h1><span className="etiqueta-sm"><span aria-hidden="true">{rango}</span><span className="sr">{rangoLargo}</span></span></div>
+          {registros > 0 && <Enlace className="historial__alternar" onClick={onAlternarDemo}>{demo ? 'Mis registros' : 'Ver ejemplo'}</Enlace>}
         </div>
         <p className="meta" role="status">{demo ? 'Modo demo: datos simulados, no son de una persona real' : `${registros} ${registros === 1 ? 'día registrado' : 'días registrados'}`}</p>
         <Calendario dias={dias} onDia={onDia} onVacio={setVacio} />

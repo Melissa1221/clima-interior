@@ -27,7 +27,7 @@ test('«Guardar así»: el check-in en 2 toques aparece en el historial (RNF-31,
   // se puede alternar con el ejemplo de 30 días y volver
   await page.getByRole('button', { name: 'Ver ejemplo' }).click()
   await expect(page.getByText(/Modo demo: datos simulados/)).toBeVisible()
-  await page.getByRole('button', { name: 'Ver mis registros' }).click()
+  await page.getByRole('button', { name: 'Mis registros' }).click()
   await expect(page.getByText('1 día registrado')).toBeVisible()
 })
 
