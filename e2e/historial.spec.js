@@ -36,3 +36,14 @@ test('el historial de ejemplo no mezcla tus respiros reales (M1)', async ({ page
   await expect(page.getByText(/datos simulados/)).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Lo que te ayudó' })).toHaveCount(0)
 })
+
+test('los días del calendario miden 44 px o más a 375 px (B3)', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto('/')
+  await page.getByRole('button', { name: /Historial/ }).click()
+  await page.getByRole('button', { name: 'Mirar 30 días de ejemplo' }).click()
+  const tamanos = await page.$$eval('.calendario .dia__cielo', (els) => els.map((e) => Math.min(e.getBoundingClientRect().width, e.getBoundingClientRect().height)))
+  expect(Math.min(...tamanos)).toBeGreaterThanOrEqual(44)
+  const desborde = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
+  expect(desborde).toBeLessThanOrEqual(0)
+})
