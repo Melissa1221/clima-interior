@@ -102,15 +102,37 @@ export function Pestanas({ actual, onIr }) {
   )
 }
 
-// Hoja inferior modal: se cierra con Escape o tocando el velo y devuelve el foco a quien la abrió
+const ENFOCABLES = 'button:not([disabled]), a[href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
+// Mantiene el Tab dentro de un contenedor modal: del último control vuelve al primero y al revés
+export function atraparFoco(e, contenedor) {
+  if (e.key !== 'Tab' || !contenedor) return
+  const lista = [...contenedor.querySelectorAll(ENFOCABLES)].filter((el) => el.offsetParent !== null || el === document.activeElement)
+  if (!lista.length) { e.preventDefault(); return }
+  const [primero, ultimo] = [lista[0], lista.at(-1)]
+  const dentro = contenedor.contains(document.activeElement)
+  if (e.shiftKey && (document.activeElement === primero || document.activeElement === contenedor || !dentro)) { e.preventDefault(); ultimo.focus() }
+  else if (!e.shiftKey && (document.activeElement === ultimo || !dentro)) { e.preventDefault(); primero.focus() }
+}
+
+// Hoja inferior modal: atrapa el foco (lo de atrás queda inerte), se cierra con Escape o tocando el velo
+// y devuelve el foco a quien la abrió
 export function HojaInferior({ titulo, id = 'hoja-titulo', onCerrar, cerrable = true, children, extra }) {
   const ref = useRef(null)
+  // Se lee al renderizar: al abrirse la hoja, <main> queda inerte y el navegador le quita el foco al botón
+  const previo = useRef(document.activeElement)
   useEffect(() => {
-    const previo = document.activeElement
     ref.current?.focus()
-    const alTecla = (e) => { if (e.key === 'Escape' && cerrable) onCerrar?.() }
+    const alTecla = (e) => {
+      if (e.key === 'Escape' && cerrable) onCerrar?.()
+      atraparFoco(e, ref.current)
+    }
     document.addEventListener('keydown', alTecla)
-    return () => { document.removeEventListener('keydown', alTecla); previo?.focus?.() }
+    return () => { document.removeEventListener('keydown', alTecla); setTimeout(() => {
+      // si la hoja llevó a otra pantalla, el foco ya está en su título: no se pisa
+      const a = document.activeElement
+      if (!a || a === document.body || a.closest('.velo')) previo.current?.focus?.()
+    }, 0) }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div className="velo" onClick={() => cerrable && onCerrar?.()}>

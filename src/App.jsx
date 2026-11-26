@@ -414,6 +414,7 @@ export default function App() {
   return (
     <TemaNoche.Provider value={noche}>
       <main className={`app ${PESTANA_DE[pantalla] && completo ? 'app--nav' : ''}`} hidden={Boolean(crisis)} aria-hidden={crisis ? true : undefined}
+        inert={Boolean(hoja || ayuda) || undefined}
         data-movimiento={preferencias.movimientoReducido ? 'reducido' : 'normal'} data-pantalla={pantalla}>
 
         {pantalla === 'bienvenida' && (
