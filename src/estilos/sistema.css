@@ -115,10 +115,11 @@ img, svg { display: block; }
 [data-tema='noche'] .pildora--respiro { border-color: rgba(124, 192, 221, .5); }
 
 /* ───────── Cabecera: «Aa» o volver/cerrar a la izquierda, «Ayuda ya» siempre a la derecha ───────── */
-.cabecera { position: relative; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+.cabecera { position: relative; z-index: 20; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
   min-height: 44px; margin: max(16px, env(safe-area-inset-top)) 24px 0; }
 .cabecera__izq { display: flex; gap: 8px; align-items: center; }
 .cabecera__titulo { flex: 1; min-width: 0; font-size: var(--t-label); font-weight: 500; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cabecera--titulo-abajo .cabecera__titulo { order: 3; flex-basis: 100%; white-space: normal; overflow: visible; line-height: 1.3; margin-top: -2px; }
 
 /* ───────── Navegación inferior ───────── */
 .nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: min(480px, 100%); z-index: 15; height: 84px;

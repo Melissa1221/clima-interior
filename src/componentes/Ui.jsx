@@ -58,8 +58,10 @@ export function FilaLista({ icono, titulo, descripcion, onClick, chevron = true,
 // Cabecera: a la izquierda «Aa» (pantallas raíz) o volver/cerrar, y la ayuda contextual; a la derecha «Ayuda ya»
 // titulo: el nombre de la pantalla al centro; con esTitulo es el h1 de la pantalla (listas de Perfil, Sala)
 export function Cabecera({ izquierda = 'aa', etiquetaIzquierda, onIzquierda, onAyuda, onAyudaYa, titulo, esTitulo = false, children }) {
+  // Un título largo no cabe entre los botones (quedaba «Volver al pr…»): baja a su propia línea, completo
+  const abajo = typeof titulo === 'string' && titulo.length > 12
   return (
-    <header className="cabecera">
+    <header className={`cabecera ${abajo ? 'cabecera--titulo-abajo' : ''}`}>
       <div className="cabecera__izq">
         {izquierda === 'aa' && (
           <button type="button" className="ib ib-aa" aria-label="Accesibilidad: texto, movimiento y sonido" onClick={onIzquierda}>

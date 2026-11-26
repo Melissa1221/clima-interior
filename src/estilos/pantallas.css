@@ -49,7 +49,7 @@
 /* ───────── Cabecera sobre el cielo y título a 320 px ───────── */
 @media (max-width: 359px) {
   .cabecera { margin-inline: 16px; }
-  .cabecera__titulo:not(h1) { display: none; }
+  .cabecera__titulo { order: 3; flex-basis: 100%; white-space: normal; overflow: visible; line-height: 1.3; margin-top: -2px; }
   .escena__cuerpo, .plana__cuerpo, .suelo { padding-inline: 16px; }
   .ayuda-ya { padding: 0 10px; }
   .display-xl { font-size: 3rem; }
