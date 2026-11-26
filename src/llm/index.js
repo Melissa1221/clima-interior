@@ -64,5 +64,5 @@ export async function proponerEmociones(texto, { proveedor = proveedorActivo(), 
   }
   // Sin IA igual se proponen emociones por palabras clave, para que el usuario tenga qué elegir
   const emociones = emocionesPorReglas(texto)
-  return { ...RESPALDO_LOCAL, emociones, reflexion: reflexionPorReglas(emociones), trampas: detectarTrampas(texto) }
+  return { ...RESPALDO_LOCAL, emociones, reflexion: reflexionPorReglas(emociones, { ...contexto, texto }), trampas: detectarTrampas(texto) }
 }

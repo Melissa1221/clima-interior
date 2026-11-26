@@ -1,5 +1,6 @@
 import { EMOCIONES_VALIDAS, TIPOS_TRAMPA } from './contrato.js'
 import { detectarTrampas } from '../datos/trampas.js'
+import { reflexionDeReglas } from '../datos/reflexion.js'
 
 export const PROMPT = (texto, { frasesCortas } = {}) => `Eres el asistente de un diario emocional de autocuidado. No diagnosticas, no das consejos clínicos y no eres terapia.
 Lee el relato entre <relato> y responde SOLO con JSON:
@@ -38,27 +39,16 @@ export function emocionesPorReglas(texto) {
   return emociones
 }
 
-const REFLEXIONES = {
-  cansancio: 'Suena a un día que pidió mucha energía. ¿Hubo algún momento en que pudiste descansar un poco?',
-  frustración: 'Algunas cosas no salieron como querías. ¿Qué parte sí dependía de ti?',
-  ansiedad: 'Se nota que algo te tuvo en tensión. ¿Qué te ayudaría a soltarlo un poco esta noche?',
-  tristeza: 'Fue un día pesado. No hace falta resolverlo hoy; ya ponerle nombre ayuda.',
-  preocupación: 'Algo te quedó dando vueltas. ¿Es algo que puedes dejar anotado para mañana?',
-  alivio: 'Al final algo se acomodó. ¿Qué fue lo que más te alivió?',
-  gratitud: 'Hubo algo o alguien que valoraste hoy. Vale la pena recordarlo.',
-  alegría: 'Hubo algo bueno en tu día. ¿Qué lo hizo especial?',
-  calma: 'Tu día tuvo momentos tranquilos. ¿Qué los hizo posibles?',
-}
-export const reflexionPorReglas = (emociones) =>
-  REFLEXIONES[emociones.find((e) => e.confianza > 0.5)?.nombre] ||
-  'Gracias por darte este minuto. Ponerle nombre a lo que sientes ya es un paso.'
+// La reflexión por reglas retoma el tema del relato y solo agradece «este minuto» si hubo un respiro (M11)
+export const reflexionPorReglas = (emociones, contexto = {}) =>
+  reflexionDeReglas(emociones.find((e) => e.confianza > 0.5)?.nombre, contexto)
 
 export const mock = {
   nombre: 'mock',
   enInternet: false,
-  async proponerEmociones(texto) {
+  async proponerEmociones(texto, contexto = {}) {
     const emociones = emocionesPorReglas(texto)
-    return { emociones, reflexion: reflexionPorReglas(emociones), trampas: detectarTrampas(texto) }
+    return { emociones, reflexion: reflexionPorReglas(emociones, { ...contexto, texto }), trampas: detectarTrampas(texto) }
   },
 }
 
@@ -67,9 +57,9 @@ export const mock = {
 export const reglas = {
   nombre: 'reglas',
   enInternet: false,
-  async proponerEmociones(texto) {
+  async proponerEmociones(texto, contexto = {}) {
     const emociones = emocionesPorReglas(texto)
-    return { emociones, reflexion: reflexionPorReglas(emociones), trampas: detectarTrampas(texto) }
+    return { emociones, reflexion: reflexionPorReglas(emociones, { ...contexto, texto }), trampas: detectarTrampas(texto) }
   },
 }
 

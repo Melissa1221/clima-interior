@@ -3,6 +3,7 @@
 // salió cada cambio que la app hizo por su cuenta.
 import { mejorTecnica, TECNICAS } from './refugio.js'
 import { TRAMPAS } from './trampas.js'
+import { fraseMasSignificativa } from './reflexion.js'
 
 const CLAVE = 'clima-interior:perfil'
 
@@ -224,17 +225,18 @@ const frasesCortas = (perfil) => perfil.personalizacion.tono && perfil.aprendido
 // Aplica lo aprendido a la respuesta de la IA: suma tus palabras de siempre y acorta si lo pediste.
 // La IA sigue proponiendo; la persona decide.
 // Se muestran hasta 4 nubes: tus palabras de siempre (máx. 2) desplazan a las propuestas menos probables.
-export function personalizarPropuesta(perfil, propuesta) {
+export function personalizarPropuesta(perfil, propuesta, relato = '') {
   const tuyas = emocionesFavoritas(perfil).filter((n) => !propuesta.emociones.some((e) => e.nombre === n)).slice(0, 2)
   const emociones = [...propuesta.emociones.slice(0, 4 - tuyas.length), ...tuyas.map((nombre) => ({ nombre, confianza: 0, tuya: true }))]
   let reflexion = propuesta.reflexion
-  if (frasesCortas(perfil)) reflexion = reflexion.match(/^[^.?!]*[.?!]/)?.[0] ?? reflexion
+  if (frasesCortas(perfil)) reflexion = fraseMasSignificativa(reflexion, relato)
   return { ...propuesta, emociones, reflexion }
 }
 
-// Lo que el proveedor de IA puede saber del perfil: solo el largo pedido, nunca el diario
-export function contextoParaLLM(perfil) {
-  return { frasesCortas: frasesCortas(perfil) }
+// Lo que el proveedor de IA puede saber del perfil: solo el largo pedido, nunca el diario.
+// respiroHoy (sí/no) lo usan solo las reglas locales; el prompt no lo incluye.
+export function contextoParaLLM(perfil, hoy = new Date().toLocaleDateString('en-CA')) {
+  return { frasesCortas: frasesCortas(perfil), respiroHoy: perfil.refugios.some((r) => r.fecha === hoy) }
 }
 
 // La entrada con la que conviene empezar, según lo aprendido

@@ -11,6 +11,7 @@ import { debeOfrecerRefugio } from './datos/refugio.js'
 import { detectarOrden, sistemaPideMenosMovimiento, sonificarClima, vibrar } from './datos/accesibilidad.js'
 import { debePreguntarIA, estadoDictado, MOTIVOS_DICTADO, temaEfectivo } from './datos/privacidad.js'
 import { hayRiesgo } from './datos/riesgo.js'
+import { fraseMasSignificativa } from './datos/reflexion.js'
 import { DESCRIPCION, climaEfectivo } from './datos/climas.js'
 import { diasRegistrados, fechaLocal, registrosDelDia, treintaDias } from './datos/historial.js'
 import { Ayuda, Cabecera, Pestanas } from './componentes/Ui.jsx'
@@ -311,7 +312,7 @@ export default function App() {
     const id = ++consulta.current
     const r = await proponerEmociones(texto, { proveedor: proveedorSegunPermiso(iaEnInternet), contexto: contextoParaLLM(perfil) })
     if (id !== consulta.current) return
-    setPropuesta(personalizarPropuesta(perfil, r))
+    setPropuesta(personalizarPropuesta(perfil, r, texto))
     setTrampa(trampaParaMostrar(texto, r.trampas, trampasSilenciadas(perfil)))
     setTrampaSi(false)
     setElegidas([])
@@ -336,7 +337,7 @@ export default function App() {
   // HU-08: la persona corrige el tono; al tercer pedido el perfil lo recuerda
   function masCorto() {
     setPerfil(pedirMasCorto)
-    setPropuesta((p) => ({ ...p, reflexion: p.reflexion.match(/^[^.?!]*[.?!]/)?.[0] ?? p.reflexion }))
+    setPropuesta((p) => ({ ...p, reflexion: fraseMasSignificativa(p.reflexion, texto) }))
   }
 
   function instalar() {

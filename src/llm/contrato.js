@@ -4,7 +4,8 @@
 // proponerEmociones(texto, contexto) -> { emociones: [{ nombre, confianza }], reflexion: string, trampas?: [{ tipo, frase }] }
 //   - emociones: propuestas, nunca impuestas (RF-12). El usuario confirma, corrige o marca "no sé".
 //   - reflexion: máximo 2 frases, no clínica (RF-13, RF-16).
-//   - contexto: solo preferencias del perfil (p. ej. { frasesCortas }), nunca el diario (RF-22).
+//   - contexto: solo preferencias del perfil (p. ej. { frasesCortas }), nunca el diario (RF-22). `respiroHoy` (sí/no)
+//     solo lo usan las reglas locales para no agradecer «este minuto» si no hubo respiro; no viaja en el prompt.
 //   - trampas: opcional, 0 a 2 trampas de pensamiento de la lista cerrada, con la frase literal del relato.
 //     Son hipótesis que la app pregunta, no diagnósticos. Las respuestas sin `trampas` siguen siendo válidas.
 import { TIPOS_TRAMPA } from '../datos/trampas.js'
@@ -30,6 +31,6 @@ export function validarTrampas(trampas) {
 
 export const RESPALDO_LOCAL = {
   emociones: [],
-  reflexion: 'Gracias por darte este minuto. Ponerle nombre a lo que sientes ya es un paso.',
+  reflexion: 'Gracias por contarlo. Ponerle nombre a lo que sientes ya es un paso.',
   respaldo: true,
 }
