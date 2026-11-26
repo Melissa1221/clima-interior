@@ -1,7 +1,7 @@
 // Perfil (B10), lo que la app sabe de ti (B11, S40) y privacidad (S42). Pantallas planas de lista: la cabecera
 // lleva el título y todo se agrupa en listas con divisores finos.
 import Icono from '../componentes/Icono.jsx'
-import { Enlace, FilaAjuste, FilaLista } from '../componentes/Ui.jsx'
+import { Enlace, FilaAjuste, FilaLista, teclasRadio } from '../componentes/Ui.jsx'
 import { Escena, Suelo } from '../componentes/Escena.jsx'
 import { CATEGORIAS, emocionesFavoritas } from '../datos/perfil.js'
 import { TECNICAS } from '../datos/refugio.js'
@@ -112,9 +112,9 @@ export function PrivacidadYDatos({ cabecera, privacidad, onCambio, onDemo }) {
             descripcion={privacidad.transcribirEnInternet ? 'Ahora: en internet, solo mientras dictas.' : 'Ahora: en este teléfono.'} /></li>
         </ul>
         <h2 className="etiqueta" id="donde-reflexion">Dónde se escribe tu reflexión</h2>
-        <div className="segmento segmento--ancho" role="radiogroup" aria-labelledby="donde-reflexion">
-          <button type="button" role="radio" aria-checked={!privacidad.iaEnInternet} onClick={() => onCambio({ iaEnInternet: false })}>Solo en este teléfono</button>
-          <button type="button" role="radio" aria-checked={privacidad.iaEnInternet} onClick={() => onCambio({ iaEnInternet: true })}>En internet</button>
+        <div className="segmento segmento--ancho" role="radiogroup" aria-labelledby="donde-reflexion" onKeyDown={teclasRadio}>
+          <button type="button" role="radio" aria-checked={!privacidad.iaEnInternet} tabIndex={privacidad.iaEnInternet ? -1 : 0} onClick={() => onCambio({ iaEnInternet: false })}>Solo en este teléfono</button>
+          <button type="button" role="radio" aria-checked={privacidad.iaEnInternet} tabIndex={privacidad.iaEnInternet ? 0 : -1} onClick={() => onCambio({ iaEnInternet: true })}>En internet</button>
         </div>
         <p className="cap"><Icono nombre="info" tam={16} />{privacidad.iaEnInternet
           ? 'Tu texto se envía sin tu nombre para escribir la reflexión, y no se guarda allá.'

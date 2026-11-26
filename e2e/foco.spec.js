@@ -38,3 +38,25 @@ test('al cerrar Crisis el foco vuelve a «Ayuda ya» (A5)', async ({ page }) => 
   await page.getByRole('button', { name: 'Volver cuando quieras' }).click()
   await expect(page.getByRole('button', { name: /Ayuda ya/ })).toBeFocused()
 })
+
+test('en los grupos de opciones las flechas mueven y eligen, y el grupo es una sola parada de Tab (M7)', async ({ page }) => {
+  await page.goto('/')
+  const climas = page.getByRole('radiogroup', { name: 'Elige tu cielo de hoy' })
+  const tabuladas = await climas.getByRole('radio').evaluateAll((rs) => rs.filter((r) => r.tabIndex === 0).length)
+  expect(tabuladas).toBe(1)
+  await climas.getByRole('radio', { name: /Nublado/ }).click()
+  await page.keyboard.press('ArrowRight')
+  await expect(climas.getByRole('radio', { name: /Lluvia/ })).toBeFocused()
+  await expect(climas.getByRole('radio', { name: /Lluvia/ })).toHaveAttribute('aria-checked', 'true')
+  await page.keyboard.press('End')
+  await expect(climas.getByRole('radio', { name: /Niebla/ })).toHaveAttribute('aria-checked', 'true')
+  await page.keyboard.press('ArrowRight') // da la vuelta
+  await expect(climas.getByRole('radio', { name: /Soleado/ })).toHaveAttribute('aria-checked', 'true')
+  await page.keyboard.press('ArrowLeft')
+  await expect(climas.getByRole('radio', { name: /Niebla/ })).toBeFocused()
+  // panel «Aa»: tamaño del texto con flechas
+  await page.getByRole('button', { name: /Accesibilidad: texto/ }).click()
+  await page.getByRole('radio', { name: 'Normal' }).focus()
+  await page.keyboard.press('ArrowRight')
+  await expect(page.getByRole('radio', { name: 'Grande', exact: true })).toHaveAttribute('aria-checked', 'true')
+})

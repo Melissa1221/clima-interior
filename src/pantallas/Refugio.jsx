@@ -4,7 +4,7 @@
 // Pantallas: journey-nuevo 04a, 04b, 05 y v3 refinada grupo B (B02 a B06).
 import { useEffect, useRef, useState } from 'react'
 import Icono from '../componentes/Icono.jsx'
-import { Boton, Campo, ElegirClima, Enlace, Progreso } from '../componentes/Ui.jsx'
+import { Boton, Campo, ElegirClima, Enlace, Progreso, tabRadio, teclasRadio } from '../componentes/Ui.jsx'
 import { Escena, Suelo } from '../componentes/Escena.jsx'
 import { Mundo } from '../mundo/Mundo.jsx'
 import Garua from '../mundo/Garua.jsx'
@@ -136,9 +136,9 @@ function Respirar({ cabecera, preferencias, capas, onTerminar, onOtra, onMasAyud
           )}
           {cambiando && (
             <div className="ritmos">
-              <div className="lista ritmos__lista" role="radiogroup" aria-label="Tipo de respiración">
-                {Object.entries(RITMOS).map(([id, { nombre, descripcion }]) => (
-                  <button key={id} type="button" role="radio" aria-checked={ritmo === id} className="fila fila--radio" onClick={() => setRitmo(id)}>
+              <div className="lista ritmos__lista" role="radiogroup" aria-label="Tipo de respiración" onKeyDown={teclasRadio}>
+                {Object.entries(RITMOS).map(([id, { nombre, descripcion }], i) => (
+                  <button key={id} type="button" role="radio" aria-checked={ritmo === id} tabIndex={tabRadio(ritmo === id, i, true)} className="fila fila--radio" onClick={() => setRitmo(id)}>
                     <span className="radio-marca" aria-hidden="true" />
                     <span className="fila__textos"><span className="fila__titulo">{nombre}</span><small className="fila__desc">{descripcion}</small></span>
                   </button>

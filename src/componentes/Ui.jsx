@@ -199,12 +199,30 @@ export function Campo({ id, etiqueta, estado, multilinea = false, ...props }) {
   )
 }
 
+// Grupo de opciones (patrón radio de ARIA, M7): una sola parada de Tab; las flechas, Inicio y Fin mueven y eligen
+const TECLAS_RADIO = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1, Home: 'primero', End: 'ultimo' }
+export function teclasRadio(e) {
+  const paso = TECLAS_RADIO[e.key]
+  if (paso === undefined) return
+  const radios = [...e.currentTarget.querySelectorAll('[role="radio"]')]
+  const i = radios.indexOf(document.activeElement)
+  if (i < 0) return
+  e.preventDefault()
+  const j = paso === 'primero' ? 0 : paso === 'ultimo' ? radios.length - 1 : (i + paso + radios.length) % radios.length
+  radios[j].focus()
+  radios[j].click()
+}
+// tabIndex de cada opción: la elegida (o la primera, si no hay) es la que recibe el Tab
+export const tabRadio = (marcado, indice, hayMarcado) => (marcado || (!hayMarcado && indice === 0) ? 0 : -1)
+
 // Los cinco climas como opciones excluyentes, con su ícono de línea
 export function ElegirClima({ valor, onElegir, etiqueta, id }) {
+  const hay = CLIMAS.some((c) => c.id === valor)
   return (
-    <div className="climas" role="radiogroup" aria-label={etiqueta} id={id}>
-      {CLIMAS.map((c) => (
-        <button key={c.id} type="button" role="radio" aria-checked={valor === c.id} className={`tok tok--${c.id}`} onClick={() => onElegir(c.id)}>
+    <div className="climas" role="radiogroup" aria-label={etiqueta} id={id} onKeyDown={teclasRadio}>
+      {CLIMAS.map((c, i) => (
+        <button key={c.id} type="button" role="radio" aria-checked={valor === c.id} tabIndex={tabRadio(valor === c.id, i, hay)}
+          className={`tok tok--${c.id}`} onClick={() => onElegir(c.id)}>
           <Icono nombre={c.id} tam={26} /><span className="tok__lbl">{c.etiqueta}</span>
         </button>
       ))}

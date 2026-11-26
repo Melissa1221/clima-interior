@@ -1,7 +1,7 @@
 // B12 · Accesibilidad (S46). Agrupada en movimiento y color, voz y sonido, y avisos. Cada capa del clima se apaga
 // por separado; el modo predecible (S47, S48) y el neutral (S49) también se activan desde el panel «Aa».
 import Icono from '../componentes/Icono.jsx'
-import { FilaAjuste } from '../componentes/Ui.jsx'
+import { FilaAjuste, tabRadio, teclasRadio } from '../componentes/Ui.jsx'
 
 const CAPAS = [['lluvia', 'Lluvia'], ['viento', 'Viento'], ['niebla', 'Niebla'], ['nubes', 'Nubes'], ['luz', 'Luz']]
 const TAMANOS = [['normal', 'Normal'], ['grande', 'Grande'], ['mas-grande', 'Más grande']]
@@ -29,15 +29,15 @@ export function Accesibilidad({ cabecera, preferencias: p, onCambio, onAlternarC
           </div>
         </div>
         <h2 className="etiqueta" id="tam-titulo">Tamaño del texto</h2>
-        <div className="segmento segmento--ancho" role="radiogroup" aria-labelledby="tam-titulo">
-          {TAMANOS.map(([id, nombre]) => (
-            <button key={id} type="button" role="radio" aria-checked={p.tamanoTexto === id} onClick={() => onCambio({ tamanoTexto: id })}>{nombre}</button>
+        <div className="segmento segmento--ancho" role="radiogroup" aria-labelledby="tam-titulo" onKeyDown={teclasRadio}>
+          {TAMANOS.map(([id, nombre], i) => (
+            <button key={id} type="button" role="radio" aria-checked={p.tamanoTexto === id} tabIndex={tabRadio(p.tamanoTexto === id, i, true)} onClick={() => onCambio({ tamanoTexto: id })}>{nombre}</button>
           ))}
         </div>
         <h2 className="etiqueta" id="tema-titulo">Tema</h2>
-        <div className="segmento segmento--ancho" role="radiogroup" aria-labelledby="tema-titulo">
-          {TEMAS.map(([id, nombre]) => (
-            <button key={id} type="button" role="radio" aria-checked={p.tema === id} onClick={() => onCambio({ tema: id })}>{nombre}</button>
+        <div className="segmento segmento--ancho" role="radiogroup" aria-labelledby="tema-titulo" onKeyDown={teclasRadio}>
+          {TEMAS.map(([id, nombre], i) => (
+            <button key={id} type="button" role="radio" aria-checked={p.tema === id} tabIndex={tabRadio(p.tema === id, i, true)} onClick={() => onCambio({ tema: id })}>{nombre}</button>
           ))}
         </div>
         <h2 className="etiqueta">Voz y sonido</h2>

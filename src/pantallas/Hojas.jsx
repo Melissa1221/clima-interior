@@ -1,7 +1,7 @@
 // Hojas justo a tiempo (journey nuevo §4.4): cada permiso aparece cuando se entiende por qué hace falta.
 // J1 micrófono (y J3 si hay que transcribir en internet) · J2 dónde se piensa la reflexión · panel «Aa».
 import Icono from '../componentes/Icono.jsx'
-import { Boton, FilaAjuste, FilaLista, HojaInferior } from '../componentes/Ui.jsx'
+import { Boton, FilaAjuste, FilaLista, HojaInferior, tabRadio, teclasRadio } from '../componentes/Ui.jsx'
 import { MOTIVOS_DICTADO } from '../datos/privacidad.js'
 import Garua from '../mundo/Garua.jsx'
 
@@ -65,9 +65,10 @@ export function HojaAa({ preferencias, onCambio, onMas, onCerrar }) {
       <div className="aa">
         <div className="aa__tamano">
           <span id="aa-tamano" className="fila__titulo">Tamaño del texto</span>
-          <div className="segmento" role="radiogroup" aria-labelledby="aa-tamano">
-            {TAMANOS.map(([id, nombre, tam]) => (
+          <div className="segmento" role="radiogroup" aria-labelledby="aa-tamano" onKeyDown={teclasRadio}>
+            {TAMANOS.map(([id, nombre, tam], i) => (
               <button key={id} type="button" role="radio" aria-checked={preferencias.tamanoTexto === id} aria-label={nombre}
+                tabIndex={tabRadio(preferencias.tamanoTexto === id, i, TAMANOS.some(([t]) => t === preferencias.tamanoTexto))}
                 onClick={() => onCambio({ tamanoTexto: id })} style={{ fontSize: tam }}>A</button>
             ))}
           </div>
