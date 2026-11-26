@@ -78,6 +78,16 @@ const AYUDA = {
   'refugio:resumen': ['En Historial, «Lo que te ayudó» junta tus respiros, sin rachas ni metas.'],
 }
 
+function enfocar(selector, intentos = 30) {
+  const el = document.querySelector(selector)
+  if (!el) {
+    if (intentos > 0) requestAnimationFrame(() => enfocar(selector, intentos - 1))
+    return
+  }
+  if (!el.matches('button, a[href], input, textarea, [tabindex]')) el.setAttribute('tabindex', '-1')
+  el.focus({ preventScroll: true })
+}
+
 const sistemaOscuro = () => typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches
 
 export default function App() {
@@ -161,6 +171,17 @@ export default function App() {
     const t = setInterval(() => setSegundos((s) => s + 1), 1000)
     return () => clearInterval(t)
   }, [grabando])
+
+  // Foco al cambiar de pantalla (A5): al h1 de la pantalla nueva, para que el lector la anuncie; al cerrar
+  // Crisis, de vuelta a «Ayuda ya». Las pantallas que cargan aparte se esperan unos cuadros.
+  const anterior = useRef({ pantalla, pasoRefugio, crisis })
+  useEffect(() => {
+    const a = anterior.current
+    anterior.current = { pantalla, pasoRefugio, crisis }
+    if (crisis) return // Crisis enfoca su propio título
+    if (a.crisis) return enfocar('.ayuda-ya')
+    if (a.pantalla !== pantalla || a.pasoRefugio !== pasoRefugio) enfocar('main h1')
+  }, [pantalla, pasoRefugio, crisis])
 
   const ir = (p) => { setPantalla(p); window.scrollTo?.(0, 0) }
   const cambiarAjustes = (grupo) => (cambios) => setPerfil((p) => guardarAjustes(p, grupo, cambios))

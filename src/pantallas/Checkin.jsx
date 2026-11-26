@@ -21,7 +21,7 @@ export function Escuchando({ cabecera, capas, clima, segundos, texto, pista, min
             <span className="rec" aria-hidden="true" /><span className="sr">Micrófono activo · </span>
             <b>{mmss(segundos)}</b><span className="meta">/ 1:00</span>
           </p>
-          <p className="burbuja burbuja--centro display-s">Te escucho. Sin apuro.</p>
+          <h1 className="burbuja burbuja--centro display-s">Te escucho. Sin apuro.</h1>
         </div>
         <div className="escucha__garua">
           <span className="anillos" aria-hidden="true"><i className="anillo anillo--3" /><i className="anillo anillo--2" /><i className="anillo anillo--1" /></span>
@@ -57,7 +57,7 @@ export function Relato({ cabecera, capas, clima, climaVista, texto, onTexto, deV
         <p className="cap">{deVoz
           ? <><Icono nombre="mic" tam={16} />Grabado · {mmss(duracion)} · solo en tu teléfono</>
           : <><Icono nombre={clima ?? 'nublado'} tam={16} />Tu cielo de hoy · {etiquetaDe(clima)}</>}</p>
-        <label id="relato-titulo" htmlFor="relato" className="pregunta relato__titulo">{deVoz ? 'Lo que entendí' : '¿Cómo fue tu día?'}</label>
+        <h1 className="pregunta relato__titulo"><label id="relato-titulo" htmlFor="relato">{deVoz ? 'Lo que entendí' : '¿Cómo fue tu día?'}</label></h1>
         {deVoz && <p className="meta">Corrígelo si algo no es así, antes de que lo lea la IA.</p>}
         <textarea id="relato" className="area" value={texto} onChange={(e) => onTexto(e.target.value)} rows={5}
           placeholder="Hoy tuve clase temprano y el tráfico me quitó energía…" />
@@ -77,7 +77,7 @@ export function Pensando({ cabecera, capas, clima }) {
   return (
     <Escena clima={clima} hy={520} suelo={700} flores="simples" capas={capas} cabecera={cabecera} className="escena--centro">
       <div className="pensando">
-        <p className="burbuja burbuja--centro display-s" aria-live="polite">Mirando tu cielo…</p>
+        <h1 className="burbuja burbuja--centro display-s" aria-live="polite">Mirando tu cielo…</h1>
         <Garua estado="pensando" tam={180} etiqueta="Garúa piensa" />
       </div>
     </Escena>
