@@ -4,7 +4,7 @@ import { test, expect, primerUsoHecho } from './base.js'
 // El permiso «compartir mi clima» arranca apagado (S03): la primera vez se pide dentro de la sala
 async function compartir(page, clima) {
   await page.getByRole('button', { name: 'Permitir compartir mi clima' }).click()
-  await page.getByRole('button', { name: clima }).click()
+  await page.getByRole('radiogroup', { name: 'Clima que compartes' }).getByRole('radio', { name: clima }).click()
 }
 
 // Cada "dispositivo" es un contexto aislado: no comparte almacenamiento con los demás
@@ -24,11 +24,11 @@ async function dispositivo(browser, mensajes) {
 test('crear, invitar, compartir, retirar, sacar y cerrar una sala entre tres dispositivos', async ({ browser }) => {
   const mensajes = []
   const ana = await dispositivo(browser, mensajes)
-  await ana.getByRole('button', { name: /Sala/ }).click()
+  await ana.getByRole('button', { name: 'Sala', exact: true }).click()
   await ana.getByRole('button', { name: 'Crear una sala' }).click()
   await compartir(ana, /Lluvia/)
   const codigo = (await ana.locator('.codigo code').innerText()).trim().replace(/\s+/g, '-')
-  expect(codigo.replace(/-/g, '')).toHaveLength(26) // RNF-14: 128 bits
+  expect(codigo.replace(/-/g, '')).toHaveLength(8) // corto para dictarlo o copiarlo (A6)
 
   // Bea entra por el enlace de invitación; Ceci escribe el código a mano en minúsculas
   const bea = await dispositivo(browser, mensajes)
@@ -36,7 +36,7 @@ test('crear, invitar, compartir, retirar, sacar y cerrar una sala entre tres dis
   await bea.getByRole('button', { name: 'Unirme' }).click()
   await compartir(bea, /Soleado/)
   const ceci = await dispositivo(browser, mensajes)
-  await ceci.getByRole('button', { name: /Sala/ }).click()
+  await ceci.getByRole('button', { name: 'Sala', exact: true }).click()
   await ceci.getByLabel(/código/).fill(codigo.toLowerCase().replace(/-/g, ' '))
   await ceci.getByRole('button', { name: 'Unirme' }).click()
   await compartir(ceci, /Tormenta/)
@@ -77,26 +77,50 @@ test('crear, invitar, compartir, retirar, sacar y cerrar una sala entre tres dis
 test('quien ya registró su día comparte su clima con un toque', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('radio', { name: /Niebla/ }).click()
-  await page.getByRole('button', { name: /Así está bien/ }).click()
+  await page.getByRole('button', { name: 'Guardar así' }).click()
   await page.getByRole('button', { name: 'Hasta mañana' }).click()
-  await page.getByRole('button', { name: /Sala/ }).click()
+  await page.getByRole('button', { name: 'Sala', exact: true }).click()
   await page.getByRole('button', { name: 'Crear una sala' }).click()
   await expect(page.getByText('Compartir tu clima está apagado en Privacidad')).toBeVisible()
   await page.getByRole('button', { name: 'Permitir compartir mi clima' }).click()
-  await page.getByRole('button', { name: /Compartir mi clima de hoy \(.*Niebla\)/ }).click()
-  await expect(page.getByText('Compartes:')).toContainText('Niebla')
+  await page.getByRole('button', { name: /Compartir mi clima de hoy \(Niebla\)/ }).click()
+  await expect(page.locator('.mi-clima')).toContainText('Compartes')
+  await expect(page.locator('.mi-clima')).toContainText('Niebla')
 })
 
 test('código incompleto muestra un error que explica qué hacer', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: /Sala/ }).click()
-  await page.getByLabel(/código/).fill('K7QF-29XM')
+  await page.getByRole('button', { name: 'Sala', exact: true }).click()
+  await page.getByLabel(/código/).fill('K7QF-29')
   await page.getByRole('button', { name: 'Unirme' }).click()
-  await expect(page.getByRole('alert')).toContainText('Son 26 letras y números')
+  await expect(page.getByRole('alert')).toContainText('Son 8 letras y números')
 })
 
 test('una sala que no existe o caducó no deja entrar (RF-26)', async ({ page }) => {
-  await page.goto('/#sala=AAAA-AAAA-AAAA-AAAA-AAAA-AAAA-AA')
+  await page.goto('/#sala=AAAA-AAAA')
   await page.getByRole('button', { name: 'Unirme' }).click()
   await expect(page.getByText('Esa sala ya no existe o caducó.')).toBeVisible()
+})
+
+test('el código de la sala es corto y se copia con un toque (A6)', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Sala', exact: true }).click()
+  await page.getByRole('button', { name: 'Crear una sala' }).click()
+  const codigo = (await page.locator('.codigo__valor').innerText()).trim()
+  expect(codigo).toMatch(/^[0-9A-Z]{4}-[0-9A-Z]{4}$/)
+  await page.getByRole('button', { name: /^Copiar el código/ }).click()
+  await expect(page.getByText('Código copiado')).toBeVisible()
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(codigo)
+})
+
+test('«Salir» de una sala vuelve a la entrada de Salas, no a Inicio (B9)', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Sala', exact: true }).click()
+  await page.getByRole('button', { name: 'Crear una sala' }).click()
+  await expect(page.locator('.codigo__valor')).toBeVisible()
+  await page.getByRole('button', { name: 'Salir', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Crear una sala' })).toBeVisible()
+  await expect(page).toHaveTitle('Sala · Clima Interior')
+  expect(new URL(page.url()).hash).toBe('')
 })

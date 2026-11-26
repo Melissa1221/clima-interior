@@ -1,6 +1,7 @@
 import { validarRespuesta, RESPALDO_LOCAL, EMOCIONES_VALIDAS } from './contrato.js'
 import * as proveedores from './proveedores.js'
-import { emocionesPorReglas, reflexionPorReglas } from './proveedores.js'
+import { emocionesPorReglas, esLocal, reflexionPorReglas, urlOllama } from './proveedores.js'
+import { detectarTrampas, estaEnElRelato, TIPOS_TRAMPA } from '../datos/trampas.js'
 
 // RNF-19 pide ≤10 s en p95; se deja margen para que Gemini pruebe dos modelos
 const TIEMPO_MAX_MS = 14000
@@ -9,16 +10,19 @@ export function proveedorActivo() {
   return proveedores[import.meta.env.VITE_LLM_PROVIDER] || proveedores.mock
 }
 
-// «Usar IA en internet» apagado: los proveedores en la nube se reemplazan por el modelo local (Ollama).
-// Si tampoco hay modelo local, proponerEmociones cae al respaldo por reglas y nada sale del dispositivo (S03, S42).
-const EN_INTERNET = new Set(['gemini', 'remoto'])
-export function proveedorSegunPermiso(iaEnInternet, activo = proveedorActivo()) {
-  return !iaEnInternet && EN_INTERNET.has(activo.nombre) ? proveedores.ollama : activo
+// «Usar IA en internet» apagado: los proveedores en la nube se reemplazan por un Ollama en este equipo, solo si se
+// configuró y su URL es localhost/127.0.0.1; si no, van directo a las reglas, sin intentar ninguna conexión (M9).
+// Cada proveedor declara `enInternet`; uno que no lo declare se trata como si saliera a internet.
+export function proveedorSegunPermiso(iaEnInternet, activo = proveedorActivo(), env = import.meta.env) {
+  if (iaEnInternet || activo.enInternet === false) return activo
+  const url = urlOllama(env)
+  return url && esLocal(url) ? proveedores.ollama : proveedores.reglas
 }
 
 // Los modelos devuelven "Cansancio", " calma " o emociones fuera de la lista.
 // Se pasan a minúsculas y se descartan las que no están en la lista; la reflexión se conserva.
-export function normalizar(r) {
+// Las trampas fuera de la lista, repetidas o con una frase que la persona no dijo se descartan (máx. 2).
+export function normalizar(r, texto) {
   if (!r || typeof r !== 'object' || !Array.isArray(r.emociones)) return r
   const vistas = new Set()
   const emociones = r.emociones
@@ -27,7 +31,15 @@ export function normalizar(r) {
     .filter((e) => EMOCIONES_VALIDAS.includes(e.nombre) && !vistas.has(e.nombre) && vistas.add(e.nombre))
     .slice(0, 4)
   const reflexion = typeof r.reflexion === 'string' ? r.reflexion.trim() : r.reflexion
-  return { ...r, emociones, reflexion }
+  if (r.trampas === undefined) return { ...r, emociones, reflexion }
+  const tipos = new Set()
+  const trampas = (Array.isArray(r.trampas) ? r.trampas : [])
+    .filter((t) => t && typeof t.frase === 'string' && typeof t.tipo === 'string')
+    .map((t) => ({ tipo: t.tipo.toLowerCase().trim(), frase: t.frase.trim() }))
+    .filter((t) => TIPOS_TRAMPA.includes(t.tipo) && !tipos.has(t.tipo) && tipos.add(t.tipo))
+    .filter((t) => texto === undefined || estaEnElRelato(t.frase, texto))
+    .slice(0, 2)
+  return { ...r, emociones, reflexion, trampas }
 }
 
 // Punto único de entrada. Si el proveedor falla, tarda o responde fuera del esquema,
@@ -39,8 +51,11 @@ export async function proponerEmociones(texto, { proveedor = proveedorActivo(), 
       proveedor.proponerEmociones(texto, contexto),
       new Promise((_, rej) => { reloj = setTimeout(() => rej(new Error('tiempo agotado')), tiempoMax) }),
     ])
-    const normal = normalizar(r)
-    if (validarRespuesta(normal) && normal.reflexion) return { ...normal, proveedor: proveedor.nombre }
+    const normal = normalizar(r, texto)
+    if (validarRespuesta(normal) && normal.reflexion) {
+      // Un modelo que no conoce el campo `trampas` no lo manda: se usa el detector por reglas
+      return { ...normal, trampas: normal.trampas ?? detectarTrampas(texto), proveedor: proveedor.nombre }
+    }
     console.warn(`LLM ${proveedor.nombre}: respuesta fuera del esquema`, r)
   } catch (err) {
     console.warn(`LLM ${proveedor.nombre}: ${err.message}`)
@@ -49,5 +64,5 @@ export async function proponerEmociones(texto, { proveedor = proveedorActivo(), 
   }
   // Sin IA igual se proponen emociones por palabras clave, para que el usuario tenga qué elegir
   const emociones = emocionesPorReglas(texto)
-  return { ...RESPALDO_LOCAL, emociones, reflexion: reflexionPorReglas(emociones) }
+  return { ...RESPALDO_LOCAL, emociones, reflexion: reflexionPorReglas(emociones, { ...contexto, texto }), trampas: detectarTrampas(texto) }
 }

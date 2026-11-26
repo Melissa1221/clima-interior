@@ -8,6 +8,8 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      // el registro del service worker no bloquea el primer pintado
+      injectRegister: 'script-defer',
       includeAssets: ['icono.svg', 'demo/*.json'],
       manifest: {
         name: 'Clima Interior',

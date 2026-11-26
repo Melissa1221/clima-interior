@@ -36,7 +36,8 @@ describe('ajustes del perfil', () => {
 
   it('arranca con los permisos más protectores', () => {
     const p = leerPerfil()
-    expect(p.privacidad).toEqual({ grabarVoz: true, transcribirEnInternet: false, iaEnInternet: false, climaCompartido: false })
+    expect(p.privacidad).toEqual({ grabarVoz: false, transcribirEnInternet: false, iaEnInternet: false, climaCompartido: false })
+    expect(p.avisos).toEqual({ ia: false, accesibilidad: false, instalar: false })
     expect(p.personalizacion.propuestas).toBe(false)
     expect(p.primerUso.completo).toBe(false)
   })
@@ -52,7 +53,7 @@ describe('ajustes del perfil', () => {
   it('guarda un grupo de ajustes sin tocar los demás', () => {
     let p = leerPerfil()
     p = guardarAjustes(p, 'privacidad', { iaEnInternet: true })
-    expect(leerPerfil().privacidad).toMatchObject({ iaEnInternet: true, grabarVoz: true })
+    expect(leerPerfil().privacidad).toMatchObject({ iaEnInternet: true, grabarVoz: false })
   })
 
   it('apaga y enciende una capa del clima por separado', () => {
@@ -139,5 +140,24 @@ describe('personalización continua', () => {
     expect(notaDeRitmo(p, ahora)).toBeNull()
     for (let i = 0; i < 2; i++) p = guardarRegistro(p, { hora: '21:30', clima: 'soleado' })
     expect(notaDeRitmo(p, ahora)).toMatch(/hora de siempre/)
+  })
+})
+
+describe('lo que sabe de ti no infiere con pocos datos (B7)', () => {
+  beforeEach(() => localStorage.clear())
+  it('con 2 registros no conoce tu ritmo; con 3 y una hora repetida, sí', async () => {
+    const { ritmoConocido } = await import('../src/datos/perfil.js')
+    let p = leerPerfil()
+    p = guardarRegistro(p, { hora: '10:00', clima: 'soleado' })
+    p = guardarRegistro(p, { hora: '10:10', clima: 'nublado' })
+    expect(ritmoConocido(p)).toBe(false)
+    p = guardarRegistro(p, { hora: '22:00', clima: 'nublado' })
+    expect(ritmoConocido(p)).toBe(true)
+  })
+  it('con 3 registros a horas distintas tampoco', async () => {
+    const { ritmoConocido } = await import('../src/datos/perfil.js')
+    let p = leerPerfil()
+    for (const hora of ['08:00', '14:00', '21:00']) p = guardarRegistro(p, { hora, clima: 'soleado' })
+    expect(ritmoConocido(p)).toBe(false)
   })
 })

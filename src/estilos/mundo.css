@@ -1,0 +1,41 @@
+/* Mundo ilustrado y Garúa. Animaciones de personaje/garua-estados/animaciones.html.
+   Todo se apaga con «Movimiento reducido» (app) o prefers-reduced-motion (sistema). */
+
+/* Escena: el mundo ocupa todo el fondo y el contenido va encima */
+.escena { position: relative; display: flex; flex-direction: column; flex: 1 0 auto; isolation: isolate; }
+.mundo { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; display: block; }
+.mundo--noche { filter: brightness(.78) saturate(.8); }
+.mundo__noche { mix-blend-mode: multiply; }
+.mundo__lluvia { animation: mundo-cae 3s linear infinite; }
+@keyframes mundo-cae { from { transform: translateY(-20px); } to { transform: translateY(20px); } }
+
+/* Suelo arenoso con su borde ondulado */
+.suelo { position: relative; background: var(--ground); padding: 14px 24px 24px; z-index: 2; }
+.borde-suelo { position: absolute; left: 0; right: 0; top: -27px; height: 28px; pointer-events: none; }
+.borde-suelo__onda { position: absolute; inset: 0; width: 100%; height: 28px; fill: var(--ground); }
+.borde-suelo__matas { position: absolute; left: 0; right: 0; top: -3px; width: 100%; height: 40px; }
+[data-tema='noche'] .borde-suelo__matas { filter: brightness(.42) saturate(.6); }
+
+/* Garúa */
+.garua { position: relative; flex: none; pointer-events: none; }
+.garua__svg { width: 100%; height: 100%; overflow: visible; }
+.garua--flotar { animation: garua-flota 6s ease-in-out infinite; }
+.garua--escuchar { animation: garua-habla 1.4s ease-in-out infinite; }
+.garua__ojos { transform-box: fill-box; transform-origin: center; animation: garua-parpadea 7s infinite; }
+@keyframes garua-flota { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes garua-parpadea { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
+@keyframes garua-habla { 50% { transform: scale(1.035); } }
+/* Respirar: 4 s inhala, 6 s exhala, con la curva de la respiración */
+.garua--respirar { transform-origin: 50% 55%; transition-property: transform, opacity; transition-timing-function: var(--ease-respira); }
+/* Disolverse (~400 ms) al pasar a crisis */
+.garua--disolver { animation: garua-disuelve 400ms cubic-bezier(.4, 0, 1, 1) both; }
+@keyframes garua-disuelve { to { opacity: 0; filter: blur(10px); transform: scale(1.08); } }
+
+/* Anillos que acompañan la voz */
+.anillos { position: absolute; left: 50%; top: 50%; width: 0; height: 0; pointer-events: none; }
+.anillo { position: absolute; left: 50%; top: 50%; border-radius: 50%; transform: translate(-50%, -50%); border: 2px solid rgba(255, 255, 255, .75);
+  background: rgba(255, 255, 255, .14); animation: anillo-voz 1.4s ease-in-out infinite; }
+.anillo--1 { width: 224px; height: 224px; }
+.anillo--2 { width: 262px; height: 262px; opacity: .6; animation-delay: .2s; }
+.anillo--3 { width: 300px; height: 300px; opacity: .32; animation-delay: .4s; }
+@keyframes anillo-voz { 50% { transform: translate(-50%, -50%) scale(1.04); } }

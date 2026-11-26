@@ -1,6 +1,10 @@
 // Perfil persistente que se actualiza con el uso (RF-21, RF-22, RF-23). Vive en el dispositivo (localStorage).
 // Guarda preferencias, permisos, ritmo, errores y emociones declaradas e inferidas, y anota de dónde
 // salió cada cambio que la app hizo por su cuenta.
+import { mejorTecnica, TECNICAS } from './refugio.js'
+import { TRAMPAS } from './trampas.js'
+import { fraseMasSignificativa } from './reflexion.js'
+
 const CLAVE = 'clima-interior:perfil'
 
 export const PREFERENCIAS = {
@@ -11,14 +15,17 @@ export const PREFERENCIAS = {
   vibrar: true,
   pistas: true,
   comandosVoz: true,
+  tamanoTexto: 'normal', // panel «Aa»: 'normal' | 'grande' | 'mas-grande'
+  tema: 'auto', // 'auto' (noche según el sistema o la hora) | 'claro' | 'noche'
   capas: { lluvia: true, viento: true, niebla: true, nubes: true, luz: true },
 }
 
-// Cada permiso es independiente y arranca en el valor más protector (S03, S42)
-export const PRIVACIDAD = { grabarVoz: true, transcribirEnInternet: false, iaEnInternet: false, climaCompartido: false }
+// Cada permiso es independiente y arranca en el valor más protector (S03, S42).
+// «Grabar mi voz» también arranca apagado: se enciende con «Activar micrófono» la primera vez que se usa (journey nuevo, P1).
+export const PRIVACIDAD = { grabarVoz: false, transcribirEnInternet: false, iaEnInternet: false, climaCompartido: false }
 
 // Qué datos usa la personalización (S40). Apagar una categoría también borra lo aprendido de ella.
-export const PERSONALIZACION = { paisaje: true, ritmo: true, elegidas: true, propuestas: false, tono: true, entrada: true }
+export const PERSONALIZACION = { paisaje: true, ritmo: true, elegidas: true, propuestas: false, tono: true, entrada: true, refugio: true, trampas: true }
 
 // Nombres de las categorías que la persona puede olvidar en "Lo que sabe de ti"
 export const CATEGORIAS = {
@@ -27,25 +34,33 @@ export const CATEGORIAS = {
   propuestas: 'Emociones que propuso la IA',
   tono: 'Cómo te habla el asistente',
   entrada: 'Si prefieres hablar o escribir',
+  refugio: 'Técnicas que te ayudan',
+  trampas: 'Trampas que no te suenan',
 }
 
 const FALLOS_MIC_PARA_TEXTO = 2
 const PEDIDOS_PARA_CORTO = 3
+const DESCARTES_PARA_SILENCIAR = 2
 
 const INICIAL = {
   registros: [],
+  // Cada uso del Refugio: { fecha, tecnica, antes, despues, segundos }. Sin texto de lo que se dijo.
+  refugios: [],
+  refugioSaltado: null, // fecha en que dijo «Ahora no» a la oferta: ese día no se vuelve a ofrecer (HU-30 Esc. 2)
   preferencias: PREFERENCIAS,
   privacidad: PRIVACIDAD,
   personalizacion: PERSONALIZACION,
   ritmo: { horaHabitual: null, segundosCheckin: null },
   primerUso: { completo: false, edad: null },
+  // Preguntas y tarjetas que se muestran una sola vez, justo cuando hacen falta (journey nuevo)
+  avisos: { ia: false, accesibilidad: false, instalar: false },
   // Lo que la app aprende del uso y lo que decidió por su cuenta a partir de eso
-  aprendizaje: { emociones: {}, propuestasIA: 0, aceptadasIA: 0, fallosMic: 0, pedidosCorto: 0 },
-  aprendido: { frasesCortas: false, entrada: 'voz' },
+  aprendizaje: { emociones: {}, propuestasIA: 0, aceptadasIA: 0, fallosMic: 0, pedidosCorto: 0, trampas: {} },
+  aprendido: { frasesCortas: false, entrada: 'voz', tecnicaFavorita: null, trampasSilenciadas: [] },
   cambios: [],
 }
 
-const GRUPOS = ['preferencias', 'privacidad', 'personalizacion', 'ritmo', 'primerUso', 'aprendizaje', 'aprendido']
+const GRUPOS = ['preferencias', 'privacidad', 'personalizacion', 'ritmo', 'primerUso', 'avisos', 'aprendizaje', 'aprendido']
 
 // Mezcla un nivel de profundidad: si se agrega un ajuste nuevo, los perfiles guardados lo reciben
 function combinar(base, guardado) {
@@ -54,6 +69,9 @@ function combinar(base, guardado) {
   for (const clave of GRUPOS) salida[clave] = { ...base[clave], ...(g[clave] ?? {}) }
   salida.preferencias.capas = { ...base.preferencias.capas, ...(g.preferencias?.capas ?? {}) }
   salida.aprendizaje.emociones = { ...(g.aprendizaje?.emociones ?? {}) }
+  salida.aprendizaje.trampas = { ...(g.aprendizaje?.trampas ?? {}) }
+  if (!Array.isArray(salida.aprendido.trampasSilenciadas)) salida.aprendido.trampasSilenciadas = []
+  if (!Array.isArray(salida.refugios)) salida.refugios = []
   if (!Array.isArray(salida.registros)) salida.registros = []
   if (!Array.isArray(salida.cambios)) salida.cambios = []
   return salida
@@ -121,7 +139,7 @@ export function guardarPreferencias(perfil, preferencias) {
   return persistir({ ...perfil, preferencias: { ...perfil.preferencias, ...preferencias } })
 }
 
-// Cambia un grupo de ajustes ('privacidad', 'personalizacion', 'primerUso') sin tocar los demás
+// Cambia un grupo de ajustes ('privacidad', 'personalizacion', 'primerUso', 'avisos') sin tocar los demás
 export function guardarAjustes(perfil, grupo, cambios) {
   return persistir({ ...perfil, [grupo]: { ...perfil[grupo], ...cambios } })
 }
@@ -172,6 +190,14 @@ export function restablecer(perfil, categoria) {
     p.aprendizaje.pedidosCorto = 0
     p.aprendido.frasesCortas = false
   }
+  if (categoria === 'refugio') {
+    p.refugios = []
+    p.aprendido.tecnicaFavorita = null
+  }
+  if (categoria === 'trampas') {
+    p.aprendizaje.trampas = {}
+    p.aprendido.trampasSilenciadas = []
+  }
   p.cambios = anotar(perfil, `Se borró: ${CATEGORIAS[categoria] ?? categoria}`, 'Lo pediste tú')
   return persistir(p)
 }
@@ -198,33 +224,80 @@ const frasesCortas = (perfil) => perfil.personalizacion.tono && perfil.aprendido
 
 // Aplica lo aprendido a la respuesta de la IA: suma tus palabras de siempre y acorta si lo pediste.
 // La IA sigue proponiendo; la persona decide.
-export function personalizarPropuesta(perfil, propuesta) {
-  const emociones = [...propuesta.emociones]
-  for (const nombre of emocionesFavoritas(perfil)) {
-    if (!emociones.some((e) => e.nombre === nombre)) emociones.push({ nombre, confianza: 0, tuya: true })
-  }
+// Se muestran hasta 4 nubes: tus palabras de siempre (máx. 2) desplazan a las propuestas menos probables.
+export function personalizarPropuesta(perfil, propuesta, relato = '') {
+  const tuyas = emocionesFavoritas(perfil).filter((n) => !propuesta.emociones.some((e) => e.nombre === n)).slice(0, 2)
+  const emociones = [...propuesta.emociones.slice(0, 4 - tuyas.length), ...tuyas.map((nombre) => ({ nombre, confianza: 0, tuya: true }))]
   let reflexion = propuesta.reflexion
-  if (frasesCortas(perfil)) reflexion = reflexion.match(/^[^.?!]*[.?!]/)?.[0] ?? reflexion
-  return { ...propuesta, emociones: emociones.slice(0, 6), reflexion }
+  if (frasesCortas(perfil)) reflexion = fraseMasSignificativa(reflexion, relato)
+  return { ...propuesta, emociones, reflexion }
 }
 
-// Lo que el proveedor de IA puede saber del perfil: solo el largo pedido, nunca el diario
-export function contextoParaLLM(perfil) {
-  return { frasesCortas: frasesCortas(perfil) }
+// Lo que el proveedor de IA puede saber del perfil: solo el largo pedido, nunca el diario.
+// respiroHoy (sí/no) lo usan solo las reglas locales; el prompt no lo incluye.
+export function contextoParaLLM(perfil, hoy = new Date().toLocaleDateString('en-CA')) {
+  return { frasesCortas: frasesCortas(perfil), respiroHoy: perfil.refugios.some((r) => r.fecha === hoy) }
 }
 
 // La entrada con la que conviene empezar, según lo aprendido
 export const empiezaEscribiendo = (perfil) => perfil.personalizacion.entrada && perfil.aprendido.entrada === 'texto'
 
 // Saludo que reconoce el ritmo de la persona, sin rachas ni reproches (RF-43)
+// B7: no se infiere el ritmo con pocos datos. Hacen falta 3 registros o más y que la hora habitual se repita.
+export const MIN_REGISTROS_RITMO = 3
+export function ritmoConocido(perfil) {
+  const { horaHabitual } = perfil.ritmo
+  if (!horaHabitual || perfil.registros.length < MIN_REGISTROS_RITMO) return false
+  return perfil.registros.filter((r) => r.hora?.slice(0, 2) === horaHabitual).length >= 2
+}
+
 export function notaDeRitmo(perfil, ahora = new Date()) {
-  if (!perfil.personalizacion.ritmo || perfil.registros.length < 3 || !perfil.ritmo.horaHabitual) return null
+  if (!perfil.personalizacion.ritmo || !ritmoConocido(perfil)) return null
   return String(ahora.getHours()).padStart(2, '0') === perfil.ritmo.horaHabitual
     ? 'Llegas a tu hora de siempre.'
     : null
 }
 
-// Borra todo lo que la app guardó en el dispositivo: perfil, caché y cola de sincronización (S45, RF-29)
+// Refugio (RF-42): guarda antes/después y, si la categoría está activa, aprende qué técnica despeja más tu cielo.
+// No hay rachas ni metas: solo se ofrece primero lo que te sirvió, y se anota por qué (RF-23, RNF-32).
+export function guardarRefugio(perfil, refugio) {
+  const refugios = [...perfil.refugios, refugio]
+  let { aprendido, cambios } = perfil
+  if (perfil.personalizacion.refugio) {
+    const mejor = mejorTecnica(refugios)
+    if (mejor && mejor.tecnica !== aprendido.tecnicaFavorita) {
+      aprendido = { ...aprendido, tecnicaFavorita: mejor.tecnica }
+      cambios = anotar(perfil, `Te ofrecemos primero «${TECNICAS[mejor.tecnica].titulo}»`,
+        `Fue la que más despejó tu cielo en ${mejor.veces} refugios`)
+    }
+  }
+  return persistir({ ...perfil, refugios, aprendido, cambios })
+}
+
+export const tecnicaFavorita = (perfil) => (perfil.personalizacion.refugio ? perfil.aprendido.tecnicaFavorita : null)
+
+// «Ahora no» a la oferta del Refugio: ese día no se vuelve a ofrecer
+export const saltarOfertaRefugio = (perfil, fecha) => persistir({ ...perfil, refugioSaltado: fecha })
+
+// La persona responde a la tarjeta de trampa. Si dice «No es así» varias veces a un mismo tipo, la app deja de
+// preguntarlo (y lo anota). Con la categoría apagada no se guarda nada.
+export function registrarTrampa(perfil, tipo, respuesta) {
+  if (!perfil.personalizacion.trampas || !TRAMPAS[tipo]) return perfil
+  const previo = perfil.aprendizaje.trampas[tipo] ?? { si: 0, no: 0 }
+  const cuenta = { ...previo, [respuesta === 'si' ? 'si' : 'no']: previo[respuesta === 'si' ? 'si' : 'no'] + 1 }
+  const aprendizaje = { ...perfil.aprendizaje, trampas: { ...perfil.aprendizaje.trampas, [tipo]: cuenta } }
+  let { aprendido, cambios } = perfil
+  if (cuenta.no >= DESCARTES_PARA_SILENCIAR && cuenta.no > cuenta.si && !aprendido.trampasSilenciadas.includes(tipo)) {
+    aprendido = { ...aprendido, trampasSilenciadas: [...aprendido.trampasSilenciadas, tipo] }
+    cambios = anotar(perfil, `Ya no te preguntamos por «${TRAMPAS[tipo].nombre.toLowerCase()}»`, `Dijiste «No es así» ${cuenta.no} veces`)
+  }
+  return persistir({ ...perfil, aprendizaje, aprendido, cambios })
+}
+
+export const trampasSilenciadas = (perfil) => (perfil.personalizacion.trampas ? perfil.aprendido.trampasSilenciadas : [])
+
+// Borra todo lo que la app guardó en el dispositivo: perfil, registros, respiros, tarea y caché (S45, RF-29).
+// No hay copias en un servidor: nada del diario sale del teléfono.
 export async function borrarTodo() {
   const claves = []
   for (let i = 0; i < localStorage.length; i++) claves.push(localStorage.key(i))

@@ -1,0 +1,359 @@
+/* Composición de las pantallas v3 refinada: escena (mundo + Garúa) arriba, suelo arenoso abajo, o pantalla plana.
+   Medidas tomadas de pantallas-v2/v3-refinada (grupo A, grupo B) y journey-nuevo, a 375 × 812. */
+
+.app { position: relative; max-width: 480px; min-height: 100dvh; margin: 0 auto; display: flex; flex-direction: column; background: var(--bg); overflow-x: clip; }
+.app--nav { padding-bottom: 84px; }
+.pie-dev { position: fixed; left: 0; bottom: 0; padding: 0 6px; font-size: 10px; color: var(--ink-3); background: var(--paper-72); z-index: 16; pointer-events: none; }
+.app--nav .pie-dev { bottom: 84px; }
+
+/* ───────── Escena ───────── */
+.escena { min-height: 300px; overflow: hidden; }
+.escena__cuerpo { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 16px; padding: 16px 24px 0; flex: 1; }
+.escena__garua { position: absolute; z-index: 1; }
+.escena .burbuja { max-width: min(78%, 330px); }
+.burbuja--derecha { align-self: flex-end; margin-left: auto; }
+.burbuja--derecha::after { right: auto; left: -9px; bottom: 18px; width: 12px; height: 16px; clip-path: polygon(100% 0, 100% 100%, 0 70%); }
+.escena .suelo, .suelo { flex: none; }
+
+/* Fecha y «Necesito un respiro» */
+.fila-fecha { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.fecha { display: flex; flex-direction: column; gap: 0; }
+.fecha .titulo-s { font-size: 1.125rem; }
+.etiqueta-sm { font-size: var(--t-meta); color: var(--ink-2); }
+.titulo-m { font-size: var(--t-question); line-height: 1.3; font-weight: 500; }
+.cuerpo-l { font-size: var(--t-body-l); line-height: 1.45; }
+
+/* ───────── Suelo ───────── */
+.suelo { display: flex; flex-direction: column; gap: 14px; }
+.suelo .climas { margin-top: -4px; }
+.suelo--inicio { gap: 12px; }
+.notas-inicio:empty { display: none; }
+.notas-inicio { display: grid; gap: 4px; }
+.puntos--bienvenida { gap: 12px; }
+.meta--centro { text-align: center; }
+.enlace--en-linea { display: inline-flex; vertical-align: middle; min-height: 44px; min-width: 0; padding: 0; font-size: inherit; font-weight: 500; color: var(--ink); }
+.pila--aire { margin-top: 10px; }
+.fila-enlaces--extremos { justify-content: space-between; }
+.centrado { align-self: center; }
+.hr { border: 0; border-top: 1px solid var(--hair); margin: 4px 0; }
+
+/* ───────── Pantalla plana (listas de Perfil, Historial) ───────── */
+.plana { flex: 1; display: flex; flex-direction: column; background: var(--bg); }
+.plana--cielo { background: linear-gradient(#D9E2E9 0, #EEF1EF 180px, var(--bg) 360px); }
+[data-tema='noche'] .plana--cielo { background: linear-gradient(#1D2A4D 0, #18222D 220px, var(--bg) 420px); }
+.plana__cuerpo { display: flex; flex-direction: column; gap: 14px; padding: 18px 24px 28px; }
+.plana__cuerpo--centro { align-items: center; text-align: center; padding-top: 40px; }
+.plana__cuerpo > .etiqueta { margin: 8px 0 -6px 4px; }
+.plana__cuerpo > h2.etiqueta { font-weight: 500; color: var(--ink-2); }
+
+/* ───────── Cabecera sobre el cielo y título a 320 px ───────── */
+@media (max-width: 359px) {
+  .cabecera { margin-inline: 16px; }
+  .cabecera__titulo { order: 3; flex-basis: 100%; white-space: normal; overflow: visible; line-height: 1.3; margin-top: -2px; }
+  .escena__cuerpo, .plana__cuerpo, .suelo { padding-inline: 16px; }
+  .ayuda-ya { padding: 0 10px; }
+  .display-xl { font-size: 3rem; }
+}
+
+/* ───────── Inicio ───────── */
+.escena--inicio { min-height: 340px; }
+.escena--inicio .escena__cuerpo { padding-top: 12px; padding-bottom: 40px; } /* el borde del suelo (27 px) no tapa la burbuja */
+/* M6: en teléfonos bajos (320 × 568) «Guardar así» se ve sin bajar: fecha en una línea y burbuja más chica */
+@media (max-height: 699px) {
+  .escena--inicio .escena__cuerpo { gap: 10px; padding-top: 8px; padding-bottom: 34px; }
+  .escena--inicio .fecha { flex-direction: row; flex-wrap: wrap; gap: 0 5px; align-items: baseline; }
+  .escena--inicio .fecha .titulo-s { font-size: 1rem; }
+  .escena--inicio .burbuja--saludo { font-size: var(--t-display-s); padding: 12px 16px 14px; margin-top: 0; }
+  .suelo--inicio { gap: 8px; padding-top: 8px; }
+  .suelo--inicio #elige-cielo { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .suelo--inicio .climas { margin-top: 0; }
+  .suelo--inicio .tok { height: 64px; gap: 6px; }
+}
+.burbuja--saludo { margin-top: 6px; max-width: 220px; }
+.escena--bienvenida { min-height: 290px; }
+.escena--bienvenida .burbuja { margin-top: 14px; }
+
+/* ───────── Te escucho ───────── */
+.escena--escucha { min-height: 440px; }
+.escucha__arriba { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.pildora--timer { gap: 8px; font-variant-numeric: tabular-nums; }
+.pildora--timer b { font-weight: 500; }
+.rec { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--crisis); animation: late 1.4s ease-in-out infinite; margin-right: 6px; vertical-align: middle; }
+@keyframes late { 50% { opacity: .4; transform: scale(.8); } }
+.escucha__garua { position: relative; display: grid; place-items: center; margin: 22px auto 0; }
+.suelo--escucha { gap: 12px; }
+.transcripcion { font-family: var(--serif); font-style: italic; font-size: var(--t-display-s); line-height: 1.3; min-height: 3.9em; }
+.transcripcion__vivo { color: var(--ink-2); }
+.cursor { display: inline-block; width: 2px; height: 1.1em; margin-left: 3px; vertical-align: -3px; background: var(--primary); animation: late 1s steps(1) infinite; }
+.controles-voz { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; margin-top: 6px; }
+.control-voz { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: var(--t-meta); color: var(--ink-2); min-height: 44px; }
+.control-voz__circulo { width: 56px; height: 56px; border-radius: 50%; border: 1px solid var(--line); background: var(--paper); display: grid; place-items: center; color: var(--ink); }
+.parar { width: 76px; height: 76px; border-radius: 50%; background: var(--primary); display: grid; place-items: center; }
+.parar span { width: 24px; height: 24px; border-radius: 6px; background: var(--on-primary); }
+
+/* ───────── Escribir / corregir, trampa, amiga: tarjeta sobre el cielo ───────── */
+.escena--relato, .escena--trampa, .escena--tarjeta, .escena--centro { flex: 1; }
+.escena--relato .escena__cuerpo, .escena--trampa .escena__cuerpo, .escena--tarjeta .escena__cuerpo { padding: 70px 16px 24px; gap: 14px; }
+.relato__garua, .trampa__garua, .tarjeta__garua { position: absolute; top: -14px; right: 26px; z-index: 3; }
+.relato, .trampa, .escena--tarjeta .tarjeta { position: relative; padding: 20px 20px 22px; display: flex; flex-direction: column; gap: 12px; }
+.relato__titulo { display: block; }
+.area { width: 100%; min-height: 150px; resize: vertical; border-radius: 12px; border: 1px solid var(--line); background: var(--paper); padding: 14px 16px;
+  font-size: var(--t-body); line-height: 1.5; color: var(--ink); }
+.area:focus-visible { outline: 2px solid var(--primary); outline-offset: 0; border-color: var(--primary); }
+.relato__acciones { padding: 0 8px; }
+.relato__acciones .b-solido { width: 100%; }
+.aviso-linea { display: flex; gap: 8px; align-items: flex-start; font-size: var(--t-meta); color: var(--peligro); }
+
+/* Pensando */
+.pensando { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding-bottom: 120px; }
+
+/* ───────── Emociones: nubes de línea ───────── */
+.escena--emociones { min-height: 270px; }
+.escena--emociones .burbuja { margin: 24px 0 0 auto; }
+.nubes { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; margin: 4px -4px 0; }
+.nube { position: relative; min-height: 76px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 22px 6px 0; color: var(--ink); font-size: var(--t-body); }
+.nube__forma { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.nube__forma path { fill: var(--paper-90); stroke: var(--line); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.nube__nombre { position: relative; }
+.nube__tuya { position: relative; font-size: var(--t-caption); color: var(--ink-2); }
+.nube[aria-pressed='true'] .nube__forma path { fill: var(--paper); stroke: var(--ink); stroke-width: 1.5; }
+.nube[aria-pressed='true'] .nube__nombre { font-weight: 500; }
+.nube[aria-pressed='true'] .nube__nombre::after { content: ''; position: absolute; left: 0; right: 0; bottom: -5px; height: 2px; border-radius: 1px; background: var(--primary); }
+.reflexion-previa { padding: 0 4px; }
+
+/* ───────── Guardado y reflexión ───────── */
+.escena--guardado { min-height: 330px; }
+.burbuja--reflexion { max-width: 100% !important; padding: 18px 20px 10px; }
+.burbuja--reflexion::after { right: 64px; }
+.reflexion { font-family: var(--serif); }
+.reflexion__herramientas { display: flex; gap: 4px; margin: 6px -8px 0; }
+.guardado__titulo { display: flex; align-items: center; gap: 8px; font-size: var(--t-question); font-weight: 500; }
+.guardado__titulo .icono { color: var(--primary); }
+.guardado__resumen { display: flex; align-items: center; gap: 6px; margin-top: -8px; }
+.oferta { display: flex; flex-direction: column; gap: 12px; }
+
+/* Tarjetas justo a tiempo (T1, T2) */
+.tarjeta-jit { padding: 16px 16px 10px; display: flex; flex-direction: column; gap: 6px; }
+.tarjeta-jit__cabeza { display: flex; justify-content: space-between; align-items: center; margin: -6px -10px -4px 0; }
+.tarjeta-jit__filas .fila { min-height: 56px; padding: 10px 0; }
+.tarjeta-jit__filas .fila:first-child { border-top: 0; }
+.tarjeta-jit__pie { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; border-top: 1px solid var(--hair); }
+.aa-mini { display: inline-block; border: 1px solid var(--line); border-radius: 6px; padding: 0 4px; font-weight: 500; }
+
+/* ───────── Trampa ───────── */
+/* B13: Garúa se asoma por el borde de la tarjeta, lejos de «Ayuda ya» */
+.escena--trampa .escena__cuerpo { padding-top: 96px; }
+.escena--trampa .trampa__garua { top: 22px; right: auto; left: 24px; }
+.trampa__chip { align-self: flex-start; font-size: var(--t-caption); color: var(--ink-2); border: 1px solid var(--hair); border-radius: 999px; padding: 3px 10px; }
+.trampa__k { margin-bottom: -6px; }
+.trampa__valida { color: var(--ink-2); }
+.trampa__nota { margin-top: 2px; }
+
+/* Despedida */
+.escena--despedida { min-height: 560px; }
+.despedida { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; padding: 40px 12px 0; }
+
+/* ───────── Hojas justo a tiempo ───────── */
+.hoja__garua { margin: -10px 0 -10px auto; }
+.opciones-ia { display: grid; gap: 10px; margin-bottom: 12px; }
+.opcion-ia { display: flex; gap: 14px; align-items: flex-start; text-align: left; padding: 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); min-height: 56px; }
+.opcion-ia > span { display: flex; flex-direction: column; gap: 3px; }
+.opcion-ia b { font-weight: 500; font-size: 1rem; }
+.opcion-ia small { font-size: var(--t-meta); color: var(--ink-2); line-height: 1.4; }
+.opcion-ia--solida { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.opcion-ia--solida small { color: var(--on-primary); opacity: .92; }
+.hoja__pie { margin-top: 4px; }
+.aa { display: flex; flex-direction: column; }
+.aa > .fila { border-top: 1px solid var(--hair); }
+.aa__tamano { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 0 14px; }
+
+/* Segmento (tamaño, ritmo, dónde se piensa): subrayado en lo elegido */
+.segmento { display: inline-flex; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); overflow: hidden; }
+.segmento button { min-width: 48px; min-height: 44px; padding: 0 12px; color: var(--ink-2); border-left: 1px solid var(--hair); line-height: 1; }
+.segmento button:first-child { border-left: 0; }
+.segmento button[aria-checked='true'] { color: var(--ink); font-weight: 500; box-shadow: inset 0 -2px 0 var(--primary); }
+.segmento--ancho { display: flex; width: 100%; }
+.segmento--ancho button { flex: 1; font-size: var(--t-meta); }
+
+/* ───────── Crisis: sin Garúa, la línea 113 primero ───────── */
+.crisis { position: fixed; inset: 0; z-index: 60; overflow-y: auto; background: linear-gradient(#EFE7DA, var(--bg) 46%); display: flex; flex-direction: column;
+  max-width: 480px; margin: 0 auto; }
+[data-tema='noche'] .crisis { background: linear-gradient(#24202A, var(--bg) 46%); }
+.crisis__horizonte { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 300px; z-index: -1; opacity: .9; }
+.crisis__cabeza { padding: max(56px, env(safe-area-inset-top)) 24px 0; display: flex; flex-direction: column; gap: 14px; }
+.crisis__cabeza h1:focus { outline: none; }
+.crisis__lista { padding: 26px 24px 32px; display: flex; flex-direction: column; gap: 14px; }
+.crisis__principal, .crisis__fila { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--ink); min-height: 64px; }
+.crisis__principal { padding: 14px 16px; border-radius: 16px; background: var(--crisis); color: #fff; }
+.crisis__principal .crisis__textos small { color: #fff; opacity: .92; }
+.crisis__num { font-size: 1.625rem; font-weight: 500; min-width: 56px; font-variant-numeric: tabular-nums; }
+.crisis__textos { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.crisis__textos b { font-weight: 500; }
+.crisis__textos small { font-size: var(--t-meta); color: var(--ink-2); line-height: 1.35; }
+.crisis__tel { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; border: 1px solid currentColor; flex: none; }
+.crisis__filas { background: var(--paper); border: 1px solid var(--hair); border-radius: 16px; padding: 0 16px; }
+.crisis__fila { padding: 10px 0; border-top: 1px solid var(--hair); }
+.crisis__fila:first-child { border-top: 0; }
+.crisis__fila .crisis__num { font-size: 1.25rem; color: var(--crisis-tx); }
+.crisis__fila .crisis__tel { color: var(--ink-2); border-color: var(--line); }
+
+/* ───────── Historial ───────── */
+.historial__cabeza { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; }
+.historial__cabeza .etiqueta-sm, .historial__alternar { white-space: nowrap; }
+.semana-dias { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: var(--t-caption); color: var(--ink-2); margin: 0 -8px -6px; }
+/* B3: el calendario usa 8 px de cada margen y huecos de 4 px para que cada día mida 44 px o más a 375 px */
+.calendario { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-inline: -8px; }
+.dia { aspect-ratio: 1; min-width: 0; }
+.dia__cielo { position: relative; width: 100%; height: 100%; min-height: 40px; border-radius: 10px; display: grid; place-items: center; border: 1px solid var(--hair);
+  background: linear-gradient(var(--c1, #EEF2F5), var(--c2, #F8F9FA)); color: #1F2A33; }
+.dia__cielo--vacio { --c1: #EEF2F5; --c2: #F8F9FA; border-style: dashed; }
+[data-tema='noche'] .dia__cielo--vacio { --c1: #22303D; --c2: #1A2530; color: var(--ink); }
+.dia--soleado { --c1: #F4CE7E; --c2: #FBF0D9; }
+.dia--nublado { --c1: #B4C2CF; --c2: #E3E9EE; }
+.dia--lluvia { --c1: #7FA3BB; --c2: #C5D7E3; }
+.dia--tormenta { --c1: #575473; --c2: #6F6B8F; }
+.dia--tormenta .dia__cielo { color: #fff; }
+.dia--niebla { --c1: #E3DDD2; --c2: #F1EEE8; }
+.dia__n { position: absolute; top: 3px; left: 5px; font-size: 11px; line-height: 1; }
+.dia__n--hoy { font-weight: 600; text-decoration: underline; text-decoration-color: var(--primary); text-underline-offset: 2px; }
+.dia__i { margin-top: 10px; display: flex; }
+.ayudo { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.fila--columna { flex-direction: column; align-items: flex-start; gap: 4px; }
+.transicion { display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap; font-size: var(--t-meta); }
+.transicion__flecha { color: var(--ink-3); margin: 0 2px; }
+.detalle__clima { display: flex; align-items: center; gap: 12px; }
+.detalle__bloque { display: flex; flex-direction: column; gap: 4px; }
+.detalle__datos { display: grid; gap: 10px; }
+.detalle__datos dd { margin: 0; }
+.detalle__registro { display: flex; flex-direction: column; gap: 14px; }
+.detalle__registro + .detalle__registro { border-top: 1px solid var(--hair); padding-top: 14px; }
+.dia__varios { position: absolute; top: 3px; right: 5px; font-size: 10px; line-height: 1; font-weight: 600; }
+.vacio { align-items: center; text-align: center; }
+.vacio .fecha { align-self: flex-start; }
+.vacio__garua { margin: 20px 0 0; }
+
+/* ───────── Refugio ───────── */
+.escena--respiro { min-height: 100dvh; }
+.escena--respiro .escena__cuerpo { padding-top: 0; }
+.respiro { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
+.respiro__textos { display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 18px; min-height: 160px; }
+.respiro__guia { min-height: 1em; }
+.respiro__ponte { font-size: 2.875rem; }
+.respiro__garua { position: relative; width: 270px; height: 270px; display: grid; place-items: center; margin: 8px auto 0; }
+.respiro__aro { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.respiro__aro circle { fill: none; stroke-width: 1.2; }
+.respiro__aro-fondo { stroke: rgba(255, 255, 255, .45); }
+.respiro__aro-avance { stroke: #fff; stroke-dasharray: 1; transition: stroke-dashoffset 1s linear; }
+.respiro__nube { transition-property: transform; transition-timing-function: var(--ease-respira); }
+.respiro__pie { margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; padding-bottom: 20px; }
+.respiro__pie .rayas { margin-bottom: 4px; }
+.respiro__pie .fila-enlaces { justify-content: center; gap: 24px; }
+.respiro__pie .b-linea { width: 100%; }
+
+.tecnicas { padding: 0 16px; }
+.tecnica { align-items: flex-start; }
+.tecnica__tuya { display: inline-flex; align-items: center; gap: 4px; font-size: var(--t-caption); color: var(--ink); font-weight: 500; }
+
+.tierra__arriba { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.tierra__garua { position: relative; display: grid; place-items: center; width: 180px; height: 180px; margin-top: 14px; }
+.anillos--quietos .anillo { animation: none; }
+.anillos--quietos .anillo--1 { width: 150px; height: 150px; }
+.anillos--quietos .anillo--2 { width: 176px; height: 176px; }
+
+.suelo--form { gap: 12px; }
+.tarea__cabeza { display: flex; justify-content: space-between; align-items: center; }
+.pasos { padding: 0 6px 0 12px; }
+.paso { display: flex; align-items: center; gap: 4px; border-top: 1px solid var(--hair); }
+.paso:first-child { border-top: 0; }
+.paso label { flex: 1; display: flex; align-items: center; gap: 12px; min-height: 56px; cursor: pointer; }
+.paso input { width: 22px; height: 22px; flex: none; accent-color: var(--primary); }
+.paso__textos { display: grid; gap: 2px; }
+.paso small { font-size: var(--t-caption); color: var(--ink-2); }
+.paso--hecho .paso__texto { text-decoration: line-through; color: var(--ink-2); }
+.agregar { display: flex; flex-direction: column; gap: 8px; }
+.agregar__botones { display: flex; gap: 8px; }
+.agregar__botones .b { flex: 1; }
+.agregar .ib { width: 56px; height: 56px; }
+
+.antes-despues { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; }
+.antes-despues > div { display: flex; flex-direction: column; gap: 6px; }
+.antes-despues__flecha { color: var(--ink-3); }
+.mini-cielo { display: block; position: relative; height: 68px; border-radius: 12px; overflow: hidden; border: 1px solid var(--hair); }
+
+/* ───────── Perfil ───────── */
+.sabe { position: relative; }
+.sabe__olvidar { position: absolute; right: 0; bottom: 6px; font-size: var(--t-meta); }
+.sabe:has(.sabe__olvidar) .fila--sw { padding-bottom: 40px; }
+.lista--peligro .fila__icono, .lista--peligro .fila__titulo { color: var(--peligro); }
+.tarjeta--lista { padding: 14px 16px; display: grid; gap: 6px; box-shadow: none; }
+.vinetas { list-style: disc; padding-left: 20px; display: grid; gap: 6px; font-size: var(--t-meta); }
+.capas { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.capa { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--paper); color: var(--ink-2); font-size: var(--t-meta); }
+.capa[aria-pressed='true'] { color: var(--ink); font-weight: 500; box-shadow: inset 0 -2px 0 var(--primary); }
+.campo--ok input { border-color: var(--primary); }
+.fila-botones { display: flex; gap: 8px; }
+.fila-botones--campos > .campo { flex: 1; min-width: 0; }
+.fila-botones .b { flex: 1; min-width: 0; padding: 0 10px; }
+.cambios { padding: 0 16px; }
+
+/* ───────── Sala ───────── */
+.amigas-inicio { position: absolute; right: 10px; bottom: 30px; display: flex; flex-wrap: wrap; width: 200px; gap: 0 4px; justify-content: flex-end; }
+.unirse { display: grid; gap: 8px; }
+.unirse__fila { display: flex; gap: 8px; }
+.unirse__fila .entrada { flex: 1; min-width: 0; }
+.unirse__fila .b { width: auto; }
+.escena--sala .escena__cuerpo { padding-top: 10px; }
+.colectivo { display: flex; flex-direction: column; gap: 4px; }
+.colectivo h1 { display: flex; align-items: center; gap: 8px; }
+.amigas { position: absolute; inset: auto 0 10px; height: 230px; z-index: 1; }
+.amiga { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 0; width: 96px; margin-left: -10px; }
+.amiga__nombre { background: var(--paper-90); border-radius: 8px; padding: 3px 8px; font-size: 11px; font-weight: 500; text-align: center; line-height: 1.3; display: flex; flex-direction: column; align-items: center; }
+.amiga__nombre small { display: inline-flex; align-items: center; gap: 3px; font-weight: 400; color: var(--ink-2); }
+.mi-clima { display: flex; flex-direction: column; gap: 10px; }
+.mi-clima__fila { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.mi-clima__fila .fila__titulo { display: inline-flex; align-items: center; gap: 6px; }
+.mi-clima__fila .b { width: auto; }
+.participantes { padding: 0 16px; }
+.fila--participante { min-height: 60px; padding: 10px 0; gap: 12px; }
+.codigo { display: grid; gap: 8px; }
+.codigo__valor { font-family: var(--sans); font-size: var(--t-display-s); font-weight: 500; letter-spacing: .12em; font-variant-numeric: tabular-nums; }
+
+/* Noche: el suelo y las tarjetas oscuros conservan el contraste */
+[data-tema='noche'] .crisis__principal { background: #9E3A2B; }
+[data-tema='noche'] .dia__cielo { border-color: transparent; }
+.campo input[type='date'] { min-width: 0; padding-inline: 12px; }
+/* La reflexión larga empuja la burbuja: Garúa queda debajo, sin taparse */
+.escena--guardado .escena__cuerpo { padding-bottom: 150px; }
+/* Crisis de noche: el horizonte se oscurece para que la nota final conserve el contraste */
+[data-tema='noche'] .crisis__horizonte { filter: brightness(.3) saturate(.5); }
+/* Textos secundarios que van directo sobre el cielo (no sobre papel): en tinta, para pasar 4,5:1 medido en píxeles */
+.escena > .cabecera .ib--plano, .escena .fecha .etiqueta-sm, .respiro .etiqueta, .tierra__arriba .meta, .colectivo .meta { color: var(--ink); }
+
+/* M5: cambiar ritmo, una línea por ritmo; Garúa se achica para que «Elegir otra cosa» quede a la vista */
+.respiro--cambiando .respiro__garua { zoom: .55; margin-top: 0; }
+.respiro--cambiando .respiro__textos { min-height: 0; padding-top: 8px; }
+.ritmos { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; }
+.ritmos__lista { width: 100%; text-align: left; }
+.fila--radio { align-items: flex-start; }
+.radio-marca { flex: none; width: 22px; height: 22px; margin-top: 1px; border-radius: 50%; border: 1.5px solid var(--ink-3); display: grid; place-items: center; }
+[aria-checked='true'] > .radio-marca { border-color: var(--primary); }
+[aria-checked='true'] > .radio-marca::after { content: ''; width: 12px; height: 12px; border-radius: 50%; background: var(--primary); }
+
+/* M10: palabra propia en emociones */
+.palabra-propia { display: flex; flex-direction: column; gap: 8px; }
+
+/* ───────── M14: escritorio. La app sigue siendo una columna de teléfono, centrada sobre un paisaje de lomas
+   que llena la ventana (antes, 75 % de pantalla vacía en 1440 px). ───────── */
+:root {
+  --lomas-escritorio: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 360' preserveAspectRatio='none'%3E%3Cpath d='M0 170C180 110 360 120 540 160S900 130 1080 100 1320 90 1440 110V360H0Z' fill='%23C9D6B4'/%3E%3Cpath d='M0 240C220 190 420 200 640 235S1060 210 1240 180 1400 175 1440 182V360H0Z' fill='%23A9C08C'/%3E%3Cpath d='M0 300C260 270 520 280 760 300S1180 290 1440 270V360H0Z' fill='%23F7F1E4'/%3E%3C/svg%3E");
+  --cielo-escritorio: linear-gradient(#C9D7E2 0%, #E3E9E8 45%, #EEEBE0 100%);
+}
+[data-tema='noche'] {
+  --lomas-escritorio: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 360' preserveAspectRatio='none'%3E%3Cpath d='M0 170C180 110 360 120 540 160S900 130 1080 100 1320 90 1440 110V360H0Z' fill='%23263447'/%3E%3Cpath d='M0 240C220 190 420 200 640 235S1060 210 1240 180 1400 175 1440 182V360H0Z' fill='%231F2C3B'/%3E%3Cpath d='M0 300C260 270 520 280 760 300S1180 290 1440 270V360H0Z' fill='%23141E28'/%3E%3C/svg%3E");
+  --cielo-escritorio: linear-gradient(#141D33 0%, #1D2A4D 50%, #22324A 100%);
+}
+@media (min-width: 720px) {
+  body { background: var(--lomas-escritorio) center bottom / 100% 42vh no-repeat fixed, var(--cielo-escritorio) fixed; }
+  .app { box-shadow: 0 0 0 1px var(--hair), 0 30px 80px -40px rgba(15, 23, 32, .55); }
+  .nav { border-inline: 1px solid var(--hair); }
+}

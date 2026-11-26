@@ -2,7 +2,7 @@
   "RF-01": {
     "estado": "implementado",
     "codigo": [
-      "src/componentes/Paisaje.jsx::export function Cielo",
+      "src/mundo/Mundo.jsx::export function Mundo",
       "src/datos/climas.js::export const CIELO",
       "src/datos/climas.js::export function capasVisibles"
     ],
@@ -10,7 +10,7 @@
     "pantallas": [
       "S06"
     ],
-    "captura": "inicio.png",
+    "captura": "v3/03-inicio.png",
     "nota": "Cielo, luz, nubes, viento, lluvia y niebla como capas SVG; la pantalla de inicio no usa formularios para el clima."
   },
   "RF-02": {
@@ -22,13 +22,13 @@
     "pantallas": [
       "S06"
     ],
-    "captura": "inicio.png",
+    "captura": "v3/03-inicio.png",
     "nota": "Los climas se distinguen por densidad de nubes, lluvia y viento; falta la prueba en escala de grises."
   },
   "RF-03": {
     "estado": "implementado",
     "codigo": [
-      "src/componentes/Paisaje.jsx::aria-label",
+      "src/mundo/Mundo.jsx::aria-label",
       "src/datos/climas.js::export const DESCRIPCION",
       "src/App.jsx::function elegirClima"
     ],
@@ -36,7 +36,7 @@
     "pantallas": [
       "S46"
     ],
-    "captura": "accesibilidad.png",
+    "captura": "v3/32-accesibilidad.png",
     "nota": "Cada paisaje tiene descripción textual (`aria-label`) y se puede describir en voz alta."
   },
   "RF-04": {
@@ -48,7 +48,7 @@
     "pantallas": [
       "S46"
     ],
-    "captura": "accesibilidad.png",
+    "captura": "v3/32-accesibilidad.png",
     "nota": "Una nota corta por clima; en modo neutral la tormenta suena como cielo neutro."
   },
   "RF-05": {
@@ -64,7 +64,7 @@
     "pantallas": [
       "S08"
     ],
-    "captura": "grabando.png",
+    "captura": "v3/06-te-escucho.png",
     "nota": "Reloj de 1:00 y cierre sugerido a los 60 s sin cortar la frase; «Seguir hablando» agrega al texto sin perder lo anterior. La prueba e2e recorre el dictado completo."
   },
   "RF-06": {
@@ -76,7 +76,7 @@
     "pantallas": [
       "S15"
     ],
-    "captura": "revision.png",
+    "captura": "v3/07-corregir.png",
     "nota": "La transcripción es editable y solo llega al LLM cuando se toca «Listo»."
   },
   "RF-07": {
@@ -99,7 +99,7 @@
     "pantallas": [
       "S13"
     ],
-    "captura": "revision.png",
+    "captura": "v3/07-corregir.png",
     "nota": "Cambiar a texto o volver a hablar conserva lo dicho."
   },
   "RF-09": {
@@ -111,7 +111,7 @@
     "pantallas": [
       "S19"
     ],
-    "captura": "emociones.png",
+    "captura": "v3/08-emociones.png",
     "nota": "La reflexión se escucha con TTS y siempre está escrita en pantalla."
   },
   "RF-10": {
@@ -126,34 +126,34 @@
     "pantallas": [
       "S12"
     ],
-    "captura": "antes-grabar.png",
+    "captura": "v3/05-antes-de-grabar.png",
     "nota": "Si el micrófono no se puede usar se explica el motivo y queda escribir; el clima elegido no se pierde."
   },
   "RF-11": {
     "estado": "implementado",
     "codigo": [
-      "src/pantallas/Privacidad.jsx::export function AntesDeGrabar",
-      "src/App.jsx::className=\"punto\""
+      "src/pantallas/Hojas.jsx::export function HojaMicrofono",
+      "src/pantallas/Checkin.jsx::className=\"rec\""
     ],
     "pruebas": [],
     "pantallas": [
       "S07",
       "S08"
     ],
-    "captura": "antes-grabar.png",
-    "nota": "Aviso previo y píldora «Micrófono activo» con el punto rojo."
+    "captura": "v3/05-antes-de-grabar.png",
+    "nota": "Hoja «Antes de grabar» la primera vez que se usa el micrófono y píldora con el punto rojo y «Micrófono activo»."
   },
   "RF-12": {
     "estado": "implementado",
     "codigo": [
-      "src/App.jsx::Toca las nubes que sientes tuyas",
+      "src/pantallas/Checkin.jsx::Toca las nubes que sientes tuyas",
       "src/App.jsx::const [elegidas"
     ],
     "pruebas": [],
     "pantallas": [
       "S17"
     ],
-    "captura": "emociones.png",
+    "captura": "v3/08-emociones.png",
     "nota": "La persona elige sus emociones o marca «no sé»; la IA solo propone."
   },
   "RF-13": {
@@ -172,7 +172,7 @@
     "pantallas": [
       "S19"
     ],
-    "captura": "emociones.png",
+    "captura": "v3/08-emociones.png",
     "nota": "Máximo 2 frases; «Más corto» la deja en una y, al tercer pedido, la app lo recuerda."
   },
   "RF-14": {
@@ -187,14 +187,14 @@
     "pantallas": [
       "S22"
     ],
-    "captura": "riesgo.png",
+    "captura": "v3/23-crisis-detector.png",
     "nota": "Corre antes de pedir la reflexión y es independiente del LLM."
   },
   "RF-15": {
     "estado": "implementado",
     "codigo": [
       "src/datos/riesgo.js::export const RECURSOS",
-      "src/App.jsx::pantalla === 'riesgo'"
+      "src/App.jsx::crisis && <Crisis"
     ],
     "pruebas": [
       "pruebas/riesgo.test.js"
@@ -202,7 +202,7 @@
     "pantallas": [
       "S22"
     ],
-    "captura": "riesgo.png",
+    "captura": "v3/23-crisis-detector.png",
     "nota": "Muestra la Línea 113 (opción 5), SAMU 106 y PNP 105 como enlaces `tel:`."
   },
   "RF-16": {
@@ -240,7 +240,7 @@
     "pantallas": [
       "S42"
     ],
-    "captura": "privacidad.png",
+    "captura": "v3/31-privacidad.png",
     "nota": "LLM intercambiable; STT y TTS usan Web Speech API sin capa de adaptadores."
   },
   "RF-19": {
@@ -253,8 +253,8 @@
     "pantallas": [
       "S54"
     ],
-    "captura": "primer-uso.png",
-    "nota": "Manifiesto, service worker e instalación desde la bienvenida; se verifica en la URL publicada."
+    "captura": "v3/01-bienvenida.png",
+    "nota": "Manifiesto, service worker e instalación sugerida tras unos días de uso; se verifica en la URL publicada."
   },
   "RF-20": {
     "estado": "parcial",
@@ -283,7 +283,7 @@
     "pantallas": [
       "S40"
     ],
-    "captura": "perfil.png",
+    "captura": "v3/30-lo-que-sabe.png",
     "nota": "Registros, ajustes, ritmo (hora y duración), emociones que eliges, aciertos de la IA y fallos del micrófono persisten en el dispositivo."
   },
   "RF-22": {
@@ -301,7 +301,7 @@
     "pantallas": [
       "S40"
     ],
-    "captura": "perfil.png",
+    "captura": "v3/30-lo-que-sabe.png",
     "nota": "Cambian con el uso las emociones ofrecidas («tuya»), el largo de la reflexión, la entrada inicial (voz o texto) y el saludo; cada cambio anota su motivo. El paisaje todavía no evoluciona."
   },
   "RF-23": {
@@ -318,7 +318,7 @@
     "pantallas": [
       "S40"
     ],
-    "captura": "perfil.png",
+    "captura": "v3/30-lo-que-sabe.png",
     "nota": "Cada categoría se ve, se apaga u olvida por separado; apagarla borra lo aprendido de ella y la lista «Lo que cambió por su cuenta» dice por qué cambió cada cosa."
   },
   "RF-24": {
@@ -346,7 +346,7 @@
     "pantallas": [
       "S10"
     ],
-    "captura": "grabando.png",
+    "captura": "v3/06-te-escucho.png",
     "nota": "A los 12 s de silencio: texto, voz y vibración, si la persona lo dejó activo."
   },
   "RF-26": {
@@ -364,7 +364,7 @@
     "pantallas": [
       "S34-S39"
     ],
-    "captura": "sala.png",
+    "captura": "v3/36-sala-activa.png",
     "nota": "Crear, unirse por código o enlace y salir; el relé borra la sala al cerrarla o a las 24 h."
   },
   "RF-27": {
@@ -381,7 +381,7 @@
     "pantallas": [
       "S34-S39"
     ],
-    "captura": "sala.png",
+    "captura": "v3/36-sala-activa.png",
     "nota": "Solo viaja el clima en números con un seudónimo efímero; «Retirar mi clima» lo quita en todos. Compartir respeta el permiso «clima compartido»."
   },
   "RF-28": {
@@ -396,7 +396,7 @@
     "pantallas": [
       "S34-S39"
     ],
-    "captura": "sala.png",
+    "captura": "v3/36-sala-activa.png",
     "nota": "Clima colectivo por valencia promedio de los climas compartidos."
   },
   "RF-29": {
@@ -413,7 +413,7 @@
     "pantallas": [
       "S34-S39"
     ],
-    "captura": "sala.png",
+    "captura": "v3/36-sala-activa.png",
     "nota": "La creadora saca y cierra; el relé decide quién creó la sala. Falta «reportar»."
   },
   "RF-30": {
@@ -440,7 +440,7 @@
     "estado": "implementado",
     "codigo": [
       "src/pantallas/Accesibilidad.jsx::export function Accesibilidad",
-      "src/microinteracciones.css::data-movimiento",
+      "src/estilos/sistema.css::data-movimiento",
       "src/datos/accesibilidad.js::export function sistemaPideMenosMovimiento"
     ],
     "pruebas": [
@@ -449,7 +449,7 @@
     "pantallas": [
       "S46"
     ],
-    "captura": "accesibilidad.png",
+    "captura": "v3/32-accesibilidad.png",
     "nota": "Movimiento reducido (del sistema o elegido) apaga las animaciones; las capas del clima se apagan por separado."
   },
   "RF-33": {
@@ -472,7 +472,7 @@
     "estado": "parcial",
     "codigo": [
       "src/datos/climas.js::export function climaEfectivo",
-      "src/App.jsx::Modo neutral activo"
+      "src/pantallas/Checkin.jsx::Modo neutral"
     ],
     "pruebas": [],
     "pantallas": [
@@ -485,7 +485,7 @@
     "estado": "parcial",
     "codigo": [
       "src/datos/accesibilidad.js::export function detectarOrden",
-      "src/estilos.css::focus-visible"
+      "src/estilos/sistema.css::focus-visible"
     ],
     "pruebas": [
       "pruebas/accesibilidad.test.js"
@@ -493,7 +493,7 @@
     "pantallas": [
       "S51"
     ],
-    "captura": "accesibilidad.png",
+    "captura": "v3/32-accesibilidad.png",
     "nota": "Órdenes de voz (terminar, pausar, ayuda, salir por hoy) y foco visible; no se probó con un conmutador real."
   },
   "RF-36": {
@@ -508,14 +508,14 @@
     "pantallas": [
       "S45"
     ],
-    "captura": "sin-registros.png",
+    "captura": "v3/28-historial-vacio.png",
     "nota": "Los errores tienen aviso visual con rol `alert` y vibran si está activo."
   },
   "RF-37": {
     "estado": "implementado",
     "codigo": [
-      "src/pantallas/PrimerUso.jsx::export function Edad",
-      "src/pantallas/PrimerUso.jsx::export function Permisos",
+      "src/pantallas/Bienvenida.jsx::export function Menor",
+      "src/datos/privacidad.js::export function debePreguntarIA",
       "src/datos/perfil.js::export const PRIVACIDAD"
     ],
     "pruebas": [
@@ -526,8 +526,8 @@
       "S02",
       "S03"
     ],
-    "captura": "permisos.png",
-    "nota": "Edad declarada y cuatro permisos independientes, apagados por defecto."
+    "captura": "v3/05-antes-de-grabar.png",
+    "nota": "Bienvenida única con edad (pantalla propia para menores de 18) y cuatro permisos independientes, apagados por defecto; el micrófono y la IA en internet se piden justo a tiempo, la primera vez que se usan."
   },
   "RF-38": {
     "estado": "implementado",
@@ -546,53 +546,61 @@
       "S44",
       "S45"
     ],
-    "captura": "exportar.png",
+    "captura": "v3/33-mis-datos.png",
     "nota": "Resumen en PDF sin propuestas de la IA, rango vacío sin archivo y borrado total confirmado con BORRAR."
   },
   "RF-39": {
     "estado": "implementado",
     "codigo": [
-      "src/App.jsx::const abrirDemo",
+      "src/App.jsx::async function abrirHistorial",
       "src/App.jsx::function treintaDias"
     ],
     "pruebas": [],
     "pantallas": [
       "S58"
     ],
-    "captura": "semana.png",
+    "captura": "v3/26-historial.png",
     "nota": "30 días simulados desde `public/demo/registros-30-dias.json`."
   },
   "RF-40": {
     "estado": "implementado",
     "codigo": [
-      "src/App.jsx::Así está bien (10 s)"
+      "src/pantallas/Inicio.jsx::Guardar así"
     ],
     "pruebas": [],
     "pantallas": [
       "S06"
     ],
-    "captura": "inicio.png",
-    "nota": "Elegir un clima y guardar son dos acciones; contar el día es opcional."
+    "captura": "v3/03-inicio.png",
+    "nota": "Elegir un clima y «Guardar así» son dos acciones; contar el día es opcional."
   },
   "RF-41": {
     "estado": "implementado",
     "codigo": [
-      "src/App.jsx::className=\"nubes\""
+      "src/pantallas/Checkin.jsx::className=\"nubes\""
     ],
     "pruebas": [],
     "pantallas": [
       "S17"
     ],
-    "captura": "emociones.png",
+    "captura": "v3/08-emociones.png",
     "nota": "Las emociones son botones con forma de nube y `aria-pressed`."
   },
   "RF-42": {
-    "estado": "pendiente",
-    "codigo": [],
-    "pruebas": [],
+    "estado": "implementado",
+    "codigo": [
+      "src/pantallas/Refugio.jsx::export default function Refugio",
+      "src/datos/refugio.js::export const RITMOS",
+      "src/datos/perfil.js::export function guardarRefugio",
+      "src/pantallas/Inicio.jsx::Necesito un respiro"
+    ],
+    "pruebas": [
+      "pruebas/refugio.test.js",
+      "e2e/refugio.spec.js"
+    ],
     "pantallas": [],
-    "captura": null,
-    "nota": "No está en esta entrega."
+    "captura": "v3/15-respiro-inhala.png",
+    "nota": "Refugio de autocuidado: respiración lenta (4 s / 6 s) o suspiro cíclico al ritmo de la lluvia, 5-4-3-2-1 (práctica clínica, sin ensayos), partir la tarea y «¿qué le dirías a una amiga?». Botón en el inicio y oferta tras un check-in pesado («Ahora no» no la repite ese día). Guarda solo el clima de antes y después, y aprende qué técnica ayuda más."
   },
   "RF-43": {
     "estado": "parcial",
@@ -603,7 +611,7 @@
     "pantallas": [
       "S30"
     ],
-    "captura": "semana.png",
+    "captura": "v3/26-historial.png",
     "nota": "Calendario sin días «perdidos»; falta el patrón descriptivo de la semana."
   },
   "RF-44": {
@@ -613,6 +621,23 @@
     "pantallas": [],
     "captura": null,
     "nota": "No está en esta entrega."
+  },
+  "RF-45": {
+    "estado": "implementado",
+    "codigo": [
+      "src/datos/trampas.js::export function detectarTrampas",
+      "src/datos/trampas.js::export function trampaParaMostrar",
+      "src/llm/contrato.js::export function validarTrampas",
+      "src/pantallas/Checkin.jsx::Sí, puede ser"
+    ],
+    "pruebas": [
+      "pruebas/trampas.test.js",
+      "pruebas/llm.test.js",
+      "e2e/refugio.spec.js"
+    ],
+    "pantallas": [],
+    "captura": "v3/11-trampa.png",
+    "nota": "La trampa se propone como pregunta y con la frase literal de la persona; máximo una tarjeta por check-in. El detector por reglas cubre el modo mock y el respaldo; con riesgo no se muestra nada salvo la pantalla de crisis."
   },
   "RNF-01": {
     "estado": "parcial",
@@ -627,14 +652,14 @@
   "RNF-02": {
     "estado": "implementado",
     "codigo": [
-      "src/App.jsx::Así está bien (10 s)"
+      "src/pantallas/Inicio.jsx::Guardar así"
     ],
     "pruebas": [],
     "pantallas": [
       "S06"
     ],
-    "captura": "inicio.png",
-    "nota": "Iniciar y guardar un check-in toma 2 acciones: clima y «Así está bien»."
+    "captura": "v3/03-inicio.png",
+    "nota": "Iniciar y guardar un check-in toma 2 acciones: clima y «Guardar así»."
   },
   "RNF-03": {
     "estado": "parcial",
@@ -649,7 +674,7 @@
       "S14",
       "S44"
     ],
-    "captura": "sin-registros.png",
+    "captura": "v3/28-historial-vacio.png",
     "nota": "Los errores del dictado y la exportación explican la causa y la siguiente acción."
   },
   "RNF-04": {
@@ -665,38 +690,38 @@
   "RNF-05": {
     "estado": "implementado",
     "codigo": [
-      "src/App.jsx::const FONDO_PAISAJE"
+      "src/estilos/sistema.css::--ink"
     ],
     "pruebas": [
       "e2e/accesibilidad.spec.js"
     ],
     "pantallas": [],
     "captura": null,
-    "nota": "axe revisa el contraste en 14 pantallas, con paisaje y sin él."
+    "nota": "axe revisa el contraste (WCAG 2.2 AA) en todas las pantallas, también en el tema de noche."
   },
   "RNF-06": {
     "estado": "implementado",
     "codigo": [
-      "src/componentes.css::min-height: 52px",
-      "src/estilos.css::focus-visible"
+      "src/estilos/sistema.css::min-height: 56px",
+      "src/estilos/sistema.css::focus-visible"
     ],
     "pruebas": [
       "e2e/accesibilidad.spec.js"
     ],
     "pantallas": [],
-    "captura": "accesibilidad.png",
+    "captura": "v3/32-accesibilidad.png",
     "nota": "Botones de 52 px y foco con anillo doble ámbar; la prueba e2e verifica que todo control visible mida al menos 44×44 px."
   },
   "RNF-07": {
     "estado": "implementado",
     "codigo": [
-      "src/microinteracciones.css::data-movimiento"
+      "src/estilos/sistema.css::data-movimiento"
     ],
     "pruebas": [],
     "pantallas": [
       "S46"
     ],
-    "captura": "accesibilidad.png",
+    "captura": "v3/32-accesibilidad.png",
     "nota": "Sin destellos; en movimiento reducido no hay animaciones y las transiciones duran 0 ms."
   },
   "RNF-08": {
@@ -744,7 +769,7 @@
     "pantallas": [
       "S07"
     ],
-    "captura": "antes-grabar.png",
+    "captura": "v3/05-antes-de-grabar.png",
     "nota": "La app nunca guarda audio: usa Web Speech API y solo conserva el texto confirmado."
   },
   "RNF-12": {
@@ -772,7 +797,7 @@
     "pantallas": [
       "S34-S39"
     ],
-    "captura": "sala.png",
+    "captura": "v3/36-sala-activa.png",
     "nota": "Esquema numérico cerrado validado al enviar, al recibir y en el relé; la prueba e2e revisa cada mensaje del WebSocket."
   },
   "RNF-14": {
@@ -789,8 +814,8 @@
     "pantallas": [
       "S34-S39"
     ],
-    "captura": "sala.png",
-    "nota": "Código de 128 bits, seudónimo por sesión y borrado al cerrar o a las 24 h."
+    "captura": "v3/36-sala-activa.png",
+    "nota": "Código de 8 caracteres (40 bits), seudónimo por sesión y borrado al cerrar o a las 24 h."
   },
   "RNF-15": {
     "estado": "parcial",
@@ -856,7 +881,7 @@
     "pantallas": [
       "S24"
     ],
-    "captura": "riesgo.png",
+    "captura": "v3/23-crisis-detector.png",
     "nota": "Los números de ayuda viajan dentro de la app y se cachean con el service worker; se verifica offline en la URL publicada."
   },
   "RNF-21": {
@@ -893,7 +918,7 @@
     "pantallas": [
       "S20"
     ],
-    "captura": "emociones.png",
+    "captura": "v3/08-emociones.png",
     "nota": "Respuesta inválida o más lenta que el límite: se usa la reflexión local."
   },
   "RNF-24": {
@@ -915,7 +940,7 @@
     "pantallas": [
       "S22"
     ],
-    "captura": "riesgo.png",
+    "captura": "v3/23-crisis-detector.png",
     "nota": "Detección síncrona y local; la app nunca contacta a terceros."
   },
   "RNF-26": {
@@ -928,7 +953,7 @@
     "pantallas": [
       "S17"
     ],
-    "captura": "emociones.png",
+    "captura": "v3/08-emociones.png",
     "nota": "Declarada e inferida se guardan en campos separados."
   },
   "RNF-27": {
@@ -946,16 +971,16 @@
   "RNF-28": {
     "estado": "implementado",
     "codigo": [
-      "src/App.jsx::className=\"rotulo-ia\"",
-      "src/pantallas/PrimerUso.jsx::Generado por IA"
+      "src/pantallas/Checkin.jsx::Propuestas por IA · no es consejo clínico",
+      "src/pantallas/Checkin.jsx::Escrita por IA · no es consejo clínico"
     ],
     "pruebas": [],
     "pantallas": [
       "S04",
       "S19"
     ],
-    "captura": "emociones.png",
-    "nota": "Toda propuesta lleva «Generado por IA · no es consejo clínico»."
+    "captura": "v3/08-emociones.png",
+    "nota": "Toda propuesta y reflexión lleva «… por IA · no es consejo clínico»."
   },
   "RNF-29": {
     "estado": "pendiente",
@@ -970,26 +995,26 @@
   "RNF-30": {
     "estado": "parcial",
     "codigo": [
-      "src/App.jsx::const abrirDemo"
+      "src/App.jsx::async function abrirHistorial"
     ],
     "pruebas": [],
     "pantallas": [
       "S58"
     ],
-    "captura": "semana.png",
+    "captura": "v3/26-historial.png",
     "nota": "La demo carga al instante; no se puede restablecer."
   },
   "RNF-31": {
     "estado": "implementado",
     "codigo": [
-      "src/App.jsx::Así está bien (10 s)"
+      "src/pantallas/Inicio.jsx::Guardar así"
     ],
     "pruebas": [],
     "pantallas": [
       "S28"
     ],
-    "captura": "inicio.png",
-    "nota": "Check-in sin relato en 2 acciones."
+    "captura": "v3/03-inicio.png",
+    "nota": "Check-in sin relato en 2 acciones: clima y «Guardar así»."
   },
   "RNF-32": {
     "estado": "implementado",
@@ -1000,7 +1025,7 @@
     "pantallas": [
       "S30"
     ],
-    "captura": "semana.png",
+    "captura": "v3/26-historial.png",
     "nota": "Los días sin registro no se muestran como fallo."
   }
 }

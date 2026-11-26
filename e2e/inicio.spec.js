@@ -1,0 +1,57 @@
+// Composición del Inicio en tamaños difíciles: la burbuja nunca tapa a Garúa (A7) y en 320 × 568
+// «Guardar así» se ve sin bajar (M6).
+import { test, expect } from './base.js'
+
+const perfil = (preferencias) => async ({ page }) => {
+  await page.addInitScript((p) => {
+    localStorage.setItem('clima-interior:perfil', JSON.stringify({ primerUso: { completo: true, edad: 'adulto' }, preferencias: p }))
+  }, preferencias)
+}
+
+const CASOS = [
+  ['320 × 568', 320, 568, { tema: 'claro' }],
+  ['375 × 812, noche y texto más grande', 375, 812, { tema: 'noche', tamanoTexto: 'mas-grande' }],
+  ['320 × 568, noche y texto más grande', 320, 568, { tema: 'noche', tamanoTexto: 'mas-grande' }],
+  ['414 × 896, texto grande', 414, 896, { tema: 'claro', tamanoTexto: 'grande' }],
+]
+
+for (const [nombre, ancho, alto, prefs] of CASOS) {
+  test.describe(nombre, () => {
+    test.beforeEach(perfil(prefs))
+    test(`la burbuja no tapa a Garúa (A7) · ${nombre}`, async ({ page }) => {
+      await page.setViewportSize({ width: ancho, height: alto })
+      await page.goto('/')
+      await page.waitForTimeout(300)
+      const b = await page.locator('.burbuja--saludo').boundingBox()
+      const g = await page.locator('.escena__garua').boundingBox()
+      // la cara de Garúa: el centro de su caja (las poses tienen aire alrededor)
+      const cara = { x: g.x + g.width * 0.2, y: g.y + g.height * 0.2, w: g.width * 0.6, h: g.height * 0.6 }
+      const choca = b.x < cara.x + cara.w && b.x + b.width > cara.x && b.y < cara.y + cara.h && b.y + b.height + 12 > cara.y
+      expect(choca).toBe(false)
+      // y Garúa queda entera dentro de la escena (antes a 320 px solo se veía un ojo)
+      const e = await page.locator('.escena--inicio').boundingBox()
+      expect(g.x + g.width).toBeLessThanOrEqual(e.x + e.width + 1)
+      expect(g.y).toBeGreaterThanOrEqual(e.y)
+    })
+  })
+}
+
+test.describe('320 × 568', () => {
+  test.beforeEach(perfil({ tema: 'claro' }))
+  test('«Guardar así» se ve entero sobre la barra inferior al abrir (M6)', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 })
+    await page.goto('/')
+    const guardar = await page.getByRole('button', { name: 'Guardar así' }).boundingBox()
+    const nav = await page.locator('nav.nav').boundingBox()
+    expect(guardar.y + guardar.height).toBeLessThanOrEqual(nav.y)
+  })
+})
+
+test.describe('tema noche a las 10:00', () => {
+  test.beforeEach(perfil({ tema: 'noche' }))
+  test('el saludo sigue la hora, no el tema (B6)', async ({ page }) => {
+    await page.clock.setFixedTime(new Date('2026-11-26T10:00:00'))
+    await page.goto('/')
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('¿Cómo va tu cielo hoy?')
+  })
+})

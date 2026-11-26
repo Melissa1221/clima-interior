@@ -18,14 +18,32 @@ test('sin internet se puede registrar el día y ver las líneas de ayuda', async
   await page.reload() // la página queda controlada por el service worker
   await context.setOffline(true)
   await page.reload()
-  await page.getByRole('radio', { name: /Lluvia/ }).click()
-  await page.getByRole('button', { name: /Así está bien/ }).click()
+  await page.getByRole('radio', { name: /Nublado/ }).click()
+  await page.getByRole('button', { name: 'Guardar así' }).click()
   await expect(page.getByRole('heading', { name: 'Tu día quedó guardado' })).toBeVisible()
   await page.getByRole('button', { name: 'Hasta mañana' }).click()
   await page.getByRole('radio', { name: /Tormenta/ }).click()
-  await page.getByRole('button', { name: /Escribir/ }).click()
+  await page.getByRole('button', { name: /Escribir/ }).first().click()
   await page.getByRole('textbox').fill('me quiero matar')
   await page.getByRole('button', { name: 'Listo' }).click()
   await expect(page.locator('a[href="tel:113"]')).toBeVisible()
   await context.setOffline(false)
+})
+
+test('el primer pintado no carga Sala, Historial ni Perfil, y el registro del SW va con defer (rendimiento)', async ({ page }) => {
+  const js = []
+  page.on('request', (r) => { if (r.url().endsWith('.js')) js.push(new URL(r.url()).pathname) })
+  await page.goto('/')
+  await page.getByRole('heading', { level: 1 }).waitFor()
+  expect(js.filter((p) => /\/(Sala|Historial|Privacidad|Datos|Accesibilidad)-/.test(p))).toEqual([])
+  await expect(page.locator('script[src$="registerSW.js"]')).toHaveAttribute('defer', '')
+  await page.getByRole('button', { name: 'Sala', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Crear una sala' })).toBeVisible()
+  expect(js.some((p) => /\/Sala-/.test(p))).toBe(true)
+})
+
+test('robots.txt existe y es texto, no la app (SEO)', async ({ request }) => {
+  const r = await request.get('/robots.txt')
+  expect(r.ok()).toBe(true)
+  expect(await r.text()).toMatch(/^User-agent: \*/)
 })

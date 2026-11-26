@@ -8,25 +8,30 @@ Proyecto del curso **CC451 Interacción Humano-Computador**, Universidad Naciona
 
 **App publicada:** https://clima-interior.vercel.app (se instala como PWA y funciona sin conexión).
 
-| Inicio | Emociones propuestas | Historial demo |
-|---|---|---|
-| ![Inicio](docs/capturas/inicio.png) | ![Emociones](docs/capturas/emociones.png) | ![Historial](docs/capturas/semana.png) |
-
-| Primer uso | Permisos por separado | Privacidad y datos | Accesibilidad |
+| Bienvenida | Inicio | Respiro | Ayuda ya |
 |---|---|---|---|
-| ![Primer uso](docs/capturas/primer-uso.png) | ![Permisos](docs/capturas/permisos.png) | ![Privacidad](docs/capturas/privacidad.png) | ![Accesibilidad](docs/capturas/accesibilidad.png) |
+| ![Bienvenida](docs/capturas/v3/01-bienvenida.png) | ![Inicio](docs/capturas/v3/03-inicio.png) | ![Respiro](docs/capturas/v3/15-respiro-inhala.png) | ![Crisis](docs/capturas/v3/22-crisis-boton.png) |
+
+| Emociones | Reflexión guardada | Historial | De noche |
+|---|---|---|---|
+| ![Emociones](docs/capturas/v3/08-emociones.png) | ![Guardado](docs/capturas/v3/09-reflexion-y-tarjeta.png) | ![Historial](docs/capturas/v3/26-historial.png) | ![Noche](docs/capturas/v3/37-inicio-noche.png) |
+
+Las 39 pantallas del sistema visual v3 a 375 × 812 están en [`docs/capturas/v3/`](docs/capturas/v3/).
 
 ## Qué hace
 
-0. La primera vez pasas por cinco pasos: bienvenida, edad, permisos por separado, límites no clínicos y ajustes iniciales de accesibilidad. Nada sale del dispositivo antes del permiso correspondiente.
-1. Eliges el clima del día: soleado, nublado, lluvia, tormenta o niebla. Si no tienes ganas de hablar, con eso basta.
+0. **Primer uso en una pantalla.** La bienvenida dice lo esencial en tres líneas (lo que cuentas se queda en tu teléfono, Garúa no diagnostica ni reemplaza a una persona) y un toque declara la edad; quien tiene menos de 18 ve una pantalla propia para leerla con un adulto. Los cuatro permisos arrancan apagados y se piden **justo a tiempo**: el micrófono la primera vez que tocas «Contar mi día», la IA en internet la primera vez que va a leer tu relato, y una tarjeta «¿Te acomodo algo?» ofrece los ajustes de accesibilidad tras el primer día guardado. «Necesito un respiro», «Ayuda ya» y el ejemplo de 30 días funcionan sin pasar por la bienvenida.
+   - **Ayuda ya** está arriba a la derecha en todas las pantallas: a un toque, las líneas 113, 106, 105 y Bienestar UNI, sin que la app contacte a nadie.
+   - **Aa**, arriba a la izquierda, abre el tamaño del texto, menos movimiento y sin tormentas.
+1. Eliges el clima del día: soleado, nublado, lluvia, tormenta o niebla, y tocas «Guardar así». Si no tienes ganas de hablar, con eso basta.
 2. Si quieres, lo cuentas por voz o lo escribes. Puedes corregir la transcripción antes de que la lea la IA.
 3. Antes de llamar a la IA se revisa si hay frases de riesgo. Si las hay, la app muestra la Línea 113 (opción 5), el SAMU 106 y la PNP 105, y no genera reflexión.
 4. La IA propone emociones y tú eliges las tuyas o marcas "no sé". Lo que infiere la IA no reemplaza lo que eliges.
 5. Ves una reflexión corta, que también se puede escuchar.
 6. El historial de ejemplo muestra 30 días simulados.
 7. En **Perfil** ves lo que la app sabe de ti y apagas cada dato, cambias los permisos, exportas un resumen en PDF para tu psicóloga o psicólogo, o eliminas todos tus datos.
-8. En **Accesibilidad** activas movimiento reducido, apagas cada capa del clima, y eliges el modo predecible o el neutral, la descripción hablada del paisaje, la vibración, las pistas y las órdenes de voz.
+8. **Necesito un respiro** (en el inicio, gratis y a un toque; también se ofrece tras un día de lluvia o tormenta): empieza a respirar con Garúa tras una cuenta de 3 s, sin preguntas antes; al final, «¿Cómo quedaste?» es opcional. Son herramientas de autocuidado de 1 a 3 minutos, no terapia. Respirar con la lluvia (respiración lenta o suspiro cíclico), 5-4-3-2-1, partir la tarea y «¿qué le dirías a alguien que quieres?». Si lo respondes, guarda solo el clima de antes y de después, y en el historial «Lo que te ayudó» resume cada técnica. Si el relato tiene una trampa de pensamiento, la app la pregunta («¿Puede ser que…?»), nunca la afirma; si hay riesgo, solo aparece la pantalla de crisis.
+9. En **Accesibilidad** eliges el tamaño del texto y el tema (automático, claro o noche: de noche el cielo se oscurece), activas movimiento reducido, apagas cada capa del clima, y eliges el modo predecible o el neutral, la descripción hablada del paisaje, la vibración, las pistas y las órdenes de voz.
 
 ## Requerimientos del proyecto y dónde están
 
@@ -36,13 +41,13 @@ Proyecto del curso **CC451 Interacción Humano-Computador**, Universidad Naciona
 | LLM con capa de abstracción | Contrato común + proveedores `mock`, `ollama`, `remoto` (`src/llm/`) | Hecho |
 | PWA | `vite-plugin-pwa`: instalable, service worker, offline | Hecho |
 | Personalización continua | El perfil aprende hora habitual, duración, emociones que eliges, si la IA acierta, fallos del micrófono y el largo de reflexión que prefieres; cada cambio anota su motivo y se puede apagar o borrar en «Lo que sabe de ti» (`src/datos/perfil.js`, `src/pantallas/Privacidad.jsx`) | Hecho |
-| Multiusuario | Salas de clima compartido con código de 128 bits, seudónimos efímeros, clima colectivo, retirar, sacar y cerrar. Mensajes solo numéricos validados en cliente y servidor (`src/salas/`, `server/salas.mjs`) | Hecho |
-| Diseño emocional (Norman) | Visceral: paisaje vivo. Conductual: check-in en menos de 90 s y micro-interacciones. Reflexivo: historial y patrones | Parcial |
-| Primer uso y consentimiento | Edad, cuatro permisos independientes y límites no clínicos (`src/pantallas/PrimerUso.jsx`) | Hecho |
+| Multiusuario | Salas de clima compartido con código corto de 8 caracteres (40 bits, se copia en un toque), seudónimos efímeros, clima colectivo, retirar, sacar y cerrar. Mensajes solo numéricos validados en cliente y servidor (`src/salas/`, `server/salas.mjs`) | Hecho |
+| Diseño emocional (Norman) | Visceral: el mundo ilustrado de Lima y Garúa, la nube que acompaña. Conductual: check-in en menos de 90 s y micro-interacciones. Reflexivo: historial y patrones | Parcial |
+| Primer uso y consentimiento | Bienvenida única con edad y pantalla para menores; cuatro permisos apagados que se piden justo a tiempo (`src/pantallas/Bienvenida.jsx`, `src/pantallas/Hojas.jsx`, `src/datos/privacidad.js`) | Hecho |
 | Privacidad y datos | Permisos, qué datos usa la personalización, exportar PDF y eliminar todo (`src/pantallas/Privacidad.jsx`, `Datos.jsx`) | Hecho |
 | Accesibilidad | Movimiento reducido, capas, modos predecible y neutral, voz, vibración (`src/pantallas/Accesibilidad.jsx`) | Hecho |
 
-La matriz de trazabilidad completa (44 RF, 32 RNF, 32 historias de usuario) está en
+La matriz de trazabilidad completa (45 RF, 32 RNF, 33 historias de usuario) está en
 [`docs/matriz-trazabilidad.md`](docs/matriz-trazabilidad.md).
 
 ## Instalación
@@ -119,14 +124,14 @@ npx vercel deploy --prod  # publica la versión de producción
 
 La versión pública usa el proveedor `mock` (sin claves). Una clave de Gemini en `VITE_GEMINI_API_KEY` quedaría dentro del bundle y visible para cualquiera: para usar una IA remota hay que ponerla detrás de un proxy (`VITE_REMOTO_URL`). Para despliegues automáticos por cada PR, conecta el repositorio desde el panel de Vercel.
 
-Comprobado en https://clima-interior.vercel.app: el service worker toma el control, el manifiesto es válido, las fuentes cargan y, tras la primera visita, funcionan sin conexión el primer uso, la demo de 30 días y la pantalla de ayuda en crisis (aparece en menos de 1 s).
+Comprobado en https://clima-interior.vercel.app: el service worker toma el control, el manifiesto es válido, las fuentes cargan y, tras la primera visita, funcionan sin conexión la bienvenida, la demo de 30 días y la pantalla de ayuda en crisis (aparece en menos de 1 s).
 
 ## Reporte de trazabilidad
 
-[`docs/reporte-trazabilidad.md`](docs/reporte-trazabilidad.md) (también en [PDF](docs/reporte-trazabilidad.pdf)) une cada una de las 32 historias de usuario con los requerimientos que cubre, el código que los implementa (enlaces a la línea), las pruebas y una captura. Hoy: 35 de 76 requerimientos implementados, 18 parciales y 23 pendientes; el reporte explica cada hueco.
+[`docs/reporte-trazabilidad.md`](docs/reporte-trazabilidad.md) (también en [PDF](docs/reporte-trazabilidad.pdf)) une cada una de las 33 historias de usuario con los requerimientos que cubre, el código que los implementa (enlaces a la línea), las pruebas y una captura. Hoy: 46 de 77 requerimientos implementados, 20 parciales y 11 pendientes; el reporte explica cada hueco.
 
 ```bash
-npm run capturas   # regenera docs/capturas recorriendo la app en un navegador real (Chrome o Chromium)
+npm run capturas   # regenera docs/capturas/v3 (375 × 812) con su propio Vite en el puerto 5182 y el Chromium de Playwright
 npm run reporte    # regenera el reporte y su PDF, y el estado de la matriz; falla si un enlace ya no coincide con el código
 ```
 
@@ -148,30 +153,28 @@ Necesita Chrome o Chromium y `ffmpeg`. `npx playwright-core install ffmpeg` baja
 - [Arquitectura (C4), con diagrama de despliegue](docs/arquitectura.md)
 - [Reporte de trazabilidad](docs/reporte-trazabilidad.md) y su [PDF](docs/reporte-trazabilidad.pdf)
 - [Matriz de trazabilidad](docs/matriz-trazabilidad.md)
-- Prototipo de fidelidad media en Figma: *Clima Interior · MVP* (58 pantallas). Ya están programadas S01 a S05 (primer uso), S07, S40, S42 a S45 (privacidad) y S46 a S49 (accesibilidad)
+- Prototipo de fidelidad media en Figma: *Clima Interior · MVP* (58 pantallas). El primer uso S01-S05 se reemplazó por la bienvenida única y los permisos justo a tiempo del journey nuevo; están programadas S07, S40, S42 a S45 (privacidad) y S46 a S49 (accesibilidad)
 
 ## Estructura
 
 ```
 src/
-  App.jsx            flujo del check-in, historial y navegación entre pantallas
-  componentes/       paisaje, íconos del Figma y piezas del sistema de diseño (botón, aviso, fila de ajuste…)
-  pantallas/         primer uso, privacidad, exportar y eliminar, accesibilidad
-  iconos/            íconos SVG de 24 px exportados del Figma
+  App.jsx            journey: bienvenida, check-in, hojas justo a tiempo, crisis, historial y navegación
+  mundo/             mundo ilustrado (lomas, amancaes, cielos por clima) y Garúa con sus poses
+  componentes/       escena y suelo, íconos de línea y piezas del sistema (botón, cabecera, hoja, fila…)
+  pantallas/         bienvenida, inicio, check-in, hojas, crisis, historial, refugio, perfil, datos, accesibilidad, sala
+  estilos/           sistema.css (tokens v3, Lexend y Newsreader, tema de noche), mundo.css, pantallas.css
   llm/               contrato, proveedores e índice con respaldo local
   voz/stt.js         voz a texto (local o en internet según el permiso) y texto a voz
-  datos/perfil.js    perfil persistente: registros, permisos, ajustes y borrado total
-  datos/privacidad.js reglas de consentimiento para dictar
+  datos/perfil.js    perfil persistente: registros, permisos, avisos, ajustes y borrado total
+  datos/privacidad.js reglas de consentimiento, permisos justo a tiempo y tema efectivo
   datos/exportar.js  resumen y PDF sin dependencias
   datos/accesibilidad.js órdenes de voz, vibración, límite de palabras y sonificación
   datos/riesgo.js    detector de riesgo y líneas de ayuda
-  estilos.css, componentes.css, microinteracciones.css  tokens del Figma, componentes y animaciones
   salas/             esquema numérico, transporte (local / WebSocket) y lógica de la sala
-  pantallas/         sala compartida, primer uso, privacidad y accesibilidad
-  componentes/       paisaje del clima
 server/salas.mjs     relé WebSocket de las salas
 public/demo/         datos simulados
-scripts/             datos simulados, capturas, reporte de trazabilidad y video
+scripts/             datos simulados, capturas v3, reporte de trazabilidad y video
 docs/                arquitectura, matriz, reporte, capturas y guion del video
 ```
 

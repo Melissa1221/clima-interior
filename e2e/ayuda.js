@@ -26,29 +26,37 @@ export async function microfonoFalso(page) {
   })
 }
 
-// Texto de la reflexión, sin los botones que la acompañan (🔊, Más corto)
-export const leerReflexion = (page) => page.locator('.reflexion').evaluate((el) => el.firstChild.textContent.trim())
+// Texto de la reflexión de la IA (va en la burbuja de Garúa, al guardar el día)
+export const leerReflexion = (page) => page.locator('.reflexion').evaluate((el) => el.textContent.trim())
 export const contarFrases = (t) => t.split(/[.?!]/).filter((f) => f.replace(/[¿¡]/g, '').trim().length > 3).length
 
-// Check-in escrito completo. Devuelve la reflexión que propuso la IA.
+// Check-in escrito completo. Devuelve la reflexión que propuso la IA (se lee al guardar el día).
 export async function checkinEscrito(page, { clima = 'Nublado', texto, elegir = [], masCorto = false }) {
   await page.getByRole('radio', { name: new RegExp(clima) }).click()
   await page.getByRole('button', { name: /Escribir/ }).first().click()
   await page.getByRole('textbox').fill(texto)
   await page.getByRole('button', { name: 'Listo' }).click()
   await page.getByText('Toca las nubes que sientes tuyas').waitFor()
+  for (const e of elegir) await page.getByRole('button', { name: new RegExp(`^${e}`) }).click()
+  await page.getByRole('button', { name: elegir.length ? 'Seguir' : 'No sé, guardar igual' }).click()
+  await page.getByRole('heading', { name: 'Tu día quedó guardado' }).waitFor()
   const reflexion = await leerReflexion(page)
   if (masCorto) await page.getByRole('button', { name: 'Más corto' }).click()
-  for (const e of elegir) await page.getByRole('button', { name: new RegExp(`^${e}`) }).click()
-  await page.getByRole('button', { name: /guardar/i }).click()
   await page.getByRole('button', { name: 'Hasta mañana' }).click()
   return reflexion
 }
 
-// S07: el botón del micrófono abre el aviso antes de grabar
+// J1: la primera vez, «Contar mi día» pide el micrófono justo a tiempo; las siguientes graba directo
 export async function hablar(page) {
   await page.getByRole('button', { name: 'Contar mi día por voz' }).click()
-  await page.getByRole('button', { name: 'Empezar a grabar' }).click()
+  const activar = page.getByRole('button', { name: 'Activar micrófono' })
+  if (await activar.waitFor({ timeout: 600 }).then(() => true, () => false)) await activar.click()
+}
+
+// La X del check-in: «Salir por hoy» lleva a la despedida, y de ahí al inicio
+export async function salirPorHoy(page) {
+  await page.getByRole('button', { name: 'Salir por hoy' }).click()
+  await page.getByRole('button', { name: 'Volver al inicio' }).last().click()
 }
 
 export const leerPerfil = (page) => page.evaluate(() => JSON.parse(localStorage.getItem('clima-interior:perfil')))

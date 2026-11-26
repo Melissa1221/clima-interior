@@ -22,11 +22,12 @@ describe('esquema de mensajes (RNF-13)', () => {
 })
 
 describe('código de sala (RNF-14)', () => {
-  it('tiene 128 bits en base32 y no se repite', () => {
+  it('tiene 8 caracteres en base32 (fácil de dictar) y no se repite', () => {
     const codigos = new Set(Array.from({ length: 200 }, generarCodigo))
     expect(codigos.size).toBe(200)
     for (const c of codigos) expect(codigoValido(c)).toBe(true)
-    expect([...codigos][0].replace(/-/g, '')).toHaveLength(26)
+    expect([...codigos][0]).toMatch(/^[0-9A-Z]{4}-[0-9A-Z]{4}$/)
+    expect([...codigos][0].replace(/-/g, '')).toHaveLength(8)
   })
   it('acepta el código escrito en minúsculas y sin guiones', () => {
     const c = generarCodigo()
@@ -90,5 +91,12 @@ describe('sala entre participantes', () => {
     expect(a.ultimo.estado.otros).toHaveLength(0)
     expect(b.ultimo.estado.otros).toHaveLength(0)
     a.sala.salir(); b.sala.salir()
+  })
+})
+
+describe('modo de las salas (A6)', () => {
+  it('sin VITE_SALAS_URL la sala es una demo local y la interfaz lo rotula', async () => {
+    const { modoDeSalas } = await import('../src/salas/transporte.js')
+    expect(modoDeSalas()).toBe('local')
   })
 })

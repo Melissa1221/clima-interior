@@ -33,19 +33,19 @@ export function validarMensaje(m) {
   return true
 }
 
-// Código de 128 bits en base32 (Crockford, sin I/L/O/U para que no se confunda al dictarlo)
+// Código de 8 caracteres (40 bits) en base32 Crockford, sin I/L/O/U para que no se confunda al dictarlo:
+// «K7QF-29XM». Se dicta o se copia en un toque; como la sala dura 24 h y el relé limita las conexiones,
+// 2^40 combinaciones bastan para que no se adivine (antes eran 26 caracteres, imposibles de dictar).
 const ALFABETO = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'
+export const LARGO_CODIGO = 8
 export function generarCodigo() {
-  const bytes = crypto.getRandomValues(new Uint8Array(16))
-  let bits = ''
-  for (const b of bytes) bits += b.toString(2).padStart(8, '0')
-  let codigo = ''
-  for (let i = 0; i < bits.length; i += 5) codigo += ALFABETO[parseInt(bits.slice(i, i + 5).padEnd(5, '0'), 2)]
-  return codigo.match(/.{1,4}/g).join('-')
+  const bytes = crypto.getRandomValues(new Uint8Array(LARGO_CODIGO))
+  const codigo = [...bytes].map((b) => ALFABETO[b & 31]).join('')
+  return `${codigo.slice(0, 4)}-${codigo.slice(4)}`
 }
 
 export const normalizarCodigo = (c) => String(c || '').toUpperCase().replace(/[^0-9A-Z]/g, '').match(/.{1,4}/g)?.join('-') ?? ''
-export const codigoValido = (c) => /^([0-9A-HJKMNP-TV-Z]{4}-){6}[0-9A-HJKMNP-TV-Z]{2}$/.test(c)
+export const codigoValido = (c) => /^[0-9A-HJKMNP-TV-Z]{4}-[0-9A-HJKMNP-TV-Z]{4}$/.test(c)
 
 export const nuevoId = () => crypto.getRandomValues(new Uint32Array(1))[0] || 1
 

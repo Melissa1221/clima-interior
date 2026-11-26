@@ -1,76 +1,117 @@
-import { useEffect, useRef, useState } from 'react'
+import { Suspense, lazy, useEffect, useRef, useState } from 'react'
 import { proponerEmociones, proveedorActivo, proveedorSegunPermiso } from './llm/index.js'
 import { crearGrabacion, decir, sttDisponible, transcripcionLocalDisponible } from './voz/stt.js'
 import {
   leerPerfil, guardarRegistro, guardarAjustes, guardarPreferencias, alternarCapa, borrarTodo, registrarFalloMic, pedirMasCorto,
   personalizarPropuesta, contextoParaLLM, notaDeRitmo, empiezaEscribiendo, cambiarCategoria, restablecer,
+  guardarRefugio, tecnicaFavorita, saltarOfertaRefugio, registrarTrampa, trampasSilenciadas,
 } from './datos/perfil.js'
-import { detectarOrden, limitarPalabras, sistemaPideMenosMovimiento, sonificarClima, vibrar } from './datos/accesibilidad.js'
-import { estadoDictado, MOTIVOS_DICTADO } from './datos/privacidad.js'
-import { hayRiesgo, RECURSOS } from './datos/riesgo.js'
-import { CLIMAS, DESCRIPCION, climaEfectivo } from './datos/climas.js'
-import Paisaje from './componentes/Paisaje.jsx'
-import Icono from './componentes/Icono.jsx'
-import { Accesibilidad } from './pantallas/Accesibilidad.jsx'
-import { Aviso, Ayuda, BarraSuperior, Boton, Pestanas } from './componentes/Ui.jsx'
-import { AjustesIniciales, Bienvenida, Edad, Limites, Permisos } from './pantallas/PrimerUso.jsx'
-import { AntesDeGrabar, PrivacidadYDatos, SabeDeMi } from './pantallas/Privacidad.jsx'
-import { EliminarDatos, ExportarResumen } from './pantallas/Datos.jsx'
-import Sala from './pantallas/Sala.jsx'
+import { trampaParaMostrar } from './datos/trampas.js'
+import { debeOfrecerRefugio } from './datos/refugio.js'
+import { detectarOrden, sistemaPideMenosMovimiento, sonificarClima, vibrar } from './datos/accesibilidad.js'
+import { debePreguntarIA, estadoDictado, MOTIVOS_DICTADO, temaEfectivo } from './datos/privacidad.js'
+import { hayRiesgo } from './datos/riesgo.js'
+import { fraseMasSignificativa } from './datos/reflexion.js'
+import { DESCRIPCION, climaEfectivo } from './datos/climas.js'
+import { diasRegistrados, fechaLocal, registrosDelDia, treintaDias } from './datos/historial.js'
+import { Ayuda, Cabecera, Pestanas } from './componentes/Ui.jsx'
+import { TemaNoche } from './componentes/Escena.jsx'
+import { Bienvenida, Menor } from './pantallas/Bienvenida.jsx'
+import Inicio from './pantallas/Inicio.jsx'
+import { Despedida, Emociones, Escuchando, Guardado, Pensando, PredecibleComo, Relato, Trampa } from './pantallas/Checkin.jsx'
+import { CuidadoDatos, HojaAa, HojaIA, HojaMicrofono } from './pantallas/Hojas.jsx'
+import Crisis from './pantallas/Crisis.jsx'
+
+// Rendimiento: las pantallas que no son del check-in se cargan al abrirlas (el primer pintado no las espera)
+const parte = (cargar, nombre) => lazy(() => cargar().then((m) => ({ default: m[nombre] })))
+const cargarHistorial = () => import('./pantallas/Historial.jsx')
+const cargarPrivacidad = () => import('./pantallas/Privacidad.jsx')
+const cargarDatos = () => import('./pantallas/Datos.jsx')
+const Historial = parte(cargarHistorial, 'Historial')
+const DetalleDia = parte(cargarHistorial, 'DetalleDia')
+const HistorialVacio = parte(cargarHistorial, 'HistorialVacio')
+const Perfil = parte(cargarPrivacidad, 'Perfil')
+const PrivacidadYDatos = parte(cargarPrivacidad, 'PrivacidadYDatos')
+const SabeDeMi = parte(cargarPrivacidad, 'SabeDeMi')
+const ExportarResumen = parte(cargarDatos, 'ExportarResumen')
+const EliminarDatos = parte(cargarDatos, 'EliminarDatos')
+const Accesibilidad = parte(() => import('./pantallas/Accesibilidad.jsx'), 'Accesibilidad')
+const Sala = lazy(() => import('./pantallas/Sala.jsx'))
+import Refugio from './pantallas/Refugio.jsx'
 
 const SEG_SUGERIR_CIERRE = 60
 
-// Pantallas con paisaje de fondo: ahí la barra superior usa el velo oscuro (contraste ≥4.5:1)
-const FONDO_PAISAJE = new Set(['bienvenida', 'antes-grabar', 'inicio', 'contar', 'pensando', 'emociones', 'guardado'])
-
 // Pantallas con barra de pestañas y la pestaña que las contiene
-const PESTANA_DE = { inicio: 'inicio', semana: 'historial', sala: 'sala', perfil: 'perfil', privacidad: 'perfil', accesibilidad: 'perfil' }
+const PESTANA_DE = {
+  inicio: 'inicio', semana: 'historial', detalle: 'historial', sala: 'sala',
+  perfil: 'perfil', 'perfil-sabe': 'perfil', privacidad: 'perfil', accesibilidad: 'perfil', exportar: 'perfil', eliminar: 'perfil',
+}
+// Pantallas raíz: a la izquierda va «Aa»; las demás llevan volver o cerrar
+const RAIZ = new Set(['bienvenida', 'inicio', 'semana', 'sala', 'perfil'])
+// Pantallas del check-in: la X es «Salir por hoy»
+const CHECKIN = new Set(['contar', 'pensando', 'emociones', 'trampa', 'predecible-como'])
+// Pantallas hijas: a dónde vuelve la flecha
+const PADRE = { menor: 'bienvenida', detalle: 'semana', 'perfil-sabe': 'perfil', privacidad: 'perfil', accesibilidad: 'perfil', exportar: 'perfil', eliminar: 'exportar' }
+const TITULO = { 'perfil-sabe': 'Lo que sabe de ti', privacidad: 'Privacidad', accesibilidad: 'Accesibilidad', exportar: 'Mis datos', eliminar: 'Eliminar mis datos' }
+
+// Título del documento por pantalla (M15): el lector y la pestaña dicen dónde estás
+const TITULO_DOC = {
+  bienvenida: 'Bienvenida', menor: 'Menores de 18', inicio: 'Inicio', contar: 'Cuéntame tu día', pensando: 'Mirando tu cielo',
+  emociones: 'Lo que sientes', trampa: 'Mirar un pensamiento', guardado: 'Día guardado', despedida: 'Listo por hoy',
+  'predecible-como': '¿Cómo quieres contarlo?', refugio: 'Un respiro', semana: 'Historial', detalle: 'Detalle del día', sala: 'Sala',
+  perfil: 'Perfil', 'perfil-sabe': 'Lo que sabe de ti', privacidad: 'Privacidad', accesibilidad: 'Accesibilidad', exportar: 'Mis datos',
+  eliminar: 'Eliminar mis datos',
+}
 
 // Ayuda contextual (RF-24): qué hacer en cada pantalla, sin salir del flujo
 const AYUDA = {
-  general: ['Cuenta cómo fue tu día en un minuto. Tú decides qué se guarda y cómo se llama lo que sientes.',
-    '«Salir por hoy» está siempre arriba a la derecha: no pierdes nada de lo que ya elegiste.'],
-  bienvenida: ['Clima Interior es un diario: cuentas tu día y lo ves convertido en un clima.', 'Puedes mirar la app con 30 días de ejemplo sin dar ningún permiso.'],
-  edad: ['Preguntamos tu edad porque las emociones son un dato sensible según la Ley 29733.'],
-  permisos: ['Cada permiso es independiente. Lo que dejes apagado no sale de tu teléfono.', 'Puedes cambiarlos cuando quieras en Perfil › Privacidad.'],
-  limites: ['Clima Interior no diagnostica ni da tratamiento. Si estás en peligro, te mostramos a quién llamar.'],
-  'ajustes-iniciales': ['Estos ajustes cambian cómo se ve y se escucha la app. Puedes modificarlos después en Accesibilidad.'],
-  inicio: ['Elige el clima que se parece a tu día. Con eso basta si hoy no tienes ganas de hablar.',
-    'Después puedes contarlo por voz o escribirlo, o guardar solo el clima.'],
-  contar: ['Revisa lo que entendimos antes de que lo lea la IA y corrígelo si hace falta.'],
-  emociones: ['La IA propone palabras para lo que podrías sentir. Tú eliges las tuyas o marcas «no sé».',
-    'Las que dicen «tuya» son palabras que sueles elegir. «Más corto» acorta la reflexión; si lo pides seguido, la app lo recuerda.'],
+  general: ['Cuenta cómo va tu cielo. Elegir el clima ya basta; contarlo es opcional.',
+    '«Ayuda ya», arriba a la derecha, te muestra a quién llamar en cualquier momento.'],
+  bienvenida: ['Clima Interior es un diario: eliges el clima de tu día y, si quieres, lo cuentas.',
+    'Puedes respirar o mirar 30 días de ejemplo sin dar ningún dato.'],
+  menor: ['Las emociones son un dato sensible (Ley 29733). Respirar y ver a quién llamar no pide ningún dato.'],
+  inicio: ['Elige el clima que se parece a tu día y toca «Guardar así». Con eso basta.',
+    'Si quieres, cuéntalo por voz o escríbelo. «Aa», arriba a la izquierda, cambia el texto y el movimiento.'],
+  contar: ['Revisa lo que entendimos antes de que lo lea la IA y corrígelo si hace falta.',
+    'La X de arriba es «Salir por hoy»: no pierdes lo que ya guardaste.'],
+  emociones: ['La IA propone palabras para lo que podrías sentir. Tú eliges las tuyas o tocas «No sé, guardar igual».',
+    'Las que dicen «tuya» son palabras que sueles elegir.'],
+  guardado: ['«Escuchar» lee la reflexión en voz alta. «Más corto» la acorta; si lo pides seguido, la app lo recuerda.'],
+  semana: ['Cada cuadrito es un día. Toca uno con registro para ver su detalle.', 'Los días sin registro no son un fallo.'],
   sala: ['En una sala ves el clima de tu grupo, nunca lo que cada persona contó ni sus emociones.',
     'Cada persona aparece con un seudónimo que cambia cada vez. Puedes retirar tu clima o salir cuando quieras.',
     'Quien crea la sala puede sacar a alguien o cerrarla. La sala se borra al cerrarla o a las 24 horas.'],
-  perfil: ['Aquí ves lo que la app aprendió de cómo la usas y por qué cambió algo.',
-    'Si apagas una categoría, también se borra lo que ya se había aprendido de ella.'],
+  perfil: ['Aquí ves lo que la app aprendió de cómo la usas, tu privacidad, la accesibilidad y tus datos.'],
+  'perfil-sabe': ['Si apagas una categoría, también se borra lo que ya se había aprendido de ella.'],
+  trampa: ['Con presión, la mente cae a veces en trampas comunes. La app solo pregunta: tú decides si te suena.',
+    'Es una sugerencia automática, no un diagnóstico. Si dices «No es así», lo tomamos en cuenta y no insistimos.'],
+  // Refugio (RF-42): una ayuda por paso
+  'refugio:respirar': ['Inhala mientras Garúa crece y exhala, más largo, mientras se encoge. Con movimiento reducido, sigue el texto.',
+    'Si te mareas, vuelve a respirar normal. «Terminar» te lleva al final sin perder nada.'],
+  'refugio:elegir': ['Cada técnica dura de 1 a 3 minutos y puedes dejarla cuando quieras.',
+    'Debajo de cada una dice qué tanto respaldo tiene. Si una te ayudó antes, aparece primero.'],
+  'refugio:tierra': ['Nombra lo que percibes, en voz alta o en tu mente, y toca «Listo». No se guarda nada de lo que digas.'],
+  'refugio:tarea': ['Escribe lo que tienes pendiente y pártelo en pasos chiquitos; el primero, de unos 15 minutos.',
+    'Marca cada paso al terminarlo. La lista se queda en este teléfono hasta que la borres.'],
+  'refugio:amiga': ['Imagina que alguien que quieres te cuenta esto. Lo que le dirías suele ser más justo que lo que te dices.',
+    'Lo que escribas aquí no se guarda.'],
+  'refugio:despues': ['Si quieres, elige cómo estabas y cómo quedaste. Se guarda solo el clima de antes y de después, nunca lo que dijiste.'],
+  'refugio:resumen': ['En Historial, «Lo que te ayudó» junta tus respiros, sin rachas ni metas.'],
 }
 
-// Fecha en la zona del usuario: con toISOString un registro de las 20:00 en Lima caía en el día siguiente
-const fechaLocal = (d) => d.toLocaleDateString('en-CA')
-
-// 30 días seguidos, incluidos los que no tienen registro (RF-43: sin rachas que castiguen).
-// La demo empieza en su primer registro; el historial real termina hoy.
-function treintaDias(registros, { terminaHoy = false } = {}) {
-  const porFecha = Object.fromEntries(registros.map((r) => [r.fecha, r]))
-  const inicio = terminaHoy ? new Date() : new Date(`${registros[0].fecha}T12:00:00`)
-  if (terminaHoy) inicio.setDate(inicio.getDate() - 29)
-  return Array.from({ length: 30 }, (_, i) => {
-    const d = new Date(inicio)
-    d.setDate(d.getDate() + i)
-    const fecha = fechaLocal(d)
-    return { fecha, r: porFecha[fecha] }
-  })
+// Reintenta hasta 4 s: las pantallas cargadas a demanda tardan en montar su h1, y mientras tanto
+// Suspense deja la pantalla anterior oculta (display: none), así que solo vale un h1 visible
+function enfocar(selector, hasta = performance.now() + 4000) {
+  const el = [...document.querySelectorAll(selector)].find((e) => e.getClientRects().length > 0)
+  if (!el) {
+    if (performance.now() < hasta) requestAnimationFrame(() => enfocar(selector, hasta))
+    return
+  }
+  if (!el.matches('button, a[href], input, textarea, [tabindex]')) el.setAttribute('tabindex', '-1')
+  el.focus({ preventScroll: true })
 }
 
-function saludo() {
-  const h = new Date().getHours()
-  return h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches'
-}
-// En el diario es una lista; en los datos de ejemplo, un texto
-const emocionesDe = (r) => [].concat(r.emocion_declarada ?? []).join(', ') || 'no sé'
-const mmss = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
+const sistemaOscuro = () => typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches
 
 export default function App() {
   const [perfil, setPerfil] = useState(leerPerfil)
@@ -80,28 +121,48 @@ export default function App() {
   })
   const [clima, setClima] = useState(null)
   const [texto, setTexto] = useState('')
+  const [deVoz, setDeVoz] = useState(false)
   const [grabando, setGrabando] = useState(false)
   const [segundos, setSegundos] = useState(0)
   const [propuesta, setPropuesta] = useState(null)
   const [elegidas, setElegidas] = useState([])
   const [demo, setDemo] = useState(null)
+  const [detalle, setDetalle] = useState(null) // fecha del día abierto en el historial
   const [errorMic, setErrorMic] = useState(null)
   const [ayuda, setAyuda] = useState(null) // { titulo, parrafos } mientras el diálogo está abierto
+  const [hoja, setHoja] = useState(null) // 'mic' | 'ia' | 'aa' | 'datos': hojas justo a tiempo
+  const [crisis, setCrisis] = useState(null) // 'boton' | 'detector'
+  const [porEstaVez, setPorEstaVez] = useState(false) // transcribir en internet solo en esta sesión (J3)
+  const [tarjeta, setTarjeta] = useState(null) // T1 'accesibilidad' | T2 'instalar' tras guardar
+  const [guardadoHoy, setGuardadoHoy] = useState(false)
   const [instalacion, setInstalacion] = useState(null) // evento beforeinstallprompt
-  const [edad, setEdad] = useState(perfil.primerUso.edad)
-  const [enSala, setEnSala] = useState(false) // dentro de una sala: paisaje de fondo
+  const [refugio, setRefugio] = useState(null) // { tecnica?, frase?, guardable } con el que se abrió el Refugio
+  const [pasoRefugio, setPasoRefugio] = useState('respirar')
+  const [trampa, setTrampa] = useState(null) // como máximo una tarjeta de trampa por check-in
+  const [trampaSi, setTrampaSi] = useState(false)
+  const [ofertaVista, setOfertaVista] = useState(false)
   const rec = useRef(null)
   const orden = useRef(null) // última versión de «ejecutar orden de voz», para el dictado en curso
   const ultimaOrden = useRef(null)
   const consulta = useRef(0) // invalida respuestas del LLM que llegan después de salir
   const inicioCheckin = useRef(null) // para aprender cuánto dura tu check-in (RF-21)
-  // Un enlace de invitación (#sala=CÓDIGO) abre directo la sala, también con la app ya abierta
   const leerInvitacion = () => new URLSearchParams(location.hash.slice(1)).get('sala') ?? ''
   const [codigoInvitacion, setCodigoInvitacion] = useState(leerInvitacion)
 
   const { preferencias, privacidad } = perfil
   const climaVista = climaEfectivo(clima, preferencias) // modo neutral: la tormenta se ve como cielo neutro (RF-34)
   const predecible = preferencias.modoPredecible
+  const completo = perfil.primerUso.completo
+  const tema = temaEfectivo(preferencias.tema, { sistemaOscuro: sistemaOscuro() })
+  const noche = tema === 'noche'
+
+  // Tamaño del texto y tema en <html>, para que las hojas y el fondo también cambien
+  useEffect(() => {
+    const html = document.documentElement
+    html.dataset.texto = preferencias.tamanoTexto ?? 'normal'
+    html.dataset.tema = tema
+    html.dataset.movimiento = preferencias.movimientoReducido ? 'reducido' : 'normal'
+  }, [preferencias.tamanoTexto, preferencias.movimientoReducido, tema])
 
   // Pista a los 12 s de silencio: en texto, en voz y con vibración (S10, RF-35)
   useEffect(() => {
@@ -116,22 +177,45 @@ export default function App() {
     return () => window.removeEventListener('beforeinstallprompt', guardar)
   }, [])
 
+  // Un enlace de invitación (#sala=CÓDIGO) abre directo la sala, también con la app ya abierta
   useEffect(() => {
     const alCambiar = () => {
       const c = leerInvitacion()
-      if (!c || !perfil.primerUso.completo) return
+      if (!c || !completo) return
       setCodigoInvitacion(c)
       setPantalla('sala')
     }
     window.addEventListener('hashchange', alCambiar)
     return () => window.removeEventListener('hashchange', alCambiar)
-  }, [perfil.primerUso.completo]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [completo]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!grabando) return
     const t = setInterval(() => setSegundos((s) => s + 1), 1000)
     return () => clearInterval(t)
   }, [grabando])
+
+  // Foco al cambiar de pantalla (A5): al h1 de la pantalla nueva, para que el lector la anuncie; al cerrar
+  // Crisis, de vuelta a «Ayuda ya». Las pantallas que cargan aparte se esperan unos cuadros.
+  const anterior = useRef({ pantalla, pasoRefugio, crisis })
+  useEffect(() => {
+    const a = anterior.current
+    anterior.current = { pantalla, pasoRefugio, crisis }
+    if (crisis) return // Crisis enfoca su propio título
+    if (a.crisis) return enfocar('.ayuda-ya')
+    if (a.pantalla !== pantalla || a.pasoRefugio !== pasoRefugio) enfocar('main h1')
+  }, [pantalla, pasoRefugio, crisis])
+
+  useEffect(() => {
+    const t = crisis ? 'Apoyo ahora' : TITULO_DOC[pantalla]
+    document.title = t ? `${t} · Clima Interior` : 'Clima Interior'
+  }, [pantalla, crisis])
+
+  const ir = (p) => { setPantalla(p); window.scrollTo?.(0, 0) }
+  const cambiarAjustes = (grupo) => (cambios) => setPerfil((p) => guardarAjustes(p, grupo, cambios))
+  const cambiarPreferencias = (cambios) => setPerfil((p) => guardarPreferencias(p, cambios))
+  const abrirAyuda = (titulo, parrafos) => setAyuda({ titulo, parrafos })
+  const ayudaDePantalla = () => (pantalla === 'refugio' ? AYUDA[`refugio:${pasoRefugio}`] : AYUDA[pantalla]) ?? AYUDA.general
 
   function guardar(extra = {}) {
     const ahora = new Date()
@@ -144,22 +228,35 @@ export default function App() {
       transcripcion: texto || null,
     }
     const segundos = inicioCheckin.current ? Math.round((Date.now() - inicioCheckin.current) / 1000) : undefined
-    setPerfil((p) => guardarRegistro(p, registro, { segundos }))
-    setPantalla('guardado')
+    // Tarjetas justo a tiempo, una sola vez: T1 tras el primer día guardado, T2 tras el segundo
+    const n = perfil.registros.length + 1
+    const t = !perfil.avisos.accesibilidad ? 'accesibilidad' : n >= 2 && !perfil.avisos.instalar && instalacion ? 'instalar' : null
+    setTarjeta(t)
+    setOfertaVista(false)
+    setPerfil((p) => {
+      const nuevo = guardarRegistro(p, registro, { segundos })
+      return t ? guardarAjustes(nuevo, 'avisos', { [t]: true }) : nuevo
+    })
+    setGuardadoHoy(true)
+    // El día ya quedó guardado; la trampa se pregunta después, sin bloquear nada
+    ir(trampa && texto && !hayRiesgo(texto) ? 'trampa' : 'guardado')
   }
 
-  const estadoVoz = () => estadoDictado(perfil.privacidad, { dictado: sttDisponible(), local: transcripcionLocalDisponible() })
+  // Permisos efectivos: «Sí, por esta vez» transcribe en internet solo durante esta sesión
+  const privacidadEfectiva = (p = privacidad, vez = porEstaVez) => ({ ...p, transcribirEnInternet: p.transcribirEnInternet || vez })
+  const estadoVoz = (p, vez) => estadoDictado(privacidadEfectiva(p, vez), { dictado: sttDisponible(), local: transcripcionLocalDisponible() })
 
-  function empezarGrabacion() {
+  function empezarGrabacion(priv = privacidadEfectiva()) {
+    setHoja(null)
     setPantalla('contar')
-    if (estadoVoz() !== 'ok') return
     setErrorMic(null)
     const previo = texto.trim() // volver a grabar agrega al texto, no lo borra
     rec.current = crearGrabacion({
-      local: !perfil.privacidad.transcribirEnInternet,
+      local: !priv.transcribirEnInternet,
       alTexto: (t) => {
         const { orden: cual, texto: limpio } = preferencias.comandosVoz ? detectarOrden(t) : { orden: null, texto: t }
         setTexto(previo ? `${previo} ${limpio}`.trim() : limpio)
+        if (limpio.trim()) setDeVoz(true) // solo cuenta como «grabado» si de verdad llegó texto dictado
         if (cual && ultimaOrden.current !== cual) { ultimaOrden.current = cual; orden.current?.(cual) }
         else if (!cual) ultimaOrden.current = null
       },
@@ -168,8 +265,8 @@ export default function App() {
         vibrar(preferencias)
         setPerfil(registrarFalloMic)
         setErrorMic(e === 'not-allowed' || e === 'service-not-allowed'
-          ? 'El micrófono está bloqueado. Puedes escribirlo aquí; tu clima sigue guardado.'
-          : 'No pudimos escucharte. Puedes escribirlo aquí o volver a intentar.')
+          ? 'El micrófono está bloqueado. Puedes escribirlo aquí; tu clima sigue elegido.'
+          : 'No pudimos escucharte. Puedes escribirlo aquí; tu clima sigue elegido.')
       },
       alTerminar: () => setGrabando(false),
     })
@@ -180,6 +277,22 @@ export default function App() {
     } catch {
       setErrorMic('No pudimos usar el micrófono. Puedes escribirlo aquí.')
     }
+  }
+
+  // «Contar mi día»: si la voz ya está permitida se graba; si no, la hoja J1 (o J3) lo pide justo ahora
+  function contar() {
+    if (estadoVoz() === 'ok') return empezarGrabacion()
+    setHoja('mic')
+  }
+  function activarMicrofono() {
+    const p = { ...privacidad, grabarVoz: true }
+    cambiarAjustes('privacidad')({ grabarVoz: true })
+    if (estadoVoz(p) === 'ok') empezarGrabacion(privacidadEfectiva(p))
+    // si solo se puede transcribir en internet, la misma hoja pasa a J3
+  }
+  function transcribirPorEstaVez() {
+    setPorEstaVez(true)
+    empezarGrabacion(privacidadEfectiva(privacidad, true))
   }
 
   function detenerMic() {
@@ -205,324 +318,276 @@ export default function App() {
   // Órdenes de voz al final del dictado: terminar, pausar, ayuda, salir por hoy (S51)
   orden.current = (cual) => {
     if (cual === 'terminar' || cual === 'pausar') terminarMic()
-    else if (cual === 'salir') reiniciar()
+    else if (cual === 'salir') salirPorHoy()
     else if (cual === 'ayuda') abrirAyuda('Ayuda', AYUDA.contar)
   }
 
   function escribir() {
     detenerMic()
+    setHoja(null)
     setErrorMic(null)
-    setPantalla('contar')
+    ir('contar')
   }
 
-  async function listo() {
+  async function listo(iaEnInternet = privacidad.iaEnInternet, preguntar = true) {
     detenerMic()
-    if (hayRiesgo(texto)) { vibrar(preferencias); return setPantalla('riesgo') }
-    setPantalla('pensando')
+    if (hayRiesgo(texto)) return abrirCrisis('detector')
+    // J2: la primera vez, y solo si el proveedor configurado sale a internet, se pregunta dónde pensar la reflexión
+    if (preguntar && debePreguntarIA(perfil.avisos, proveedorActivo())) return setHoja('ia')
+    setHoja(null)
+    ir('pensando')
     const id = ++consulta.current
-    const r = await proponerEmociones(texto, {
-      proveedor: proveedorSegunPermiso(perfil.privacidad.iaEnInternet),
-      contexto: contextoParaLLM(perfil),
-    })
+    const r = await proponerEmociones(texto, { proveedor: proveedorSegunPermiso(iaEnInternet), contexto: contextoParaLLM(perfil) })
     if (id !== consulta.current) return
-    setPropuesta(personalizarPropuesta(perfil, r))
+    setPropuesta(personalizarPropuesta(perfil, r, texto))
+    setTrampa(trampaParaMostrar(texto, r.trampas, trampasSilenciadas(perfil)))
+    setTrampaSi(false)
     setElegidas([])
-    setPantalla('emociones')
+    ir('emociones')
+  }
+  function decidirIA(enInternet) {
+    setPerfil((p) => guardarAjustes(guardarAjustes(p, 'privacidad', { iaEnInternet: enInternet }), 'avisos', { ia: true }))
+    listo(enInternet, false)
   }
 
-  // Historial con tus registros; si aún no hay, o si lo pides, el de ejemplo
-  async function abrirHistorial(verDemo = perfil.registros.length === 0) {
+  // Historial con tus registros; sin registros, la pantalla vacía ofrece la demo
+  async function abrirHistorial(verDemo = false) {
     if (verDemo) {
       const res = await fetch('/demo/registros-30-dias.json')
       setDemo(await res.json())
     } else {
       setDemo(null)
     }
-    setPantalla('semana')
+    ir('semana')
   }
-  const abrirDemo = () => abrirHistorial(true)
 
   // HU-08: la persona corrige el tono; al tercer pedido el perfil lo recuerda
   function masCorto() {
     setPerfil(pedirMasCorto)
-    setPropuesta((p) => ({ ...p, reflexion: p.reflexion.match(/^[^.?!]*[.?!]/)?.[0] ?? p.reflexion }))
+    setPropuesta((p) => ({ ...p, reflexion: fraseMasSignificativa(p.reflexion, texto) }))
   }
 
-  const cambiarAjustes = (grupo) => (cambios) => setPerfil((p) => guardarAjustes(p, grupo, cambios))
-  const cambiarPreferencias = (cambios) => setPerfil((p) => guardarPreferencias(p, cambios))
-  const abrirAyuda = (titulo, parrafos) => setAyuda({ titulo, parrafos })
-
   function instalar() {
+    setTarjeta(null)
     if (instalacion) return instalacion.prompt()
     abrirAyuda('Instalar la app', ['En Chrome o Edge, toca el botón «Instalar» de la barra de direcciones.',
       'En el celular, abre el menú del navegador y elige «Agregar a pantalla de inicio».'])
   }
 
-  function irAAjustes() {
-    // Si el sistema ya pide menos movimiento, el paisaje arranca estático (S05)
-    if (sistemaPideMenosMovimiento()) cambiarPreferencias({ movimientoReducido: true })
-    setPantalla('ajustes-iniciales')
-  }
-
   async function eliminarTodo() {
     vibrar(perfil.preferencias)
     setPerfil(await borrarTodo())
-    setEdad(null); setClima(null); setTexto(''); setPropuesta(null); setElegidas([]); setDemo(null)
-    setPantalla('bienvenida')
+    setClima(null); setTexto(''); setPropuesta(null); setElegidas([]); setDemo(null); setGuardadoHoy(false)
+    ir('bienvenida')
     abrirAyuda('Tus datos se eliminaron', ['Borramos tus registros, tu perfil y la caché de este teléfono.', 'Puedes empezar de nuevo cuando quieras.'])
   }
 
-  function terminarPrimerUso() {
-    cambiarAjustes('primerUso')({ completo: true, edad })
-    setPantalla('inicio')
+  // Bienvenida: un toque declara la edad y lleva al inicio (si el sistema pide menos movimiento, se respeta, S05)
+  function empezar(edad) {
+    setPerfil((p) => {
+      const conEdad = guardarAjustes(p, 'primerUso', { completo: true, edad })
+      return sistemaPideMenosMovimiento() ? guardarPreferencias(conEdad, { movimientoReducido: true }) : conEdad
+    })
+    ir('inicio')
+  }
+
+  // Refugio: gratis y sin preguntas, desde el inicio, la bienvenida o tras un check-in pesado (RF-42)
+  function abrirRefugio(inicial = {}) {
+    detenerMic()
+    setRefugio({ ...inicial, guardable: completo })
+    setPasoRefugio(inicial.tecnica ?? 'respirar')
+    ir('refugio')
+  }
+
+  // Crisis (C1): a un toque desde cualquier pantalla; el resto de la app queda montada debajo
+  function abrirCrisis(origen) {
+    detenerMic()
+    setHoja(null)
+    setAyuda(null)
+    vibrar(preferencias)
+    setCrisis(origen)
+  }
+  function cerrarCrisis() {
+    const origen = crisis
+    setCrisis(null)
+    if (origen === 'detector') reiniciar()
   }
 
   function irAPestana(id) {
     if (id === 'inicio') return reiniciar()
     if (id === 'historial') return abrirHistorial()
-    setPantalla(id)
+    ir(id)
   }
 
-  const reiniciar = () => {
+  function reiniciar() {
     detenerMic()
     consulta.current++
-    setErrorMic(null)
+    setErrorMic(null); setHoja(null)
     inicioCheckin.current = null
-    setClima(null); setTexto(''); setPropuesta(null); setElegidas([]); setPantalla(perfil.primerUso.completo ? 'inicio' : 'bienvenida')
+    setTrampa(null); setTrampaSi(false); setDeVoz(false)
+    setClima(null); setTexto(''); setPropuesta(null); setElegidas([])
+    ir(completo ? 'inicio' : 'bienvenida')
+  }
+
+  // «Salir por hoy»: la X del check-in. No guarda nada que no se haya guardado ya.
+  function salirPorHoy() {
+    reiniciar()
+    ir(completo ? 'despedida' : 'bienvenida')
   }
 
   const porTexto = empiezaEscribiendo(perfil)
+  const hoy = fechaLocal(new Date())
+  const ofrecerRefugio = pantalla === 'guardado' && !ofertaVista && perfil.refugioSaltado !== hoy &&
+    debeOfrecerRefugio({ clima, emociones: perfil.registros.at(-1)?.emocion_declarada, texto })
   const ultimo = perfil.registros.at(-1)
-  const climaHoy = ultimo?.fecha === fechaLocal(new Date()) ? ultimo.clima : null
+  const climaHoy = ultimo?.fecha === hoy ? ultimo.clima : null
+  const capas = preferencias.capas
+
+  // Cabecera de cada pantalla: «Aa» o volver/cerrar, la ayuda contextual y «Ayuda ya»
+  function cabecera(opciones = {}) {
+    let izquierda = RAIZ.has(pantalla) ? 'aa' : CHECKIN.has(pantalla) ? 'cerrar' : 'volver'
+    let etiqueta
+    let alTocar = () => setHoja('aa')
+    if (izquierda === 'cerrar') { etiqueta = 'Salir por hoy'; alTocar = salirPorHoy }
+    if (izquierda === 'volver') alTocar = () => ir(PADRE[pantalla] ?? (completo ? 'inicio' : 'bienvenida'))
+    if (pantalla === 'guardado' || pantalla === 'despedida') { izquierda = 'cerrar'; etiqueta = 'Volver al inicio'; alTocar = reiniciar }
+    return (
+      <Cabecera izquierda={opciones.izquierda ?? izquierda} etiquetaIzquierda={opciones.etiquetaIzquierda ?? etiqueta}
+        onIzquierda={opciones.onIzquierda ?? alTocar} titulo={opciones.titulo ?? TITULO[pantalla]} esTitulo={opciones.esTitulo ?? Boolean(TITULO[pantalla])}
+        onAyuda={() => abrirAyuda('Ayuda', ayudaDePantalla())} onAyudaYa={() => abrirCrisis('boton')} />
+    )
+  }
+  const cab = cabecera()
+  const registrosDetalle = detalle ? registrosDelDia(demo ?? perfil.registros, detalle) : []
 
   return (
-    <main className="app" data-movimiento={perfil.preferencias.movimientoReducido ? 'reducido' : 'normal'}>
-      <BarraSuperior fondo={FONDO_PAISAJE.has(pantalla) || (pantalla === 'sala' && enSala) ? 'paisaje' : 'claro'} soloAyuda={pantalla === 'bienvenida'}
-        onAyuda={() => abrirAyuda('Ayuda', AYUDA[pantalla] ?? AYUDA.general)} onSalir={reiniciar} />
+    <TemaNoche.Provider value={noche}>
+      {/* B12: con teclado se salta la cabecera y va directo al título de la pantalla */}
+      {!crisis && <a href="#contenido" className="saltar" onClick={(e) => { e.preventDefault(); enfocar('main h1') }}>Saltar al contenido</a>}
+      <main id="contenido" className={`app ${PESTANA_DE[pantalla] && completo ? 'app--nav' : ''}`} hidden={Boolean(crisis)} aria-hidden={crisis ? true : undefined}
+        inert={Boolean(hoja || ayuda) || undefined}
+        data-movimiento={preferencias.movimientoReducido ? 'reducido' : 'normal'} data-pantalla={pantalla}>
+        <Suspense fallback={<p className="cargando" role="status">Cargando…</p>}>
+
+        {pantalla === 'bienvenida' && (
+          <Bienvenida cabecera={cab} capas={capas} onEmpezar={() => empezar('adulto')} onRespiro={() => abrirRefugio()}
+            onMenor={() => ir('menor')} onDemo={() => abrirHistorial(true)} onDatos={() => setHoja('datos')} />
+        )}
+        {pantalla === 'menor' && <Menor cabecera={cab} capas={capas} onEmpezar={() => empezar('menor')} onRespiro={() => abrirRefugio()} />}
+
+        {pantalla === 'inicio' && (
+          <Inicio cabecera={cab} noche={noche} capas={capas} clima={clima} climaVista={climaVista} registros={perfil.registros}
+            notaRitmo={notaDeRitmo(perfil)} porTexto={porTexto} predecible={predecible} tamanoTexto={preferencias.tamanoTexto} sinVoz={!sttDisponible()}
+            onElegir={elegirClima} onGuardar={() => guardar()} onContar={contar} onEscribir={escribir}
+            onPredecible={() => ir('predecible-como')} onRespiro={() => abrirRefugio()} />
+        )}
+
+        {pantalla === 'contar' && grabando && (
+          <Escuchando cabecera={cab} capas={capas} clima={climaVista} segundos={segundos} texto={texto}
+            pista={preferencias.pistas && segundos >= 12 && !texto} minuto={segundos >= SEG_SUGERIR_CIERRE}
+            enInternet={privacidadEfectiva().transcribirEnInternet} onTerminar={terminarMic} onPausar={terminarMic} onEscribir={escribir} />
+        )}
+        {pantalla === 'contar' && !grabando && (
+          <Relato cabecera={cab} capas={capas} clima={clima} climaVista={climaVista} texto={texto} onTexto={setTexto} deVoz={deVoz && Boolean(texto)}
+            duracion={segundos} estadoVoz={estadoVoz()} motivoVoz={deVoz ? MOTIVOS_DICTADO[estadoVoz()] : null} errorMic={errorMic}
+            puedeHablar={estadoVoz() !== 'sin-navegador' && !errorMic} onListo={() => listo()} onHablar={contar} />
+        )}
+        {pantalla === 'predecible-como' && <PredecibleComo cabecera={cab} onHablar={sttDisponible() ? contar : undefined} onEscribir={escribir} onGuardar={() => guardar()} />}
+        {pantalla === 'pensando' && <Pensando cabecera={cab} capas={capas} clima={climaVista} />}
+        {pantalla === 'emociones' && propuesta && (
+          <Emociones cabecera={cab} capas={capas} clima={climaVista} neutral={climaVista !== clima} predecible={predecible} propuesta={propuesta}
+            elegidas={elegidas} onAlternar={(n) => setElegidas((l) => l.includes(n) ? l.filter((x) => x !== n) : [...l, n])}
+            onGuardar={(e) => guardar({ emociones: e })} onRiesgo={() => abrirCrisis('detector')} />
+        )}
+        {pantalla === 'trampa' && trampa && (
+          <Trampa cabecera={cab} capas={capas} clima={climaVista} trampa={trampa} respondioSi={trampaSi}
+            onSi={() => { setPerfil((p) => registrarTrampa(p, trampa.tipo, 'si')); setTrampaSi(true) }}
+            onNo={() => { setPerfil((p) => registrarTrampa(p, trampa.tipo, 'no')); ir('guardado') }}
+            onAmiga={() => abrirRefugio({ tecnica: 'amiga', frase: trampa.frase })} onSeguir={() => ir('guardado')} />
+        )}
+        {pantalla === 'guardado' && (
+          <Guardado cabecera={cab} capas={capas} clima={clima} climaVista={climaVista} emociones={ultimo?.emocion_declarada}
+            reflexion={propuesta ? (predecible ? propuesta.reflexion.split(' ').slice(0, 80).join(' ') : propuesta.reflexion) : null}
+            oferta={ofrecerRefugio} tarjeta={tarjeta} preferencias={preferencias}
+            onEscuchar={() => decir(propuesta?.reflexion ?? '')} onMasCorto={masCorto} onRespiro={() => abrirRefugio()}
+            onAhoraNo={() => { setOfertaVista(true); setPerfil((p) => saltarOfertaRefugio(p, hoy)) }} onListo={reiniciar}
+            onTarjeta={{ cambiar: cambiarPreferencias, mas: () => { setTarjeta(null); ir('accesibilidad') }, cerrar: () => setTarjeta(null), instalar }} />
+        )}
+        {pantalla === 'despedida' && <Despedida cabecera={cab} capas={capas} guardadoHoy={Boolean(climaHoy)} onVolver={reiniciar} />}
+
+        {pantalla === 'refugio' && (
+          <Refugio key={JSON.stringify(refugio)} cabecera={cabecera} preferencias={preferencias} favorita={tecnicaFavorita(perfil)} inicial={refugio}
+            guardable={refugio?.guardable} voz={{ disponible: estadoVoz() === 'ok', local: !privacidadEfectiva().transcribirEnInternet }}
+            onPaso={setPasoRefugio} onGuardar={(r) => setPerfil((p) => guardarRefugio(p, r))} onSalir={reiniciar}
+            onRiesgo={() => abrirCrisis('detector')} onMasAyuda={() => abrirCrisis('boton')} onEmpezar={() => ir('bienvenida')} />
+        )}
+
+        {pantalla === 'semana' && (demo || perfil.registros.length > 0) && (
+          <Historial cabecera={completo ? cab : cabecera({ izquierda: 'volver', onIzquierda: () => ir('bienvenida'), etiquetaIzquierda: 'Volver' })}
+            dias={demo ? treintaDias(demo) : treintaDias(perfil.registros, { terminaHoy: true })} demo={Boolean(demo)}
+            registros={diasRegistrados(perfil.registros)} refugios={demo ? [] : perfil.refugios}
+            onDia={(f) => { setDetalle(f); ir('detalle') }} onAlternarDemo={() => abrirHistorial(!demo)} />
+        )}
+        {pantalla === 'semana' && !demo && perfil.registros.length === 0 && (
+          <HistorialVacio cabecera={cab} sinVoz={!sttDisponible()} onContar={reiniciar} onDemo={() => abrirHistorial(true)} />
+        )}
+        {pantalla === 'detalle' && registrosDetalle.length > 0 && (
+          <DetalleDia cabecera={cabecera({ titulo: registroDetalleTitulo(registrosDetalle[0]) })} capas={capas} registros={registrosDetalle}
+            neutral={preferencias.modoNeutral} refugios={demo ? [] : perfil.refugios.filter((r) => r.fecha === detalle)} />
+        )}
+
+        {pantalla === 'perfil' && (
+          <Perfil cabecera={cab} capas={capas} onSabe={() => ir('perfil-sabe')} onPrivacidad={() => ir('privacidad')}
+            onAccesibilidad={() => ir('accesibilidad')} onDatos={() => ir('exportar')} onAyuda={() => abrirAyuda('Ayuda', AYUDA.general)} />
+        )}
+        {pantalla === 'perfil-sabe' && (
+          <SabeDeMi cabecera={cab} perfil={perfil}
+            onCambio={(cambios) => setPerfil((p) => Object.entries(cambios).reduce((acc, [k, v]) => cambiarCategoria(acc, k, v), p))}
+            onOlvidar={(categoria) => setPerfil((p) => restablecer(p, categoria))} />
+        )}
+        {pantalla === 'privacidad' && (
+          <PrivacidadYDatos cabecera={cab} privacidad={privacidad} onCambio={cambiarAjustes('privacidad')} />
+        )}
+        {pantalla === 'accesibilidad' && (
+          <Accesibilidad cabecera={cab} preferencias={preferencias} onCambio={cambiarPreferencias} onAlternarCapa={(c) => setPerfil((p) => alternarCapa(p, c))} />
+        )}
+        {pantalla === 'exportar' && (
+          <ExportarResumen cabecera={cab} registros={perfil.registros} vibrar={() => vibrar(preferencias)} onListo={() => ir('perfil')} onEliminar={() => ir('eliminar')} />
+        )}
+        {pantalla === 'eliminar' && <EliminarDatos cabecera={cab} onEliminar={eliminarTodo} onCancelar={() => ir('exportar')} onExportar={() => ir('exportar')} />}
+
+        {/* B9: «Salir» de una sala vuelve a la entrada de Salas, no a Inicio */}
+        {pantalla === 'sala' && (
+          <Sala key={codigoInvitacion} cabecera={cabecera} capas={capas} climaHoy={climaHoy} codigoInicial={codigoInvitacion}
+            permitido={privacidad.climaCompartido} onPermitir={() => cambiarAjustes('privacidad')({ climaCompartido: true })}
+            alVolver={() => { history.replaceState(null, '', location.pathname); setCodigoInvitacion(''); enfocar('main h1') }} />
+        )}
+
+        </Suspense>
+        {PESTANA_DE[pantalla] && completo && <Pestanas actual={PESTANA_DE[pantalla]} onIr={irAPestana} />}
+        {import.meta.env.DEV && <footer className="pie-dev">LLM activo: {proveedorActivo().nombre}</footer>}
+      </main>
+
+      {hoja === 'mic' && (
+        <HojaMicrofono estado={privacidad.grabarVoz ? estadoVoz() : sttDisponible() ? 'sin-permiso' : 'sin-navegador'} onActivar={activarMicrofono} onInternet={transcribirPorEstaVez}
+          onEscribir={escribir} onCerrar={() => setHoja(null)} />
+      )}
+      {hoja === 'ia' && <HojaIA onInternet={() => decidirIA(true)} onTelefono={() => decidirIA(false)} onCerrar={() => setHoja(null)} />}
+      {hoja === 'aa' && <HojaAa preferencias={preferencias} onCambio={cambiarPreferencias} onCerrar={() => setHoja(null)}
+        onMas={completo ? () => { setHoja(null); ir('accesibilidad') } : undefined} />}
+      {hoja === 'datos' && <CuidadoDatos onCerrar={() => setHoja(null)} />}
       {ayuda && (
-        <Ayuda titulo={ayuda.titulo} onCerrar={() => setAyuda(null)}>
+        <Ayuda titulo={ayuda.titulo} onCerrar={() => setAyuda(null)} onMasAyuda={() => abrirCrisis('boton')}>
           {ayuda.parrafos.map((t) => <p key={t}>{t}</p>)}
         </Ayuda>
       )}
-
-      {pantalla === 'bienvenida' && (
-        <Bienvenida onEmpezar={() => setPantalla('edad')} onDemo={abrirDemo} onInstalar={instalar} />
-      )}
-      {pantalla === 'edad' && (
-        <Edad edad={edad} onElegir={setEdad} onContinuar={() => setPantalla('permisos')} />
-      )}
-      {pantalla === 'permisos' && (
-        <Permisos privacidad={perfil.privacidad} edad={edad} onCambio={cambiarAjustes('privacidad')} onGuardar={() => setPantalla('limites')} />
-      )}
-      {pantalla === 'limites' && <Limites onRecursos={() => setPantalla('riesgo')} onEntendido={irAAjustes} />}
-      {pantalla === 'ajustes-iniciales' && (
-        <AjustesIniciales preferencias={perfil.preferencias} sistemaReducido={sistemaPideMenosMovimiento()}
-          onCambio={cambiarPreferencias} onListo={terminarPrimerUso} />
-      )}
-
-      {pantalla === 'inicio' && (
-        <Paisaje clima={climaVista} capas={preferencias.capas}>
-          <section className="saludo">
-            <h1>{saludo()}</h1>
-            <p>¿Cómo fue tu día?</p>
-            {notaDeRitmo(perfil) && <p className="pequeno">{notaDeRitmo(perfil)}</p>}
-          </section>
-          {perfil.registros.at(-1) && (
-            <p className="ayer">Último registro: {DESCRIPCION[perfil.registros.at(-1).clima]}</p>
-          )}
-          <section className="hoja">
-            <p className="hoja__titulo">¿Qué clima hay hoy?</p>
-            <div className="climas" role="radiogroup" aria-label="Clima del día">
-              {CLIMAS.map((c) => (
-                <button key={c.id} role="radio" aria-checked={clima === c.id}
-                  className={clima === c.id ? 'clima activo' : 'clima'} onClick={() => elegirClima(c.id)}>
-                  <span aria-hidden="true">{c.icono}</span>{c.etiqueta}
-                </button>
-              ))}
-            </div>
-            {!clima && <p className="pequeno" role="status">Elige un clima para empezar.</p>}
-            {porTexto && <p className="pequeno">Como el micrófono falló, empezamos escribiendo. Puedes hablar cuando quieras.</p>}
-            {predecible ? (
-              <Boton disabled={!clima} onClick={() => setPantalla('predecible-como')}>Continuar</Boton>
-            ) : (
-              <>
-                <div className="contar">
-                  <button className="mic-grande" disabled={!clima} onClick={porTexto ? escribir : () => setPantalla('antes-grabar')}
-                    aria-label={porTexto ? 'Escribir mi día' : 'Contar mi día por voz'}>{porTexto ? <span aria-hidden="true" className="icono-lapiz">✎</span> : <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" /></svg>}</button>
-                  <div>
-                    <h2>{porTexto ? 'Escribir mi día' : 'Contar mi día'}</h2>
-                    <p className="pequeno">{porTexto ? 'Unas líneas bastan.' : 'Más o menos 1 minuto. Puedes cambiar a texto cuando quieras.'}</p>
-                  </div>
-                </div>
-                <div className="fila">
-                  {porTexto
-                    ? <button className="secundario" disabled={!clima} onClick={() => setPantalla('antes-grabar')}>🎙️ Hablar</button>
-                    : <button className="secundario" disabled={!clima} onClick={escribir}>✎ Escribir</button>}
-                  <button className="secundario" disabled={!clima} onClick={() => guardar()}>Así está bien (10 s)</button>
-                </div>
-              </>
-            )}
-          </section>
-        </Paisaje>
-      )}
-
-      {pantalla === 'contar' && grabando && (
-        <Paisaje clima={climaVista} capas={preferencias.capas}>
-          <div className="grabando">
-            <p className="pildora" aria-live="polite"><span className="punto" /> Micrófono activo · {mmss(segundos)}</p>
-            <div className="reloj" style={{ '--avance': `${Math.min(segundos / SEG_SUGERIR_CIERRE, 1) * 360}deg` }}>
-              <div><strong>{mmss(segundos)}</strong><span>de ~1:00</span></div>
-            </div>
-            {preferencias.pistas && segundos >= 12 && !texto && <p className="pildora" role="status">¿Sigues ahí? Puedes contarlo con pocas palabras o escribirlo.</p>}
-            {segundos >= SEG_SUGERIR_CIERRE && <p className="pildora">Ya va un minuto. Termina cuando cierres la idea.</p>}
-            <p className="transcripcion" aria-live="polite">{texto ? `«${texto}»` : 'Te escucho…'}</p>
-          </div>
-          <section className="controles">
-            <button className="ctrl" onClick={reiniciar}><span>✕</span>Cancelar</button>
-            <button className="ctrl ctrl--parar" onClick={terminarMic}><span>■</span>Terminar</button>
-            <button className="ctrl" onClick={escribir}><span>⌨</span>A texto</button>
-          </section>
-        </Paisaje>
-      )}
-
-      {pantalla === 'contar' && !grabando && (
-        <Paisaje clima={climaVista} capas={preferencias.capas}>
-          <section className="hoja">
-            {estadoVoz() !== 'ok' && <p role="status">{MOTIVOS_DICTADO[estadoVoz()]}</p>}
-            {errorMic && <p role="alert">{errorMic}</p>}
-            <label htmlFor="relato" className="hoja__titulo">Lo que entendí (puedes corregirlo)</label>
-            <textarea id="relato" value={texto} onChange={(e) => setTexto(e.target.value)} rows={5}
-              placeholder="Hoy me desperté con sueño y el tráfico me quitó energía…" />
-            <button className="principal" disabled={!texto.trim()} onClick={listo}>Listo</button>
-            {estadoVoz() === 'ok' && (
-              <button className="secundario" onClick={empezarGrabacion}>🎙️ {texto.trim() ? 'Seguir hablando' : 'Hablar'}</button>
-            )}
-          </section>
-        </Paisaje>
-      )}
-
-      {pantalla === 'predecible-como' && (
-        <section className="pantalla" aria-labelledby="como-titulo">
-          <div className="pantalla__cuerpo">
-            <h1 id="como-titulo">¿Cómo quieres contarlo?</h1>
-            <p className="cuerpo">Elige una opción. Después te haremos la siguiente pregunta.</p>
-            <Boton icono="mic" onClick={() => setPantalla('antes-grabar')}>Hablar</Boton>
-            <Boton tipo="secundario" icono="texto" onClick={escribir}>Escribir</Boton>
-            <Boton tipo="fantasma" onClick={() => guardar()}>Guardar solo el clima</Boton>
-          </div>
-        </section>
-      )}
-      {pantalla === 'antes-grabar' && (
-        <AntesDeGrabar clima={clima} estado={estadoVoz()} onGrabar={empezarGrabacion} onEscribir={escribir} />
-      )}
-      {pantalla === 'perfil' && (
-        <SabeDeMi perfil={perfil}
-          onCambio={(cambios) => setPerfil((p) => Object.entries(cambios).reduce((acc, [k, v]) => cambiarCategoria(acc, k, v), p))}
-          onOlvidar={(categoria) => setPerfil((p) => restablecer(p, categoria))}
-          onPrivacidad={() => setPantalla('privacidad')} onAccesibilidad={() => setPantalla('accesibilidad')} />
-      )}
-      {pantalla === 'privacidad' && (
-        <PrivacidadYDatos privacidad={perfil.privacidad} onCambio={cambiarAjustes('privacidad')}
-          onExportar={() => setPantalla('exportar')} onEliminar={() => setPantalla('eliminar')} onDemo={abrirDemo} />
-      )}
-
-      {pantalla === 'sala' && (
-        <Sala key={codigoInvitacion} climaHoy={climaHoy} codigoInicial={codigoInvitacion}
-          permitido={privacidad.climaCompartido} onDentro={setEnSala} onPermitir={() => cambiarAjustes('privacidad')({ climaCompartido: true })}
-          alVolver={() => { history.replaceState(null, '', location.pathname); reiniciar() }} />
-      )}
-
-      {pantalla === 'accesibilidad' && (
-        <Accesibilidad preferencias={preferencias} onCambio={cambiarPreferencias} onAlternarCapa={(c) => setPerfil((p) => alternarCapa(p, c))} />
-      )}
-      {pantalla === 'exportar' && (
-        <ExportarResumen registros={perfil.registros} vibrar={() => vibrar(perfil.preferencias)} onListo={() => setPantalla('privacidad')} />
-      )}
-      {pantalla === 'eliminar' && (
-        <EliminarDatos onEliminar={eliminarTodo} onCancelar={() => setPantalla('privacidad')} onExportar={() => setPantalla('exportar')} />
-      )}
-
-      {pantalla === 'pensando' && <Paisaje clima={climaVista} capas={preferencias.capas}><p className="tarjeta" aria-live="polite">Mirando tu cielo…</p></Paisaje>}
-
-      {pantalla === 'emociones' && (
-        <Paisaje clima={climaVista} capas={preferencias.capas}>
-          <section className="tarjeta">
-            {climaVista !== clima && <Aviso titulo="Modo neutral activo">Hoy tu registro generaría tormenta. Lo mostramos como cielo neutro y sin sonidos intensos.</Aviso>}
-            <h2>{predecible ? '¿Cuáles de estas emociones sientes?' : 'Toca las nubes que sientes tuyas'}</h2>
-            <span className="rotulo-ia"><Icono nombre="ia" tam={17} />Generado por IA · no es consejo clínico</span>
-            <p className="rotulo">Propuesto por {propuesta.proveedor ?? 'respaldo local'}. Tú decides cuáles son tuyas.</p>
-            <div className="nubes">
-              {propuesta.emociones.map((e) => (
-                <button key={e.nombre} aria-pressed={elegidas.includes(e.nombre)}
-                  className={elegidas.includes(e.nombre) ? 'nube activa' : 'nube'}
-                  onClick={() => setElegidas((l) => l.includes(e.nombre) ? l.filter((x) => x !== e.nombre) : [...l, e.nombre])}>
-                  {e.nombre}{e.tuya && <small className="tuya"> · tuya</small>}
-                </button>
-              ))}
-            </div>
-            <p className="reflexion">{predecible ? limitarPalabras(propuesta.reflexion) : propuesta.reflexion}
-              <button className="enlace" onClick={() => decir(propuesta.reflexion)} aria-label="Escuchar la reflexión">🔊</button>
-              <button className="enlace" onClick={masCorto}>Más corto</button>
-            </p>
-            <button className="principal" onClick={() => guardar({ emociones: elegidas })}>
-              {elegidas.length ? 'Guardar mi día' : 'No sé, guardar igual'}
-            </button>
-          </section>
-        </Paisaje>
-      )}
-
-      {pantalla === 'riesgo' && (
-        <section className="tarjeta riesgo" role="alert">
-          <h2>Mereces apoyo ahora mismo</h2>
-          <p>Algo de lo que contaste nos preocupa. Hablar con una persona puede ayudar. Estas líneas son gratuitas.</p>
-          {RECURSOS.map((r) => (
-            <a key={r.tel} className="recurso" href={`tel:${r.tel}`}><strong>{r.nombre}</strong><span>{r.detalle}</span></a>
-          ))}
-          <p className="pequeno">La app no contactó a nadie. Tú decides si llamas.</p>
-          <button className="secundario" onClick={reiniciar}>Ahora no</button>
-        </section>
-      )}
-
-      {pantalla === 'guardado' && (
-        <Paisaje clima={climaVista} capas={preferencias.capas}>
-          <section className="tarjeta">
-            {climaVista !== clima && <Aviso titulo="Modo neutral activo">Tu tormenta se guardó y hoy se muestra como cielo neutro.</Aviso>}
-            <span className="sello"><Icono nombre="check" /></span>
-            <h2>Tu día quedó guardado</h2>
-            <p>{DESCRIPCION[climaVista]}</p>
-            <p className="pequeno">Llevas {perfil.registros.length} registro(s).
-              {perfil.ritmo.horaHabitual && ` Sueles registrar a las ${perfil.ritmo.horaHabitual}:00.`}</p>
-            <button className="principal" onClick={reiniciar}>Hasta mañana</button>
-          </section>
-        </Paisaje>
-      )}
-
-      {pantalla === 'semana' && (demo || perfil.registros.length > 0) && (
-        <section className="tarjeta historial">
-          <h2>Tus últimos 30 días</h2>
-          <p className="rotulo">{demo ? 'Modo demo: datos simulados, no son de una persona real' : `Tus ${perfil.registros.length} registro(s)`}</p>
-          <ol className="calendario">
-            {(demo ? treintaDias(demo) : treintaDias(perfil.registros, { terminaHoy: true })).map(({ fecha, r }) => (
-              <li key={fecha} className={r ? `dia paisaje--${r.clima}` : 'dia dia--vacio'}
-                title={r ? `${fecha}: ${r.clima}, ${emocionesDe(r)}` : `${fecha}: sin registro`}>
-                <span className="dia__n" aria-hidden="true">{Number(fecha.slice(8))}</span>
-                {r && <span className="dia__i" aria-hidden="true">{CLIMAS.find((c) => c.id === r.clima)?.icono}</span>}
-                <span className="sr">
-                  {r ? `${fecha}: ${DESCRIPCION[r.clima]} Emoción: ${emocionesDe(r)}` : `${fecha}: sin registro, cielo despejado`}
-                </span>
-              </li>
-            ))}
-          </ol>
-          <p className="pequeno">Los días sin registro no aparecen como fallo: el cielo sigue despejado.</p>
-          {perfil.registros.length > 0 && (
-            <button className="enlace" onClick={() => abrirHistorial(!demo)}>{demo ? 'Ver mis registros' : 'Ver el ejemplo de 30 días'}</button>
-          )}
-          <button className="secundario" onClick={reiniciar}>Volver al inicio</button>
-        </section>
-      )}
-
-      {PESTANA_DE[pantalla] && <Pestanas actual={PESTANA_DE[pantalla]} onIr={irAPestana} />}
-      <footer className="pie">LLM activo: {proveedorActivo().nombre}</footer>
-    </main>
+      {crisis && <Crisis origen={crisis} onVolver={cerrarCrisis} />}
+    </TemaNoche.Provider>
   )
+}
+
+const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+function registroDetalleTitulo(r) {
+  const d = new Date(`${r.fecha}T12:00:00`)
+  return `${DIAS[d.getDay()]} ${d.getDate()}`
 }

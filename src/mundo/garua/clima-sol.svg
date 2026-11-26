@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240"><defs><radialGradient id="gBody" cx="92" cy="78" r="108" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".42" stop-color="#FFF9EE"/><stop offset=".78" stop-color="#F5E9D6"/><stop offset="1" stop-color="#E9D8BE"/></radialGradient>
+<radialGradient id="gCore" cx="100" cy="112" r="52" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFD27A" stop-opacity=".95"/><stop offset=".45" stop-color="#FFE3A8" stop-opacity=".6"/><stop offset="1" stop-color="#FFF1D6" stop-opacity="0"/></radialGradient>
+<radialGradient id="gHalo" cx="100" cy="98" r="100" gradientUnits="userSpaceOnUse"><stop offset=".55" stop-color="#FFFFFF" stop-opacity=".55"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+<clipPath id="gClip"><circle cx="100" cy="64" r="42"/><circle cx="62" cy="80" r="32"/><circle cx="140" cy="78" r="34"/><circle cx="42" cy="110" r="27"/><circle cx="160" cy="108" r="28"/><circle cx="72" cy="120" r="32"/><circle cx="128" cy="120" r="32"/><circle cx="100" cy="104" r="46"/></clipPath>
+<filter id="gSoft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="7"/></filter>
+<filter id="gEdge" x="-15%" y="-15%" width="130%" height="130%"><feGaussianBlur stdDeviation="0.7"/></filter></defs><g id="sol"><circle cx="190" cy="54" r="40" fill="#FDE1A7" opacity=".55"/><circle cx="190" cy="54" r="24" fill="#FFE9A5"/></g><g id="garua" transform="translate(12 44) translate(100.00 100.00) rotate(0) scale(1.0 1.0) translate(-100 -100)"><g id="halo"><circle cx="100" cy="98" r="100" fill="url(#gHalo)"/></g>
+<g id="cuerpo" filter="url(#gEdge)">
+  <g id="forma" fill="url(#gBody)" opacity="0.97"><circle cx="100" cy="64" r="42"/><circle cx="62" cy="80" r="32"/><circle cx="140" cy="78" r="34"/><circle cx="42" cy="110" r="27"/><circle cx="160" cy="108" r="28"/><circle cx="72" cy="120" r="32"/><circle cx="128" cy="120" r="32"/><circle cx="100" cy="104" r="46"/></g>
+  <g id="sombreado" clip-path="url(#gClip)" opacity="0.97">
+    <ellipse cx="100" cy="176" rx="118" ry="48" fill="#D9C3A0" opacity=".55" filter="url(#gSoft)"/>
+    <g id="nucleo"><circle cx="100" cy="112" r="52" fill="url(#gCore)" opacity="1.3"/></g>
+    <g id="brillo" opacity="1.0">
+      <ellipse cx="92" cy="44" rx="30" ry="14" fill="#fff" opacity=".9" filter="url(#gSoft)"/>
+      <ellipse cx="52" cy="70" rx="14" ry="9" fill="#fff" opacity=".8" filter="url(#gSoft)"/>
+      <ellipse cx="146" cy="60" rx="16" ry="9" fill="#fff" opacity=".8" filter="url(#gSoft)"/>
+    </g>
+  </g>
+</g>
+<g id="cara" opacity="1.0">
+  <g id="rubor"><ellipse cx="67" cy="109" rx="9.5" ry="5.2" fill="#F2A79E" opacity="0.65"/><ellipse cx="133" cy="109" rx="9.5" ry="5.2" fill="#F2A79E" opacity="0.65"/></g>
+  <g id="ojos"><path d="M73 98 q7 5.5 14 0" stroke="#2A3440" stroke-width="3.2" fill="none" stroke-linecap="round"/><path d="M113 98 q7 5.5 14 0" stroke="#2A3440" stroke-width="3.2" fill="none" stroke-linecap="round"/></g>
+  <g id="boca"><path d="M93 109 q7 6 14 0" stroke="#2A3440" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+</g>
+<g id="gotas"></g></g></svg>
