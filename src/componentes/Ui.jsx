@@ -56,7 +56,8 @@ export function FilaLista({ icono, titulo, descripcion, onClick, chevron = true,
 }
 
 // Cabecera: a la izquierda «Aa» (pantallas raíz) o volver/cerrar, y la ayuda contextual; a la derecha «Ayuda ya»
-export function Cabecera({ izquierda = 'aa', etiquetaIzquierda, onIzquierda, onAyuda, onAyudaYa, titulo, children }) {
+// titulo: el nombre de la pantalla al centro; con esTitulo es el h1 de la pantalla (listas de Perfil, Sala)
+export function Cabecera({ izquierda = 'aa', etiquetaIzquierda, onIzquierda, onAyuda, onAyudaYa, titulo, esTitulo = false, children }) {
   return (
     <header className="cabecera">
       <div className="cabecera__izq">
@@ -74,7 +75,7 @@ export function Cabecera({ izquierda = 'aa', etiquetaIzquierda, onIzquierda, onA
           <button type="button" className="ib ib--plano" aria-label="Ayuda contextual" onClick={onAyuda}><Icono nombre="help" tam={22} /></button>
         )}
       </div>
-      {titulo && <span className="cabecera__titulo">{titulo}</span>}
+      {titulo && (esTitulo ? <h1 className="cabecera__titulo">{titulo}</h1> : <span className="cabecera__titulo" aria-hidden="true">{titulo}</span>)}
       {children}
       {onAyudaYa && (
         <button type="button" className="ayuda-ya" onClick={onAyudaYa} aria-label="Ayuda ya: líneas de apoyo">
@@ -182,27 +183,5 @@ export function ElegirClima({ valor, onElegir, etiqueta, id }) {
         </button>
       ))}
     </div>
-  )
-}
-
-// Compatibilidad: la barra de antes (ayuda contextual + «Salir por hoy»)
-export function BarraSuperior({ soloAyuda = false, onAyuda, onSalir }) {
-  return (
-    <header className="cabecera barra">
-      <div className="cabecera__izq">
-        <button type="button" className="ib" onClick={onAyuda} aria-label="Ayuda contextual"><Icono nombre="help" tam={22} /></button>
-      </div>
-      {!soloAyuda && <button type="button" className="pildora" onClick={onSalir}><Icono nombre="out" tam={18} />Salir por hoy</button>}
-    </header>
-  )
-}
-
-// Opción excluyente con tarjeta (se usa en el primer uso de antes)
-export function Opcion({ marcada, onElegir, children }) {
-  return (
-    <button type="button" role="radio" aria-checked={marcada} className="fila fila--sw opcion" onClick={onElegir}>
-      <span className="fila__textos"><span className="fila__titulo">{children}</span></span>
-      <span className="sw" aria-hidden="true" />
-    </button>
   )
 }
