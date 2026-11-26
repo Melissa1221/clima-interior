@@ -64,7 +64,7 @@ export function Cabecera({ izquierda = 'aa', etiquetaIzquierda, onIzquierda, onA
     <header className={`cabecera ${abajo ? 'cabecera--titulo-abajo' : ''}`}>
       <div className="cabecera__izq">
         {izquierda === 'aa' && (
-          <button type="button" className="ib ib-aa" aria-label="Accesibilidad: texto, movimiento y sonido" onClick={onIzquierda}>
+          <button type="button" className="ib ib-aa" aria-label="Aa · Accesibilidad: texto, movimiento y sonido" onClick={onIzquierda}>
             <span aria-hidden="true">Aa</span>
           </button>
         )}

@@ -72,3 +72,8 @@ test('Crisis es un diálogo: la alerta es solo el párrafo y Escape vuelve (B1)'
   await expect(dialogo).toHaveCount(0)
   await expect(page.getByRole('button', { name: /Ayuda ya/ })).toBeFocused()
 })
+
+test('el nombre accesible del botón «Aa» contiene «Aa», lo que se ve (B2, WCAG 2.5.3)', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.getByRole('button', { name: /^Aa\b/ })).toBeVisible()
+})
