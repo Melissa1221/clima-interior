@@ -3,18 +3,27 @@
 // y B09 gestión (quien creó la sala saca a alguien o la cierra).
 import { useEffect, useRef, useState } from 'react'
 import Icono from '../componentes/Icono.jsx'
-import { Boton, Enlace, ElegirClima } from '../componentes/Ui.jsx'
+import { Aviso, Boton, Enlace, ElegirClima } from '../componentes/Ui.jsx'
 import { Escena, Suelo } from '../componentes/Escena.jsx'
 import Garua from '../mundo/Garua.jsx'
 import { CLIMAS, DESCRIPCION } from '../datos/climas.js'
 import { crearSala } from '../salas/sala.js'
-import { crearTransporte } from '../salas/transporte.js'
+import { crearTransporte, modoDeSalas } from '../salas/transporte.js'
 import { generarCodigo, normalizarCodigo, codigoValido, HORAS_DE_VIDA } from '../salas/mensaje.js'
 
 const etiqueta = (id) => CLIMAS.find((c) => c.id === id)?.etiqueta ?? ''
 const AMIGAS = ['amiga-base', 'amiga-lavanda', 'amiga-menta', 'amiga-durazno']
 // Dónde flota cada amiga en el cielo de la sala (izquierda %, abajo px)
 const SITIOS = [[6, 70], [40, 118], [70, 82], [26, 14], [56, 22], [80, 150]]
+
+// Sin servidor de salas configurado, la sala es una demo y se dice claro antes de crearla
+function AvisoDemo() {
+  return (
+    <Aviso titulo="Modo demo, sin servidor">
+      Esta sala solo conecta pestañas de este navegador. Para usarla entre teléfonos hace falta el servidor de salas.
+    </Aviso>
+  )
+}
 
 const FIN = {
   'salí': 'Saliste de la sala.',
@@ -56,8 +65,17 @@ export default function Sala({ cabecera, capas, climaHoy, codigoInicial = '', pe
   function unirme(e) {
     e.preventDefault()
     const c = normalizarCodigo(codigo)
-    if (!codigoValido(c)) return setError('El código no está completo. Son 26 letras y números; puedes pegarlo con o sin guiones.')
+    if (!codigoValido(c)) return setError('El código no está completo. Son 8 letras y números, como K7QF-29XM; puedes escribirlo con o sin guion.')
     entrar(c, false)
+  }
+
+  async function copiarCodigo() {
+    try {
+      await navigator.clipboard.writeText(estado.codigo)
+      setAviso('Código copiado')
+    } catch {
+      setAviso(`Tu código: ${estado.codigo}`)
+    }
   }
 
   async function invitar() {
@@ -91,13 +109,14 @@ export default function Sala({ cabecera, capas, climaHoy, codigoInicial = '', pe
           </div>
         </Escena>
         <Suelo matas={false}>
+          {modoDeSalas() === 'local' && <AvisoDemo />}
           <p className="cap"><Icono nombre="lock" tam={16} />Solo viaja el clima del día, con un seudónimo que cambia cada vez. Nunca lo que contaste.</p>
           <Boton icono="plus" onClick={() => entrar(generarCodigo(), true)}>Crear una sala</Boton>
           <form className="unirse" onSubmit={unirme}>
             <label htmlFor="codigo" className="etiqueta">¿Te pasaron un código?</label>
             <div className="unirse__fila">
               <input id="codigo" className="entrada" value={codigo} onChange={(e) => setCodigo(e.target.value)} autoComplete="off"
-                placeholder="K7QF-29XM-…" aria-describedby={error ? 'error-codigo' : undefined} />
+                placeholder="K7QF-29XM" aria-describedby={error ? 'error-codigo' : undefined} />
               <Boton tipo="linea" type="submit" disabled={!codigo.trim()}>Unirme</Boton>
             </div>
             {error && <p id="error-codigo" role="alert" className="aviso-linea"><Icono nombre="alert" tam={16} />{error}</p>}
@@ -144,6 +163,7 @@ export default function Sala({ cabecera, capas, climaHoy, codigoInicial = '', pe
         </div>
       </Escena>
       <Suelo matas={false}>
+        {estado.transporte === 'local' && <AvisoDemo />}
         <div className="mi-clima">
           {yo.clima ? (
             <div className="mi-clima__fila">
@@ -186,14 +206,16 @@ export default function Sala({ cabecera, capas, climaHoy, codigoInicial = '', pe
 
         <div className="codigo">
           <p className="meta">Código · caduca en {HORAS_DE_VIDA} h</p>
-          <code>{estado.codigo.split('-').map((g, i) => <span key={i}>{g}</span>)}</code>
-          <Boton tipo="linea" icono="share" onClick={invitar}>Invitar</Boton>
+          <code className="codigo__valor">{estado.codigo}</code>
+          <div className="fila-botones">
+            <Boton tipo="linea" icono="copy" onClick={copiarCodigo} aria-label={`Copiar el código ${estado.codigo}`}>Copiar</Boton>
+            <Boton tipo="linea" icono="share" onClick={invitar}>Invitar</Boton>
+          </div>
           {aviso && <p className="cap" role="status">{aviso}</p>}
         </div>
 
-        <p className="cap"><Icono nombre="lock" tam={16} />Nadie ve lo que contaste ni tus emociones. {estado.transporte === 'local'
-          ? 'Modo demo: la sala conecta las pestañas de este navegador.'
-          : 'Conectada al servidor de salas: funciona entre dispositivos.'}</p>
+        <p className="cap"><Icono nombre="lock" tam={16} />Nadie ve lo que contaste ni tus emociones.{estado.transporte === 'local'
+          ? '' : ' Conectada al servidor de salas: funciona entre dispositivos.'}</p>
         <div className="pila">
           {yo.creador && <Boton tipo="linea" icono="close" onClick={() => {
             if (window.confirm('¿Cerrar la sala para todos? Se borra y nadie más podrá entrar con este código.')) sala.current.cerrar()

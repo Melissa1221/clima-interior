@@ -815,7 +815,7 @@
       "S34-S39"
     ],
     "captura": "v3/36-sala-activa.png",
-    "nota": "Código de 128 bits, seudónimo por sesión y borrado al cerrar o a las 24 h."
+    "nota": "Código de 8 caracteres (40 bits), seudónimo por sesión y borrado al cerrar o a las 24 h."
   },
   "RNF-15": {
     "estado": "parcial",

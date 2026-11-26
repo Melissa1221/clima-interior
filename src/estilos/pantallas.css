@@ -300,7 +300,7 @@
 .participantes { padding: 0 16px; }
 .fila--participante { min-height: 60px; padding: 10px 0; gap: 12px; }
 .codigo { display: grid; gap: 8px; }
-.codigo code { font-family: var(--sans); font-size: var(--t-meta); font-weight: 500; letter-spacing: .06em; display: flex; flex-wrap: wrap; gap: 2px 10px; }
+.codigo__valor { font-family: var(--sans); font-size: var(--t-display-s); font-weight: 500; letter-spacing: .12em; font-variant-numeric: tabular-nums; }
 
 /* Noche: el suelo y las tarjetas oscuros conservan el contraste */
 [data-tema='noche'] .crisis__principal { background: #9E3A2B; }

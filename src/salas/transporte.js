@@ -48,6 +48,9 @@ export function transporteServidor(codigo, url, { crear = false } = {}) {
   }
 }
 
+// 'servidor' si el deploy configuró el relé; si no, 'local' (demo entre pestañas). La interfaz lo rotula.
+export const modoDeSalas = () => (import.meta.env?.VITE_SALAS_URL ? 'servidor' : 'local')
+
 export function crearTransporte(codigo, opciones) {
   const url = import.meta.env?.VITE_SALAS_URL
   return url ? transporteServidor(codigo, url, opciones) : transporteLocal(codigo)

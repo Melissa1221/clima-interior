@@ -28,7 +28,7 @@ test('crear, invitar, compartir, retirar, sacar y cerrar una sala entre tres dis
   await ana.getByRole('button', { name: 'Crear una sala' }).click()
   await compartir(ana, /Lluvia/)
   const codigo = (await ana.locator('.codigo code').innerText()).trim().replace(/\s+/g, '-')
-  expect(codigo.replace(/-/g, '')).toHaveLength(26) // RNF-14: 128 bits
+  expect(codigo.replace(/-/g, '')).toHaveLength(8) // corto para dictarlo o copiarlo (A6)
 
   // Bea entra por el enlace de invitación; Ceci escribe el código a mano en minúsculas
   const bea = await dispositivo(browser, mensajes)
@@ -91,13 +91,25 @@ test('quien ya registró su día comparte su clima con un toque', async ({ page 
 test('código incompleto muestra un error que explica qué hacer', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Sala', exact: true }).click()
-  await page.getByLabel(/código/).fill('K7QF-29XM')
+  await page.getByLabel(/código/).fill('K7QF-29')
   await page.getByRole('button', { name: 'Unirme' }).click()
-  await expect(page.getByRole('alert')).toContainText('Son 26 letras y números')
+  await expect(page.getByRole('alert')).toContainText('Son 8 letras y números')
 })
 
 test('una sala que no existe o caducó no deja entrar (RF-26)', async ({ page }) => {
-  await page.goto('/#sala=AAAA-AAAA-AAAA-AAAA-AAAA-AAAA-AA')
+  await page.goto('/#sala=AAAA-AAAA')
   await page.getByRole('button', { name: 'Unirme' }).click()
   await expect(page.getByText('Esa sala ya no existe o caducó.')).toBeVisible()
+})
+
+test('el código de la sala es corto y se copia con un toque (A6)', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Sala', exact: true }).click()
+  await page.getByRole('button', { name: 'Crear una sala' }).click()
+  const codigo = (await page.locator('.codigo__valor').innerText()).trim()
+  expect(codigo).toMatch(/^[0-9A-Z]{4}-[0-9A-Z]{4}$/)
+  await page.getByRole('button', { name: /^Copiar el código/ }).click()
+  await expect(page.getByText('Código copiado')).toBeVisible()
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(codigo)
 })

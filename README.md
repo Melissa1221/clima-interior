@@ -41,7 +41,7 @@ Las 39 pantallas del sistema visual v3 a 375 × 812 están en [`docs/capturas/v3
 | LLM con capa de abstracción | Contrato común + proveedores `mock`, `ollama`, `remoto` (`src/llm/`) | Hecho |
 | PWA | `vite-plugin-pwa`: instalable, service worker, offline | Hecho |
 | Personalización continua | El perfil aprende hora habitual, duración, emociones que eliges, si la IA acierta, fallos del micrófono y el largo de reflexión que prefieres; cada cambio anota su motivo y se puede apagar o borrar en «Lo que sabe de ti» (`src/datos/perfil.js`, `src/pantallas/Privacidad.jsx`) | Hecho |
-| Multiusuario | Salas de clima compartido con código de 128 bits, seudónimos efímeros, clima colectivo, retirar, sacar y cerrar. Mensajes solo numéricos validados en cliente y servidor (`src/salas/`, `server/salas.mjs`) | Hecho |
+| Multiusuario | Salas de clima compartido con código corto de 8 caracteres (40 bits, se copia en un toque), seudónimos efímeros, clima colectivo, retirar, sacar y cerrar. Mensajes solo numéricos validados en cliente y servidor (`src/salas/`, `server/salas.mjs`) | Hecho |
 | Diseño emocional (Norman) | Visceral: el mundo ilustrado de Lima y Garúa, la nube que acompaña. Conductual: check-in en menos de 90 s y micro-interacciones. Reflexivo: historial y patrones | Parcial |
 | Primer uso y consentimiento | Bienvenida única con edad y pantalla para menores; cuatro permisos apagados que se piden justo a tiempo (`src/pantallas/Bienvenida.jsx`, `src/pantallas/Hojas.jsx`, `src/datos/privacidad.js`) | Hecho |
 | Privacidad y datos | Permisos, qué datos usa la personalización, exportar PDF y eliminar todo (`src/pantallas/Privacidad.jsx`, `Datos.jsx`) | Hecho |
