@@ -206,7 +206,10 @@ test('trampa: «Sí, puede ser» lleva a una pregunta y a «¿Qué le dirías a 
   await page.getByRole('button', { name: 'No sé, guardar igual' }).click()
   await page.getByRole('button', { name: 'Sí, puede ser' }).click()
   await expect(page.getByText('No se trata de pensar bonito', { exact: false })).toBeVisible()
-  await expect(page.getByText('¿Lo que pasó habla de ese momento, o de quién eres en todo?')).toBeVisible()
+  await expect(page.getByRole('heading', { name: '¿Lo que pasó habla de ese momento, o de quién eres en todo?' })).toBeVisible()
+  // B10: el anuncio va en su propia región, no en el h1
+  await expect(page.getByRole('status').filter({ hasText: '¿Lo que pasó habla de ese momento' })).toHaveCount(1)
+  await expect(page.locator('h1[role="status"]')).toHaveCount(0)
   await page.getByRole('button', { name: '¿Qué le dirías a alguien que quieres?' }).click()
   await expect(page.getByText('«soy un fracaso»')).toBeVisible()
   await page.getByLabel(/Lo que le dirías/).fill('Una expo no dice quién eres, te esforzaste')
@@ -315,4 +318,20 @@ test('con movimiento reducido del sistema (sin activarlo en la app) Garúa no ca
   const exhala = await nube.evaluate((el) => [el.style.transform, el.querySelector('.garua').dataset.estado])
   expect(inhala[0]).toBe(cuenta)
   expect(exhala).toEqual(inhala)
+})
+
+test('Garúa no tapa ni se pega a «Ayuda ya» en la trampa, y en «¿Qué te vendría bien?» tiene tamaño (B13)', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await checkinConTexto(page, 'Estudié toda la noche. Seguro que voy a jalar el parcial')
+  await page.getByRole('button', { name: 'No sé, guardar igual' }).click()
+  const g = await page.locator('.trampa__garua').boundingBox()
+  const a = await page.getByRole('button', { name: /Ayuda ya/ }).boundingBox()
+  const separadas = g.x > a.x + a.width || g.x + g.width < a.x || g.y > a.y + a.height + 16
+  expect(separadas).toBe(true)
+  await page.getByRole('button', { name: 'No es así' }).click()
+  await page.getByRole('button', { name: 'Hasta mañana' }).click()
+  await page.getByRole('button', { name: 'Necesito un respiro' }).click()
+  await page.getByRole('button', { name: 'Elegir otra cosa' }).click()
+  const e = await page.locator('.escena .garua').first().boundingBox()
+  expect(e.width).toBeGreaterThanOrEqual(110)
 })

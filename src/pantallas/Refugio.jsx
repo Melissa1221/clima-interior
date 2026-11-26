@@ -169,7 +169,7 @@ function Elegir({ cabecera, capas, favorita, onElegir, onMasAyuda }) {
   return (
     <>
       <Escena clima="nublado" hy={150} suelo={230} flores="simples" brillo={[300, 80]} mar={false} capas={capas} cabecera={cabecera} alto={230}
-        garua={{ estado: 'curiosa', tam: 92, izq: 22, x: 'auto', y: 26 }}>
+        garua={{ estado: 'curiosa', tam: 140, izq: 14, x: 'auto', y: 0 }}>
         <h1 className="burbuja burbuja--derecha display-s">¿Qué te vendría bien?</h1>
       </Escena>
       <Suelo matas={false}>

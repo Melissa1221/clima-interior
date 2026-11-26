@@ -141,6 +141,9 @@
 .aa-mini { display: inline-block; border: 1px solid var(--line); border-radius: 6px; padding: 0 4px; font-weight: 500; }
 
 /* ───────── Trampa ───────── */
+/* B13: Garúa se asoma por el borde de la tarjeta, lejos de «Ayuda ya» */
+.escena--trampa .escena__cuerpo { padding-top: 96px; }
+.escena--trampa .trampa__garua { top: 22px; right: auto; left: 24px; }
 .trampa__chip { align-self: flex-start; font-size: var(--t-caption); color: var(--ink-2); border: 1px solid var(--hair); border-radius: 999px; padding: 3px 10px; }
 .trampa__k { margin-bottom: -6px; }
 .trampa__valida { color: var(--ink-2); }
